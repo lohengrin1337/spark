@@ -4,7 +4,4 @@
 
 ## Contributors
 
-Emma Meyer Widengård
-Lisa Rosengren
-Herman Karlsson
-Olof Jönsson
+Emma Meyer Widengård - Lisa Rosengren - Herman Karlsson - Olof Jönsson

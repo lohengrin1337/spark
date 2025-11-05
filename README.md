@@ -1,6 +1,6 @@
 # Spark - a System for Scooters
 
-#### *This system is made as a group project in the course 'Programutveckling i virtuella team' at Bleking Tekniska Högskola*
+#### *This system is made as a group project in the course 'Programutveckling i virtuella team' at Blekinge Tekniska Högskola*
 
 ## Contributors
 

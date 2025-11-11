@@ -17,7 +17,7 @@ Här är en konkret tolkning av kraven för kundens app, och hur dess behov kan 
     * Knapp för att hyra cykel
 3. HYRA cykel
 4. VISA karta (under hyrning)
-    * Stadszon, Parkeringszoner, Laddstationer, användarens position (ej lediga cyklar)
+    * Stadszon, Parkeringszoner, Laddstationer, användarens position (ej lediga cyklar - eller?)
     * Knapp för att parkera cykel
 5. VISA historik över resor? (I kravspecen står det olika under "Bakgrund" och "Kundens app")
 6. VISA senaste resan? (samma som ovan)

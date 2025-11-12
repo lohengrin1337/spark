@@ -13,6 +13,6 @@ This app is being developed as a group project in the course ['Programutveckling
 ```
 [lohengrin1337, Olof Jönsson, oljn22]
 [kh3rm, Herman Karlsson, hekr23]
-[lisarosengren, Lisa Rosengren, ?]
-[emmwid81, Emma Meyer Widengård, ?]
+[lisarosengren, Lisa Rosengren, lirs24]
+[emmwid81, Emma Meyer Widengård, emme24]
 ```

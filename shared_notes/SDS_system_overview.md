@@ -21,7 +21,7 @@ Customers
 Customers use the system for finding scooters, parking and charging locations, renting and returning scooters, managing their account and handling payments.
 
 //utkast bild av kundens användande//
-![customer usage](../img/SDS_customer.jpg)
+![customer usage](../img/sds_customer.jpg)
 
 //här skriver vi något mer utförligt vad kunden ska kunna göra i app och webb, förslagsvis i punkt- eller listform//
 

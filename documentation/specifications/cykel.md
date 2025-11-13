@@ -1,13 +1,13 @@
 # Cykelns intelligens
 
 Utgångspunkten är att så avskalat som möjligt specificera vad kod som är tänkt att köras i cykel ska ansvara för.
-Jag tänker mig att cykeln har en hårdvarudel som vi bara förhåller oss till konceptuellt
+Jag tänker mig att cykeln har en fabriksinställd del som vi bara förhåller oss till konceptuellt
 
 ## Konceptuell bild av cykelns färdiga funktioner (som vi inte kodar)
 *Dessa delar bör finas hos en riktig cykel. Vi kan inte trigga dess riktiga funktioner, men vi kan simulera dem genom att förändra cykelns status för respektive funktion*
 * Hastighetsmätare
 * GPS
-* Laddnings-sensor
+* Service-indikator-lampa
 
 
 ## Vad ska intelligensen ansvara för

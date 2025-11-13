@@ -46,6 +46,7 @@ Jag tänker mig att cykeln har en fabriksinställd del som vi bara förhåller o
             * Sätt `isOn = true` - cykeln är uthyrd till kund / körs av admin
             * Sätt `position` till olika kordinater över tid
             * Sätt `speed` till olika hastigheter över tid
+            * Laddnings % går ner över tid
             * Sätt `isOn = false` - cykeln är parkerad
         * Simulera att en cykel laddas
             * Sätt `onService = true` - cykeln är otillgänglig

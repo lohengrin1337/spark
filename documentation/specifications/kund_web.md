@@ -40,7 +40,7 @@ Konkretiserat implementationsförslag som uppfyller kraven samt våra preferense
         - ?
           
         (Propsar fortfarande på att använda oss av en mer modern, verklighetstrogen
-        och relevant pay as you go-lösning (Merchant Swish Simulator?))
+        och relevant simulering av en pay as you go-lösning (Merchant Swish Simulator?))
 
 
 ## Resurs för att potentiellt kunna simulera en realistisk Swish-betalning

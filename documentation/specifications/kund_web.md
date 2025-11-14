@@ -10,11 +10,11 @@ Konkretiserat implementationsförslag som uppfyller kraven samt våra preferense
     * Lösenord minst 8 tecken, versal/gemen, minst ett specialtecken
     * Konto skapas utan mail-bekräftelse-länk (?)
 
-2. Logga in - formulärvy för att logga in (inkluderar länk till Skapa konto)
-    * Mailadressen måste vara av giltigt format och unik (HTML5-form-inbyggd-validering?)
-    * Användarnamnet måste vara giltigt (min 4, max 20 tecken) och unikt
-    * Lösenord minst 8 tecken, versal/gemen, minst ett specialtecken
-    * Konto skapas utan mail-bekräftelse-länk (?)
+2. Logga in - formulärvy för att logga in
+    * Formulär för mailadress/användarnamn (båda ska vara gångbara, reglerat i backend med enkel @-konditionell koll?)
+    * Formulär för lösenord
+    * Logga in-knapp
+    * Understruken Skapa nytt konto-länk
 
 ## Som inloggad...
 1. I profilvyn kommer användaren ha tillgång till tre klickbara alternativ:

@@ -31,13 +31,14 @@ Konkretiserat implementationsförslag som uppfyller kraven samt våra preferense
             - rese_id
             - datum- och tidsstämpel
             - resans varaktighet(?)
-            - resans sträckning i km()
+            - resans sträckning i km(?)
             - kostnad
             - inbäddad dynamisk kartvy som uppvisar resans sträckning
 
     
     * Hantera fakturor
         - ?
+          
         (Propsar fortfarande på att använda oss av en mer modern, verklighetstrogen
         och relevant pay as you go-lösning (Merchant Swish Simulator?))
 

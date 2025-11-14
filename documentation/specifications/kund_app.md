@@ -19,8 +19,10 @@ Här är en konkret tolkning av kraven för kundens app, och hur dess behov kan 
 4. VISA karta (under hyrning - kan vara samma som 1.)
     * Stadszon, Parkeringszoner, Laddstationer, användarens position (ej lediga cyklar - eller?)
     * Knapp för att parkera cykel
-5. VISA historik över resor? (I kravspecen står det olika under "Bakgrund" och "Kundens app")
-6. VISA senaste resan? (samma som ovan)
+
+*BONUSKRAV*
+5. VISA historik över resor
+6. VISA senaste resan
 
 
 ## Förslag på hur APIet kan stödja appen
@@ -34,11 +36,6 @@ Här är en konkret tolkning av kraven för kundens app, och hur dess behov kan 
 * GET `/api/v1/bikes<?city=xxx>`
     * A regular user gets available bikes, admin would get all
     * 200 OK { data: [ bike, ...] }
-* GET `/api/v1/rentals/`
-    * A regular user only gets their own rentals, admin would get all
-    * 200 OK { data: [ rental, ... ] }
-* GET `/api/v1/rentals/<rent-id>`
-    * 200 OK { data: rental }
 * POST `/api/v1/rentals`
     * Request body: { bike_id: "xxx" }
     * Response: 201 Created `Location: api/v1/rentals/<rent-id>` (Location header pointing at the resource)
@@ -46,6 +43,12 @@ Här är en konkret tolkning av kraven för kundens app, och hur dess behov kan 
     * Request body: { status: "parked" }
     * Response: 200 OK { data: rental }
 
+*BONUSKRAV*
+* GET `/api/v1/rentals/`
+    * A regular user only gets their own rentals, admin would get all
+    * 200 OK { data: [ rental, ... ] }
+* GET `/api/v1/rentals/<rent-id>`
+    * 200 OK { data: rental }
 
 ## Side-note om geoData för zoner
 Zoner kan representeras som GeoJSON där flera kordinater kan anges som hörn i en polygon

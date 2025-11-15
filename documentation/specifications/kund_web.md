@@ -11,7 +11,7 @@ Konkretiserat implementationsförslag som uppfyller kraven samt våra preferense
     * Konto skapas utan mail-bekräftelse-länk (?)
 
 2. Logga in - formulärvy för att logga in
-    * Formulär för mailadress/användarnamn (båda ska vara gångbara, reglerat i backend med enkel @-konditionell koll?)
+    * Formulär för mailadress (eventuellt att både mail/användarnamn ska vara gångbara)
     * Formulär för lösenord
     * Logga in-knapp
     * Understruken Skapa nytt konto-länk
@@ -37,10 +37,17 @@ Konkretiserat implementationsförslag som uppfyller kraven samt våra preferense
 
     
     * Hantera fakturor
-        - ?
-          
-        (Propsar fortfarande på att använda oss av en mer modern, verklighetstrogen
-        och relevant simulering av en pay as you go-lösning (Merchant Swish Simulator?))
+        - Fakturavy som visar upp kundens fakturor med:
+            - faktura_id
+            - klickbart rese_id som fakturan är kopplad till, som länkar till resehistorikvyn för den specifika resan
+            - fakturadatum
+            - förfallodatum
+            - summa
+            - betald (ja/nej)
+            - en knapp som konditionellt renderas om nej, som tillåter en kund att betala fakturan i någon lämplig enkel simulerad vy
+         
+      (Tycker att en simulerad pay as you go/direktbetalningslösning hade varit högst rimligt att ha i anslutning till appen,
+      men kan acceptera att lägga in den i högen med eventuella bonusfeatures som man kan lägga till i mån av tid.)
 
 
 ## Resurs för att potentiellt kunna simulera en realistisk Swish-betalning

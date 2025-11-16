@@ -34,6 +34,7 @@ Här är en konkret tolkning av kraven för admins webbgränssnitt, och hur dess
 8- VISA alla taxor
 
 *BONUS?*
+
 9. ÄNDRA
   * Tillåten zon
   * Minuttaxa

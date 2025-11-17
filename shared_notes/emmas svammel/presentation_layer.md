@@ -8,14 +8,13 @@ Kundens webbapplikation //*skriver vi något om språk eller ramverk här eller 
 
 All åtkomst till kundens data kräver autentisering. Även efter inloggning kontrolleras varje förfrågan om data av en autentiseringsfunktion i systemet innan datan hämtas/levereras.
 
-BILD
+BILD?
 
 Vill kunden av någon anledning avsluta sitt konto måste hen kontakta administratör då kunden inte har behörighet att radera data.
 
 I det mobilanpassade gränssnittet kan kunden på en karta se lediga cyklars position, laddstationer och godkända sparkcykelparkeringar samt stadens tillåtna körzon. När kunden väljer en cykelmarkör på kartan visas dess id och status upp tillsammans med en knapp för att påbörja en hyrsession.
 
-![customer app view](../../img/customer_app.jpg)
-
+<img src="../../img/customer_app.jpg" alt="customer app" width="200"/>
 
 När kunden har påbörjat en hyrsession räknas tiden fram tills kundens återlämnande av cykeln som hyrtiden. Systemet loggar hyrtidens varaktighet samt resans start- och slutposition, vilket används för att räkna ut kostnaden för hyrsessionen.
 

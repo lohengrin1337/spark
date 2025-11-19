@@ -1,13 +1,33 @@
-# Just a temporary example from docs.docker.com
+networks: 
+  spark:
+
 services:
-  web:
-    build: .
+  mongodb:
+    image: mongo:6
+    container_name: spark_mongodb
+    restart: always
     ports:
-      - "8000:5000"
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /code
-  redis:
-    image: "redis:alpine"
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ./services/mongodb/data:/data/db
+
+  backend:
+    build: ./services/backend
+    container_name: spark_backend
+    networks:
+      - spark
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./services/backend:/app/  # mount local backend to container
+      - /app/node_modules         # exclude local node_modules (anonymous volume)
+    command: ["npx", "nodemon", "app.js"]
+
+
+
+  # admin-web:
+

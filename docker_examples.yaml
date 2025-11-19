@@ -1,0 +1,52 @@
+
+# # CHATGPT
+# version: "3.9"
+# services:
+#   mongodb:
+#     image: mongo:6
+#     container_name: scooter-mongo
+#     restart: always
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       - mongo-data:/data/db
+
+#   backend:
+#     build: ./backend
+#     container_name: scooter-backend
+#     restart: always
+#     ports:
+#       - "5000:5000"
+#     environment:
+#       - MONGO_URI=mongodb://mongodb:27017/scooterdb
+#     depends_on:
+#       - mongodb
+
+#   frontend:
+#     build: ./frontend
+#     container_name: scooter-frontend
+#     restart: always
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - backend
+
+# volumes:
+#   mongo-data:
+
+
+
+
+# # Just a temporary example from docs.docker.com
+# services:
+#   web:
+#     build: .
+#     ports:
+#       - "8000:5000"
+#     develop:
+#       watch:
+#         - action: sync
+#           path: .
+#           target: /code
+#   redis:
+#     image: "redis:alpine"

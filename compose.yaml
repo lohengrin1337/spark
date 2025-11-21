@@ -4,18 +4,20 @@ networks:
 services:
   mongodb:
     image: mongo:6
-    container_name: spark_mongodb
+    container_name: spark_db
+    networks:
+      - spark
     restart: always
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: root      # ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: password  # ${MONGO_PASSWORD}
     volumes:
-      - ./services/mongodb/data:/data/db
+      - ./docker_services/mongodb/data:/data/db
 
   backend:
-    build: ./services/backend
+    build: ./docker_services/backend
     container_name: spark_backend
     networks:
       - spark
@@ -23,11 +25,17 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./services/backend:/app/  # mount local backend to container
+      - ./docker_services/backend:/app/  # mount local files to container
       - /app/node_modules         # exclude local node_modules (anonymous volume)
-    command: ["npx", "nodemon", "app.js"]
 
-
-
-  # admin-web:
-
+  admin_web:
+    build: ./docker_services/clients/admin_web
+    container_name: spark_admin_web
+    networks:
+      - spark
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker_services/clients/admin_web:/app/  # mount local files to container
+      - /app/node_modules         # exclude local node_modules (anonymous volume)

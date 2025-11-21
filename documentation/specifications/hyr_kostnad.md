@@ -1,4 +1,4 @@
-# Kostnadsuträkning vid uthyrning av cykel
+# Kostnadsuträkning vid uthyrning av cykel (version 3)
 
 ## Vad står det i kravspecen
 * Cyklar kan även parkeras utanför laddstationer och utanför accepterade platser, men det kan då tillkomma en extra avgift för kunden. Detta kallas fri parkering.
@@ -7,29 +7,33 @@
 
 ## Logisk tolkning
 * P = parkeringszon, F = fri parkering
-* Det finns tre scenarion beroende av cykelns start- och slutposition
-1. **Från P -> P eller från F -> F**
+* Det finns fyra scenarion beroende av cykelns start- och slutposition
+1. **P -> P**
     * Kunden betalar normalpris
-    * Fast taxa + rörlig taxa +  normal parkeringstaxa
-2. **Från P -> F**
+    * Fast taxa + rörlig taxa
+4. **P -> F**
     * Kunden betalar extra för fri parkering
-    * Fast taxa + rörlig taxa + dyrare parkeringstaxa
-3. **Från F -> P**
+    * Fast taxa + rörlig taxa + staffavgift
+3. **F -> P**
     * Kunden betalar ett reducerat pris för att ha återställt en cykel till parkeringszon
-    * Fast taxa  + rörligt pris + reducerad parkeringstaxa
-    * Det står i kravet att startavgiften ska reduceras, men verkar mer logiskt att ändra parkeringsavgiften tycker jag, eftersom scenario 1 och 2 är varandras motsatser.
+    * Fast taxa + rörlig taxa - rabatt
+4. **F -> F**
+    * Kunden betalar extra för fri parkering, men får rabatt eftersom den inte togs från parkering
+    * Fast taxa + rörlig + staff - rabatt
+    * En kund som har fri parkering som slutdestination får ett inicitament att ändå ta en cykel från fri parkering, vilket hjälper till att hålla så många cyklar på parkering som möjligt.
 
 ## Förslag på taxor
-* Fast taxa: 10kr
-* Rörlig taxa: 1kr/min (inte per påbörjad minut, utan per hel minut)
-* Parkeringstaxa: 10kr
-    * Påslag för P -> F: 10kr
-    * Avdrag för F -> P: 10kr
+* Fast: 20kr
+* Rörlig: 1kr/min (inte per påbörjad minut, utan per hel minut)
+* Straff: 15
+* Avdrag: 10
 
 ## Exempel
-1. **Från P -> P eller från F -> F på 12min och 30s**
-    * 10 + 12 + 10 = 32kr
-2. **Från P -> F  på 12min och 30s**
-    * 10 + 12 + 20 = 42kr
-3. **Från F -> P  på 12min och 30s**
-    * 10 + 12 + 0 = 22krkr
+1. **P -> P på 12min och 30s**
+    * 20 + 12 = 32kr
+2. **P -> F  på 12min och 30s**
+    * 20 + 12 + 15 = 47kr
+3. **F -> P  på 12min och 30s**
+    * 20 + 12 - 10 = 22kr
+4. **F -> F på 12min och 30s**
+    * 20 + 12 + 15 - 10 = 37kr

@@ -16,3 +16,12 @@ This app is being developed as a group project in the course ['Programutveckling
 [lisarosengren, Lisa Rosengren, lirs24]
 [emmwid81, Emma Meyer Widengård, emme24]
 ```
+
+## Docker Compose
+
+### Run services
+* `docker compose up [ --build ] [ -d ] [ service name ]`
+
+### Install dependency in a container
+* `docker compose exec <service name> npm install <dependency name>`
+    * reduild image (--build) on next restart

@@ -1,0 +1,10 @@
+--
+-- Spark
+-- CREATE DATABASE
+--
+
+DROP DATABASE IF EXISTS spark;
+
+CREATE DATABASE spark;
+
+USE spark;

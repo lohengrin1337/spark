@@ -16,3 +16,15 @@ DROP TABLE IF EXISTS `zone_type`;
 DROP TABLE IF EXISTS `fee`;
 DROP TABLE IF EXISTS `admin`;
 
+--
+-- CREATE TABLES
+--
+
+CREATE TABLE `invoice`
+(
+    `invoice_id` INT AUTO_INCREMENT NOT NULL,
+    `status` VARCHAR(45) NOT NULL,
+    `due_date`DATE,    
+
+    PRIMARY KEY (`invoice_id`)
+)

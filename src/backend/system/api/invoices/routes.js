@@ -6,14 +6,11 @@ const invoiceController = require('./controller');
 
 /**
  * GET invoices
- * Returns an array of all invoices in the database.
  * Response: 200 ok and array of invoice objects.
  */
 router.get('/', invoiceController.getInvoices);
 /**
  * GET /:id
- * Returns invoice that matches query param :id
- * @param id Invoice id
  * Response: 200 ok and invoice object or 404 not found.
  */
 router.get('/:id', invoiceController.getInvoiceById);

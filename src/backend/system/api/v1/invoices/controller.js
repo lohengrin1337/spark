@@ -1,6 +1,6 @@
 // request logic
 // calls services with params and stuff
-const invoiceServices = require('../../services/invoiceServices');
+const invoiceServices = require('../../../services/invoiceServices');
 
 /**
  * @returns all invoices in database.

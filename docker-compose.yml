@@ -1,0 +1,183 @@
+# docker-compose.yml
+x-common-variables: &common-env
+  NODE_ENV: development
+  APP_NAME: spark
+  CORS_ORIGIN: http://localhost:8080 http://localhost:8081 http://localhost:8082
+  API_BASE_URL: http://localhost:3000
+  LOG_LEVEL: debug
+
+# ______________________________________________________________________
+#
+#  Backend
+# ______________________________________________________________________
+
+services:
+
+  system:
+    build:
+      context: ./src/backend/system
+      target: development
+    container_name: system
+    environment:
+      <<: *common-env
+      REDIS_HOST: redis
+      DB_HOST: mariadb
+      DB_USER: root
+      DB_PASSWORD: admin
+      DB_NAME: spark_db
+    volumes:
+      - ./src/backend/system:/app:cached
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      redis:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src/backend/system
+    networks: [spark]
+
+  redis:
+    image: redis:7-alpine
+    container_name: spark-redis
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [spark]
+
+  mariadb:
+    image: mariadb:11
+    container_name: spark-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: spark_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+      - ./src/backend/mariadb/dev-init:/docker-entrypoint-initdb.d:ro
+    #ports:
+    #  - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "--protocol=tcp", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks: [spark]
+
+
+# ______________________________________________________________________
+#
+#  Frontend (JS & Caddy-served)
+# ______________________________________________________________________
+
+  admin-frontend:
+    build:
+      context: ./src/frontend/admin
+      target: development
+    container_name: spark-admin-frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src/frontend/admin/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./src/frontend/admin/html:/usr/share/caddy:ro
+    depends_on: [system]
+    develop:
+      watch:
+        - action: sync
+          path: ./src/frontend/admin/html
+          target: /usr/share/caddy
+        - action: sync
+          path: ./src/frontend/admin/Caddyfile
+          target: /etc/caddy/Caddyfile
+        - action: rebuild
+          path: ./src/frontend/admin/Dockerfile
+    networks: [spark]
+
+  user-web-frontend:
+    build:
+      context: ./src/frontend/user-web
+      target: development
+    container_name: spark-user-web
+    ports:
+      - "8081:80"
+    volumes:
+      - ./src/frontend/user-web/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./src/frontend/user-web/html:/usr/share/caddy:ro
+    depends_on: [system]
+    develop:
+      watch:
+        - action: sync
+          path: ./src/frontend/user-web/html
+          target: /usr/share/caddy
+        - action: sync
+          path: ./src/frontend/user-web/Caddyfile
+          target: /etc/caddy/Caddyfile
+    networks: [spark]
+
+  user-app-frontend:
+    build:
+      context: ./src/frontend/user-app
+      target: development
+    container_name: spark-user-app
+    ports:
+      - "8082:80"
+    volumes:
+      - ./src/frontend/user-app/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./src/frontend/user-app/html:/usr/share/caddy:ro
+    depends_on: [system]
+    develop:
+      watch:
+        - action: sync
+          path: ./src/frontend/user-app/html
+          target: /usr/share/caddy
+        - action: sync
+          path: ./src/frontend/user-app/Caddyfile
+          target: /etc/caddy/Caddyfile
+    networks: [spark]
+
+# ______________________________________________________________________
+#
+#  Device Scooter Simulation (Python)
+# ______________________________________________________________________
+
+  scooter-simulation:
+      build:
+        context: ./src/device/scooter-simulation
+        target: development
+      container_name: spark-scooter-sim
+      volumes:
+        - ./src/device/scooter-simulation:/app:cached
+      command: null
+      depends_on:
+        redis:
+          condition: service_healthy
+      develop:
+        watch:
+          - action: sync+restart
+            path: ./src/device/scooter-simulation
+            target: /app
+      networks: [spark]
+
+# ______________________________________________________________________
+#
+#  Volumes & Networks
+# ______________________________________________________________________
+
+
+volumes:
+  redis-data:
+  mariadb-data:
+
+networks:
+  spark:
+    driver: bridge
+    name: spark-network

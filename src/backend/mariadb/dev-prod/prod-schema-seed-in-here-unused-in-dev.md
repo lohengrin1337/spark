@@ -1,0 +1,1 @@
+...in production, the SQL init files are instead straight copied into the image at build time (not volume-bound) so the running containers can be made completely independent of the repository.

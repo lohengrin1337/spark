@@ -33,7 +33,7 @@ CREATE TABLE `bike`
     `bike_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45),
     `status` VARCHAR(45),
-
+    `coordinates` POINT,
 
     PRIMARY KEY (`bike_id`),
     FOREIGN KEY (`city`) REFERENCES `city`(`name`)

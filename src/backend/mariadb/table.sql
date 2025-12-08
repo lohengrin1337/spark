@@ -38,7 +38,7 @@ CREATE TABLE `bike`
 (
     `bike_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45),
-    `status` VARCHAR(45) DEFAULT `available` ,
+    `status` VARCHAR(45) DEFAULT `available`,
     `coordinates` POINT,
 
     PRIMARY KEY (`bike_id`),
@@ -51,9 +51,6 @@ CREATE TABLE `customer`
     `customer_id` INT AUTO_INCREMENT NOT NULL,
     `email` VARCHAR(200) NOT NULL UNIQUE,
     `name` VARCHAR(200) NOT NULL,
-    `address` VARCHAR(200) NOT NULL,
-    `zip` INT NOT NULL,
-    `city` VARCHAR(45) NOT NULL,
     `password` CHAR(60),
     `blocked` BOOLEAN NOT NULL DEFAULT FALSE,
     `oauth_provider` VARCHAR(50) NULL,

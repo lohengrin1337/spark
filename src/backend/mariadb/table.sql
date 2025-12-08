@@ -20,6 +20,12 @@ DROP TABLE IF EXISTS `city`;
 -- CREATE TABLES
 --
 
+CREATE TABLE `bike_status`
+(
+    `status` VARCHAR(45) NOT NULL,
+
+    PRIMARY KEY (`status`)
+);
 
 CREATE TABLE `city`
 (
@@ -32,11 +38,12 @@ CREATE TABLE `bike`
 (
     `bike_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45),
-    `status` VARCHAR(45),
+    `status` VARCHAR(45) DEFAULT `available` ,
     `coordinates` POINT,
 
     PRIMARY KEY (`bike_id`),
     FOREIGN KEY (`city`) REFERENCES `city`(`name`)
+    FOREIGN KEY (`status`) REFERENCES `bike_status`(`status`)
 );
 
 CREATE TABLE `customer`

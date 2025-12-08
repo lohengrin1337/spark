@@ -53,8 +53,8 @@ CREATE TABLE `customer`
     `name` VARCHAR(200) NOT NULL,
     `password` CHAR(60),
     `blocked` BOOLEAN NOT NULL DEFAULT FALSE,
-    `oauth_provider` VARCHAR(50) NULL,
-    `oauth_provider_id` VARCHAR(255) NULL,
+    `oauth_provider` VARCHAR(50),
+    `oauth_provider_id` VARCHAR(255),
 
     PRIMARY KEY (`bike_id`),
     FOREIGN KEY (`city`) REFERENCES `city`(`name`)

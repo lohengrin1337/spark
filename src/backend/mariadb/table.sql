@@ -121,3 +121,4 @@ CREATE TABLE `admin`
 
     PRIMARY KEY (`acronym`)
 );
+

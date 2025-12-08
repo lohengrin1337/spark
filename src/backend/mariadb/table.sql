@@ -56,8 +56,7 @@ CREATE TABLE `customer`
     `oauth_provider` VARCHAR(50),
     `oauth_provider_id` VARCHAR(255),
 
-    PRIMARY KEY (`bike_id`),
-    FOREIGN KEY (`city`) REFERENCES `city`(`name`)
+    PRIMARY KEY (`customer_id`),
 );
 
 CREATE TABLE `rental`

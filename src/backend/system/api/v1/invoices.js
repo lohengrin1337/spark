@@ -26,7 +26,7 @@ router.get('/:id',
     //validateInvoice, //validerar requesten
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
-    const invoiceId = req.params;
+    const invoiceId = req.params.id;
     try {
         const invoice = await invoiceServices.getInvoiceById(invoiceId);
         if (!invoice) {

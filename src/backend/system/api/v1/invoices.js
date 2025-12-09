@@ -1,22 +1,20 @@
 const router = require('express').Router();
-const validate = require('../middleware/validate.js');
-const authenticate = require('../middleware/authenticate.js');
-const authorize = require('../middleware/authorize.js');
+// const validate = require('../middleware/validate.js');
+// const authenticate = require('../middleware/authenticate.js');
+// const authorize = require('../middleware/authorize.js');
 const invoiceServices = require('../../services/invoiceServices');
-
-router.use(auth.user());
-
 
 /**
  * GET invoices
  * Response: 200 ok and array of invoice objects.
  */
 router.get('/',
-    authenticate, // koll valid token
-    validate, // koll valid request
-    authorize, // k
+    //authenticate, // koll valid token
+    //validate, // koll valid request
+    //authorize, // k
     async (req, res) => {
-    
+    const invoices = await invoiceServices.getInvoices();
+    res.status(200).json(invoices);
 });
 
 /**
@@ -24,9 +22,9 @@ router.get('/',
  * Response: 200 ok and invoice object or 404 not found.
  */
 router.get('/:id',
-    authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
-    validate, //validerar requesten
-    authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
+    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
+    //validateInvoice, //validerar requesten
+    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const invoiceId = req.params;
     try {

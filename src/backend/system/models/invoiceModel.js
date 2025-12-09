@@ -1,7 +1,7 @@
 // invoice model
 // Handles database queries for invoice data.
 
-const pool = require('../config/database');
+const pool = require('../database/database');
 
 const invoiceModel = {
   /**

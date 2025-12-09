@@ -1,13 +1,14 @@
 const express = require("express");
 const cities = require("./cities.js");
 const invoices = require("./invoices.js");
+const customers = require("./customers.js");
 
 // Bundle all api v1 routers together
 const router = express.Router();
 
 router.use("/cities", cities);
 router.use("/invoices", invoices);
-// router.use("/customers", customers);
+router.use("/customers", customers);
 
 module.exports = router;
 

@@ -4,6 +4,7 @@ const invoices = require("./invoices.js");
 
 // Bundle all api v1 routers together
 const router = express.Router();
+
 router.use("/cities", cities);
 router.use("/invoices", invoices);
 

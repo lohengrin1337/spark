@@ -2,6 +2,9 @@ const express = require("express");
 const invoiceServices = require('../../services/invoiceServices');
 const router = require('express').Router();
 
+router.use(auth.user());
+
+
 /**
  * GET invoices
  * Response: 200 ok and array of invoice objects.

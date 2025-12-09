@@ -1,7 +1,7 @@
 const express = require("express");
-const cities = require("./cities.js");
-const invoices = require("./invoices.js");
-const customers = require("./customers.js");
+const cities = require("./cities/cities.js");
+const invoices = require("./invoices/invoices.js");
+const customers = require("./customers/customers.js");
 
 // Bundle all api v1 routers together
 const router = express.Router();

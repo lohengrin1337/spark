@@ -8,12 +8,13 @@
 
 DELETE FROM `admin_account`;
 DELETE FROM `fee`;
-DELETE FROM `zone`;
+DELETE FROM `spark_zone`;
 DELETE FROM `zone_type`;
 DELETE FROM `invoice`;
 DELETE FROM `rental`;
 DELETE FROM `customer`;
 DELETE FROM `bike`;
+DELETE FROM `bike_status`;
 DELETE FROM `city`;
 
 
@@ -29,8 +30,11 @@ SHOW VARIABLES LIKE 'local_infile';
 -- Insert into admin
 --
 
-LOAD DATA LOCAL INFILE 'admin_account'
-INTO TABLE admin
+-- LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/spark_db/admin_account'
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/admin_account.csv'
+INTO TABLE admin_account
 CHARSET utf8
 FIELDS
     TERMINATED BY ','
@@ -41,13 +45,28 @@ IGNORE 1 LINES
 (`admin_id`, `password`)
 ;
 
+--
+-- Insert into bike_status
+--
 
+-- LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/spark_db/bike_status'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/bike_status.csv'
+INTO TABLE bike_status
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+        TERMINATED BY '\n'
+IGNORE 1 LINES
+(`status`)
+;
 
 --
 -- Insert into fee
 --
 
-LOAD DATA LOCAL INFILE 'fee.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/fee.csv'
 INTO TABLE fee
 CHARSET utf8
 FIELDS
@@ -56,7 +75,7 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`id`, `start`, `minute`, `discount`,  `penalty`)
+(`fee_id`, `start`, `minute`, `discount`,  `penalty`)
 ;
 
 SHOW WARNINGS;
@@ -65,7 +84,7 @@ SHOW WARNINGS;
 -- Insert into spark_zone
 --
 
-LOAD DATA LOCAL INFILE 'spark_zone.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/spark_zone.csv'
 INTO TABLE spark_zone
 CHARSET utf8
 FIELDS
@@ -82,7 +101,7 @@ IGNORE 1 LINES
 -- Insert into zone_type
 --
 
-LOAD DATA LOCAL INFILE 'zone_type.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/zone_type.csv'
 INTO TABLE zone_type
 CHARSET utf8
 FIELDS
@@ -100,7 +119,7 @@ IGNORE 1 LINES
 -- Insert into invoice
 --
 
-LOAD DATA LOCAL INFILE 'invoice.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/invoice.csv'
 INTO TABLE invoice
 CHARSET utf8
 FIELDS
@@ -119,7 +138,7 @@ IGNORE 1 LINES
 -- Insert into rental
 --
 
-LOAD DATA LOCAL INFILE 'rental'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/rental.csv'
 INTO TABLE rental
 CHARSET utf8
 FIELDS
@@ -136,7 +155,7 @@ IGNORE 1 LINES
 -- Insert into customer
 --
 
-LOAD DATA LOCAL INFILE 'customer'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/customer.csv'
 INTO TABLE customer
 CHARSET utf8
 FIELDS
@@ -153,7 +172,7 @@ IGNORE 1 LINES
 -- Insert into bike
 --
 
-LOAD DATA LOCAL INFILE 'bike'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/bike.csv'
 INTO TABLE bike
 CHARSET utf8
 FIELDS
@@ -170,7 +189,7 @@ IGNORE 1 LINES
 -- Insert into city
 --
 
-LOAD DATA LOCAL INFILE 'city'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/city.csv'
 INTO TABLE city
 CHARSET utf8
 FIELDS

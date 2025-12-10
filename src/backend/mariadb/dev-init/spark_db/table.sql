@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS `rental`;
 DROP TABLE IF EXISTS `customer`;
 DROP TABLE IF EXISTS `bike`;
 DROP TABLE IF EXISTS `city`;
+DROP TABLE IF EXISTS `bike_status`;
 
 
 --
@@ -38,11 +39,11 @@ CREATE TABLE `bike`
 (
     `bike_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45),
-    `status` VARCHAR(45) DEFAULT `available`,
+    `status` VARCHAR(45) DEFAULT 'available',
     `coordinates` POINT,
 
     PRIMARY KEY (`bike_id`),
-    FOREIGN KEY (`city`) REFERENCES `city`(`name`)
+    FOREIGN KEY (`city`) REFERENCES `city`(`name`),
     FOREIGN KEY (`status`) REFERENCES `bike_status`(`status`)
 );
 
@@ -56,12 +57,12 @@ CREATE TABLE `customer`
     `oauth_provider` VARCHAR(50),
     `oauth_provider_id` VARCHAR(255),
 
-    PRIMARY KEY (`customer_id`),
+    PRIMARY KEY (`customer_id`)
 );
 
 CREATE TABLE `rental`
 (
-    `rental_id` INT AUTO_INCREMENT NOT NULL
+    `rental_id` INT AUTO_INCREMENT NOT NULL,
     `customer_id` INT NOT NULL,
     `bike_id` INT NOT NULL,
     `start_point` POINT,
@@ -72,7 +73,7 @@ CREATE TABLE `rental`
 
     PRIMARY KEY (`rental_id`),
     FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`),
-    FOREIGN KEY (`bike_id`) REFERENCES `bike`(`bike_id`),
+    FOREIGN KEY (`bike_id`) REFERENCES `bike`(`bike_id`)
 );
 
 CREATE TABLE `invoice`
@@ -99,8 +100,8 @@ CREATE TABLE `spark_zone`
 (
     `zone_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45) NOT NULL,
-    `type` VARCHAR(45) NOT NULL,
-    `coordinates` POLYGON,    
+    `zone_type` VARCHAR(45) NOT NULL,
+    `coordinates` POLYGON NULL,    
 
     PRIMARY KEY (`zone_id`),
     FOREIGN KEY (`city`) REFERENCES `city`(`name`)
@@ -114,7 +115,7 @@ CREATE TABLE `fee`
     `discount` INT NOT NULL,
     `penalty` INT NOT NULL,   
 
-    PRIMARY KEY (`fee_id`),
+    PRIMARY KEY (`fee_id`)
 );
 
 CREATE TABLE `admin_account`

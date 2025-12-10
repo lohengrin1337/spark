@@ -2,11 +2,11 @@
 // Handles database queries for bike data.
 
 const pool = require('../../../database/database');
-const bikes = { "Bike nr 1": 1, "Bike nr 2": 2};
+const bikes = [{ "bike_id": 1 }, {"bike_id": 2}];
 
 const bikeModel = {
   /**
-   * Fetch all bikes in database ordered by issued date.
+   * Fetch all bikes in database.
    * @returns { Array } Array of bike objects.
    * @throws { Error } If the query fails.
    */
@@ -34,9 +34,7 @@ const bikeModel = {
     try {
         conn = await pool.getConnection();
         // const bike = await conn.query("SELECT * FROM bike WHERE bike_id = ?", [id]);
-        bikeId = id - 1
-        const bike = bikes[bikeId];
-        return bike[0];
+        return bikes.filter(bike => bike.bike_id == id)[0];
     } catch (err) {
         console.error('');
         throw err;

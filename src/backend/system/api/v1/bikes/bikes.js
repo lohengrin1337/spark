@@ -15,6 +15,7 @@ router.get('/',
     //authorize, // k
     async (req, res) => {
     const bikes = await bikeService.getBikes();
+    console.log(bikes);
     res.status(200).json(bikes);
 });
 
@@ -30,7 +31,7 @@ router.get('/:id',
     async (req, res) => {
     const bikeId = req.params.id;
     try {
-        const bike = await bikeService.getBikerById(bikeId);
+        const bike = await bikeService.getBikeById(bikeId);
         if (!bike) {
             return res.status(404).json({ error: 'Vehicle not found'});
         }

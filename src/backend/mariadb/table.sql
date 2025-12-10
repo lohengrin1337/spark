@@ -119,9 +119,9 @@ CREATE TABLE `fee`
 
 CREATE TABLE `admin`
 (
-    `acronym` VARCHAR(5),
+    `id` VARCHAR(25) NOT NULL,
     `password` CHAR(60),
 
-    PRIMARY KEY (`acronym`)
+    PRIMARY KEY (`id`)
 );
 

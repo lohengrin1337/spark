@@ -5,7 +5,7 @@
 --
 -- DROP TABLES
 --
-DROP TABLE IF EXISTS `admin`;
+DROP TABLE IF EXISTS `admin_account`;
 DROP TABLE IF EXISTS `fee`;
 DROP TABLE IF EXISTS `spark_zone`;
 DROP TABLE IF EXISTS `zone_type`;
@@ -117,11 +117,11 @@ CREATE TABLE `fee`
     PRIMARY KEY (`fee_id`),
 );
 
-CREATE TABLE `admin`
+CREATE TABLE `admin_account`
 (
-    `id` VARCHAR(25) NOT NULL,
+    `admin_id` VARCHAR(25) NOT NULL,
     `password` CHAR(60),
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`admin_id`)
 );
 

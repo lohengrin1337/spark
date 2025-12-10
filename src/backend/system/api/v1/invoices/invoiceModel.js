@@ -13,7 +13,7 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const invoices = await conn.query("SELECT * FROM invoices ORDER BY issued_date");
+        const invoices = await conn.query("SELECT * FROM invoices");
         return invoices;
     } catch (err) {
         console.error("GET /api/invoices error:", err);
@@ -32,7 +32,7 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const invoices = await conn.query("SELECT * FROM invoices WHERE id = ?", [id]);
+        const invoices = await conn.query("SELECT * FROM invoices WHERE invoice_id = ?", [id]);
         return invoices[0];
     } catch (err) {
         console.error('');

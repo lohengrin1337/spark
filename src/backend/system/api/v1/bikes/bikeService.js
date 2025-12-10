@@ -19,4 +19,4 @@ async function getBikeById(id) {
     return bikeModel.getOneBike(id);
 }
 
-module.exports = { getBikes, getBikesById };
+module.exports = { getBikes, getBikeById };

@@ -7,7 +7,7 @@
 --
 DROP TABLE IF EXISTS `admin`;
 DROP TABLE IF EXISTS `fee`;
-DROP TABLE IF EXISTS `zone`;
+DROP TABLE IF EXISTS `spark_zone`;
 DROP TABLE IF EXISTS `zone_type`;
 DROP TABLE IF EXISTS `invoice`;
 DROP TABLE IF EXISTS `rental`;
@@ -95,7 +95,7 @@ CREATE TABLE `zone_type`
 );
 
 
-CREATE TABLE `zone`
+CREATE TABLE `spark_zone`
 (
     `zone_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45) NOT NULL,

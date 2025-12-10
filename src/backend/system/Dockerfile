@@ -2,23 +2,29 @@
 
 # ______________________________________________________________________
 #
-#  Base
+# Base
 # ______________________________________________________________________
 
 FROM node:20-alpine AS base
 WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json pnpm-lock.yaml* ./
-RUN npm install --frozen-lockfile
 
+# Install dependencies
+RUN npm install --frozen-lockfile || npm install --frozen-lockfile
+
+# ______________________________________________________________________
+#
+# Development
+# ______________________________________________________________________
 
 FROM base AS development
 
-
+# Copy source code
 COPY . .
 
-EXPOSE 3000 9229
-
+# Expose ports
+EXPOSE 3000
+EXPOSE 9229
 
 CMD ["npm", "run", "dev"]

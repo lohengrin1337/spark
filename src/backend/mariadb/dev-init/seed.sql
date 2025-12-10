@@ -1,13 +1,3 @@
--- src/backend/mariadb/seed.sql
-DROP TABLE IF EXISTS invoices;
-CREATE TABLE invoices (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  issued_date DATE NOT NULL,
-  due_date DATE NOT NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  paid BOOLEAN DEFAULT FALSE,
-  rental_id VARCHAR(10) NOT NULL
-);
 
 INSERT INTO invoices (issued_date, due_date, amount, paid, rental_id) VALUES
 ('2025-01-01','2025-01-31',95.00,TRUE,'#4832'),

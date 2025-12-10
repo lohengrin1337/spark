@@ -40,7 +40,7 @@ CREATE TABLE `bike`
     `bike_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45),
     `status` VARCHAR(45) DEFAULT 'available',
-    `coordinates` POINT,
+    `coordinates` POINT NULL DEFAULT NULL,
 
     PRIMARY KEY (`bike_id`),
     FOREIGN KEY (`city`) REFERENCES `city`(`name`),

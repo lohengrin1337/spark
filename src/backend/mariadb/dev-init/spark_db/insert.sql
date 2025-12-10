@@ -18,8 +18,6 @@ DELETE FROM `bike_status`;
 DELETE FROM `city`;
 
 
-
-
 --
 -- Enable LOAD DATA LOCAL INFILE on the server.
 --
@@ -63,11 +61,11 @@ IGNORE 1 LINES
 ;
 
 --
--- Insert into fee
+-- Insert into city
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/fee.csv'
-INTO TABLE fee
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/city.csv'
+INTO TABLE city
 CHARSET utf8
 FIELDS
     TERMINATED BY ','
@@ -75,10 +73,89 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`fee_id`, `start`, `minute`, `discount`,  `penalty`)
+(`name`)
 ;
 
-SHOW WARNINGS;
+
+--
+-- Insert into bike
+--
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/bike.csv'
+INTO TABLE bike
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(@city, @coordinates)
+SET 
+    city = @city,
+    coordinates = ST_GeomFromText(@coordinates);
+
+
+--
+-- Insert into customer
+--
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/customer.csv'
+INTO TABLE customer
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+        TERMINATED BY '\n'
+IGNORE 1 LINES
+(`email`, `name`, `password`, `blocked`, `oauth_provider`, `oauth_provider_id`);
+
+
+--
+-- Insert into rental
+--
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/rental.csv'
+INTO TABLE rental
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    -- ENCLOSED BY '"'
+LINES
+        TERMINATED BY '\n'
+IGNORE 1 LINES
+(`customer_id`, `bike_id`, `start_point`, `start_time`, `end_point`, `end_time`, `route`)
+;
+
+
+
+Insert into invoice
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/invoice.csv'
+INTO TABLE invoice
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+        TERMINATED BY '\n'
+IGNORE 1 LINES
+(`rental_id`, `status`, `due_date`)
+;
+
+--
+-- Insert into zone_type
+--
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/zone_type.csv'
+INTO TABLE zone_type
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+        TERMINATED BY '\n'
+IGNORE 1 LINES
+(`zone_type`, `speed_limit`)
+;
 
 --
 -- Insert into spark_zone
@@ -98,11 +175,11 @@ IGNORE 1 LINES
 
 
 --
--- Insert into zone_type
+-- Insert into fee
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/zone_type.csv'
-INTO TABLE zone_type
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/fee.csv'
+INTO TABLE fee
 CHARSET utf8
 FIELDS
     TERMINATED BY ','
@@ -110,93 +187,23 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`zone_type`, `speed_limit`)
-;
-
-
-
---
--- Insert into invoice
---
-
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/invoice.csv'
-INTO TABLE invoice
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-        TERMINATED BY '\n'
-IGNORE 1 LINES
-(`rental_id`, `status`, `due_date`)
+(`fee_id`, `start`, `minute`, `discount`,  `penalty`)
 ;
 
 
 
 
---
--- Insert into rental
---
-
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/rental.csv'
-INTO TABLE rental
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-        TERMINATED BY '\n'
-IGNORE 1 LINES
-(`customer_id`, `bike_id`, `start_point`, `start_time`, `end_point`, `end_time`, `route`)
-;
 
 
---
--- Insert into customer
---
-
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/customer.csv'
-INTO TABLE customer
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-        TERMINATED BY '\n'
-IGNORE 1 LINES
-(`email`, `name`, `password`, `blocked`, `oauth_provider`, `oauth_provider_id`)
-;
 
 
---
--- Insert into bike
---
-
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/bike.csv'
-INTO TABLE bike
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-        TERMINATED BY '\n'
-IGNORE 1 LINES
-(`city`, `coordinates`)
-;
 
 
---
--- Insert into city
---
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/city.csv'
-INTO TABLE city
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-        TERMINATED BY '\n'
-IGNORE 1 LINES
-(`city`, `coordinates`)
-;
+
+
+
+
+
+
+

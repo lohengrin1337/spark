@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS customer;
 
 CREATE TABLE invoices (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  invoice_id INT AUTO_INCREMENT PRIMARY KEY,
   issued_date DATE NOT NULL,
   due_date DATE NOT NULL,
   amount DECIMAL(10,2) NOT NULL,

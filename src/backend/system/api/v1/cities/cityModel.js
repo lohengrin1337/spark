@@ -38,7 +38,7 @@ const cityModel = {
     try {
         // conn = await pool.getConnection();
         // const cities = await conn.query("SELECT * FROM cities WHERE id = ?", [id]);
-        return cities;
+        return cities.find(city => city.id === id);
     } catch (err) {
         console.error('');
         throw err;

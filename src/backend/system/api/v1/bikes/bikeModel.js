@@ -2,6 +2,7 @@
 // Handles database queries for bike data.
 
 const pool = require('../../../database/database');
+const bikes = { "Bike nr 1": 1, "Bike nr 2": 2};
 
 const bikeModel = {
   /**
@@ -13,7 +14,7 @@ const bikeModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const bikes = await conn.query("SELECT * FROM bike");
+        // const bikes = await conn.query("SELECT * FROM bike");
         return bikes;
     } catch (err) {
         console.error("GET /api/bikes error:", err);
@@ -32,7 +33,9 @@ const bikeModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const bike = await conn.query("SELECT * FROM bike WHERE bike_id = ?", [id]);
+        // const bike = await conn.query("SELECT * FROM bike WHERE bike_id = ?", [id]);
+        bikeId = id - 1
+        const bike = bikes[bikeId];
         return bike[0];
     } catch (err) {
         console.error('');

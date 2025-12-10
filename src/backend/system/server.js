@@ -1,23 +1,21 @@
-// Server.js version is crude, and we'll extract what is useful from here to
-// a cleaner module already in progress by E & O
-
-// src/backend/system/server.js
-
-
-import express from 'express';
-import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
-import Redis from 'ioredis';
-import mariadb from 'mariadb';
+const express = require('express');
+const cors = require('cors');
+const { createServer } = require('http');
+const { WebSocketServer } = require('ws');
+const Redis = require('ioredis');
+const mariadb = require('mariadb');
+const apiV1 = require('./api/v1/apiRoutes.js');
 
 const app = express();
 
-import cors from 'cors';
+app.use(express.json());
 
 app.use(cors({
   origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
   credentials: true
 }));
+
+app.use("/api/v1", apiV1);
 
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
@@ -64,23 +62,7 @@ redisSub.on('message', (channel, message) => {
 
 
 app.use(express.json());
-app.use(express.static('public'));
-
-app.get('/api/invoices', async (req, res) => {
-  let conn;
-  try {
-    conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM invoices ORDER BY issued_date");
-    res.json(rows);
-  } catch (err) {
-    console.error("GET /api/invoices error:", err);
-    res.status(500).json({ error: "Database error" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
-
-
+app.use(express.static('public'));  // Is this in use?
 
 app.get('/api/rentals', async (req, res) => {
   let conn;
@@ -180,6 +162,8 @@ app.post('/api/pay/:id', async (req, res) => {
     if (conn) conn.release();
   }
 });
+
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {

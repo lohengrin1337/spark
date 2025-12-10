@@ -55,7 +55,7 @@
     <script>
         async function loadInvoices() {
             try {
-                const res = await fetch('http://localhost:3000/api/invoices');
+                const res = await fetch('http://localhost:3000/api/v1/invoices');
                 const invoices = await res.json();
 
                 const tbody = document.getElementById('invoice-table-body');

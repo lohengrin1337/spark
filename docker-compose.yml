@@ -64,7 +64,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
     volumes:
       - mariadb-data:/var/lib/mysql
-      - ./src/backend/mariadb/dev-init:/docker-entrypoint-initdb.d:ro
+      - ./src/backend/mariadb/dev-init:/docker-entrypoint-initdb.d
     ports:
      - "3306:3306"
     healthcheck:

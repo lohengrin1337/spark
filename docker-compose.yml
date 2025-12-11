@@ -2,7 +2,7 @@
 x-common-variables: &common-env
   NODE_ENV: development
   APP_NAME: spark
-  CORS_ORIGIN: http://localhost:8080 http://localhost:8081 http://localhost:8082
+  CORS_ORIGIN: "http://localhost:*"
   API_BASE_URL: http://localhost:3000
   LOG_LEVEL: debug
 
@@ -26,7 +26,11 @@ services:
       DB_PASSWORD: admin
       DB_NAME: spark_db
     ports:
+<<<<<<< HEAD
       - "3000:3000" # DEV
+=======
+      - "3000:3000"
+>>>>>>> feature/sim+revamped-admin
     volumes:
       - ./src/backend/system:/app:cached
       - /app/node_modules
@@ -146,28 +150,41 @@ services:
           target: /etc/caddy/Caddyfile
     networks: [spark]
 
-# ______________________________________________________________________
-#
-#  Device Scooter Simulation (Python)
-# ______________________________________________________________________
+  # ______________________________________________________________________
+  #
+  #  Device Scooter Simulation (Python)
+  # ______________________________________________________________________
 
   scooter-simulation:
-      build:
-        context: ./src/device/scooter-simulation
-        target: development
-      container_name: spark-scooter-sim
-      volumes:
-        - ./src/device/scooter-simulation:/app:cached
-      command: null
-      depends_on:
-        redis:
-          condition: service_healthy
-      develop:
-        watch:
-          - action: sync+restart
-            path: ./src/device/scooter-simulation
-            target: /app
-      networks: [spark]
+    build:
+      context: ./src/device/scooter-simulation
+      target: development
+    container_name: spark-scooter-sim
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./src/device/scooter-simulation:/app:cached
+    command: >
+      sh -c "
+        pip install --quiet redis requests &&
+        export PYTHONPATH=/app:$PYTHONPATH &&
+        watchfiles 'python ./scenarios/one_malmoe/first-simulation.py'
+          --watch /app
+          --ignore /app/__pycache__
+      "
+    depends_on:
+      redis:
+        condition: service_healthy
+      system:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src/device/scooter-simulation
+          target: /app
+    networks: [spark]
+    restart: unless-stopped
 
 # ______________________________________________________________________
 #

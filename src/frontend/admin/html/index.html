@@ -1,136 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spark — Live Map</title>
+  <link rel="stylesheet" href="style/style.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
-  <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-  crossorigin=""
-/>
-  <style>
 
-  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <link rel="icon" href="favicon.ico">
 </head>
 <body>
 
-    
-    <main class="admin-grid grid">
-        <header>
-            <button id="theme-toggle"><img class="title-sun" src="img/sun.svg" alt="Sun SVG"></button>
-    
-            <h1 class="title">
-                spark<span class="title-blink">_</span>
+  <main class="admin-grid grid">
+    <header>
+      <button id="theme-toggle">
+        <img class="title-sun" src="img/sun.svg" alt="Toggle theme">
+      </button>
 
-                    <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter SVG">
-                    
-    
-                
-            </h1>
-    
-            <nav>
-                <div class="navlink-box">
-                    <a href="index.html">
-                        <img class="invoice-spark" src="img/admin.svg" alt="Admin SVG">
-                    </a>
-                </div>
-            </nav>
-        </header>  
-        <aside class="sidebar sidebar-vertical">
-            <a href="index.html">Karta</a>
-            <a href="admin-invoices.html">Fakturor</a>
-            <a href="admin-users.html">Användare</a>
-            <a href="admin-scooters.html">Sparkcyklar</a>
-            <div class="map-options">
-                <p>Map options, filtering, etc, has decent amount of space here</p>
-            </div>
-        </aside>
+      <h1 class="title">
+        spark<span class="title-blink">_</span>
+        <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter">
+      </h1>
 
+      <nav>
+        <div class="navlink-box">
+          <a href="index.html">
+            <img class="invoice-spark" src="img/admin.svg" alt="Admin">
+          </a>
+        </div>
+      </nav>
+    </header>
 
-        <section class="content">
-            <div id="map" class="leaflet-map"></div>
-        </section>
+    <aside class="sidebar sidebar-vertical">
+      <a href="index.html">Karta</a>
+      <a href="admin-invoices.html">Fakturor</a>
+      <a href="admin-users.html">Användare</a>
+      <a href="admin-scooters.html">Sparkcyklar</a>
 
+      <div class="map-options">
+        <h3 class="rental-sidebar-header">Sparkcykelflotta - Malmö</h3>
+        <div id="statsPanel" class="stats-panel">
+          <div id="statsContent">Laddar...</div>
+          <h4 style="margin:15px 0 6px;">Tidigare uthyrningar</h4>
+          <ul id="completedRentals"></ul>
+        </div>
+      </div>
+    </aside>
 
-        <footer class="footer footer-flex-three">
-            <div class="city-link karlskrona"><a href="test.html" class="karlskrona-link">Karlskrona</a></div>
-            <div class="city-link malmo"><a href="test.html" class="malmo-link">Malmö</a></div>
-            <div class="city-link umea"><a href="test.html" class="umea-link">Umeå</a></div>
-        </footer>
-      </main>
+    <section class="content">
+      <div id="map"></div>
+    </section>
 
-
-
-
-    <script>
-        document.querySelectorAll('.title-spark, .invoice-spark').forEach(el => {
-          el.addEventListener('animationend', () => {
-            el.style.pointerEvents = 'auto';
-          });
-        });
-    
-        const html = document.documentElement;
-        const toggle = document.getElementById("theme-toggle");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        let savedTheme = localStorage.getItem("theme");
-    
-        if (!savedTheme) {
-          savedTheme = prefersDark ? "dark" : "light";
-        }
-        html.classList.add(savedTheme + "-mode");
-    
-        toggle.addEventListener("click", () => {
-          const current = html.classList.contains("dark-mode") ? "dark" : "light";
-          const newTheme = current === "dark" ? "light" : "dark";
-          html.classList.remove(current + "-mode");
-          html.classList.add(newTheme + "-mode");
-          localStorage.setItem("theme", newTheme);
-        });
-    </script>
-    
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""
-    ></script>
-
-    <script>
-        let map;
-
-        document.addEventListener("DOMContentLoaded", () => {
-        map = L.map("map", {
-            zoomControl: true,
-            scrollWheelZoom: true
-        }).setView([55.6054, 13.0042], 13);
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: "© OpenStreetMap",
-            maxZoom: 19
-        }).addTo(map);
-
-        setTimeout(() => map.invalidateSize(), 200);
+    <footer class="footer footer-flex-three">
+      <div class="city-link karlskrona"><a href="#" class="karlskrona-link">Karlskrona</a></div>
+      <div class="city-link malmo"><a href="#" class="malmo-link">Malmö</a></div>
+      <div class="city-link umea"><a href="#" class="umea-link">Umeå</a></div>
+    </footer>
+  </main>
 
 
-        const cityCenters = {
-            "karlskrona-link": [56.1618, 15.5875],
-            "malmo-link":       [55.6054, 13.0042],
-            "umea-link":        [63.8262, 20.2628]
-        };
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-        Object.entries(cityCenters).forEach(([className, coords]) => {
-            const link = document.querySelector(`.${className}`);
-            if (!link) return;
-
-            link.addEventListener("click", e => {
-            e.preventDefault();
-            map.setView(coords, 13);
-            });
-        });
-        });
-    </script>
+  <script type="module" src="/js/index.js"></script>
 </body>
 </html>

@@ -15,6 +15,7 @@ import secrets
 import string
 import random
 import math
+from api import fetch_users
 from utils import calculate_distance_in_m
 from config import UPDATE_INTERVAL, NOMINAL_SPEED_MPS
 from redisbroadcast import ScooterBroadcaster
@@ -71,11 +72,9 @@ class Simulator:
             for scooter in scooters
         }
 
-        # User pool - will be supplanted by actual db-fetched users
-        self.user_pool = [
-            {"user_id": uid, "user_name": f"JohnDoe{uid}"}
-            for uid in range(1, 21)
-        ]
+        # User pool - has now been supplanted by actual db-fetched users
+        # (Generic JohnDoe-generated users are used as fallback if API fails)
+        self.user_pool = fetch_users()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Generate a unique rental-ID

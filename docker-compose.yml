@@ -26,11 +26,7 @@ services:
       DB_PASSWORD: admin
       DB_NAME: spark_db
     ports:
-<<<<<<< HEAD
       - "3000:3000" # DEV
-=======
-      - "3000:3000"
->>>>>>> feature/sim+revamped-admin
     volumes:
       - ./src/backend/system:/app:cached
       - /app/node_modules

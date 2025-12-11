@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-const express = require('express');
-const apiV1 = require('./api/v1/apiRoutes.js');
-
-const app = express();
-
-
-app.use(express.json());
-app.use("/api/v1", apiV1);
-=======
-// Server.js version is crude, and we'll extract what is useful from here to
-// a cleaner module already in progress by E & O
-
-// src/backend/system/server.js
-
-
-import express from 'express';
-import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
-import Redis from 'ioredis';
-import mariadb from 'mariadb';
-=======
 const express = require('express');
 const cors = require('cors');
 const { createServer } = require('http');
@@ -28,7 +5,6 @@ const { WebSocketServer } = require('ws');
 const Redis = require('ioredis');
 const mariadb = require('mariadb');
 const apiV1 = require('./api/v1/apiRoutes.js');
->>>>>>> f863c9b (Integrate invoices)
 
 const app = express();
 
@@ -86,9 +62,9 @@ redisSub.on('message', (channel, message) => {
 
 
 app.use(express.json());
-app.use(express.static('public'));  // Is this in use?
 
-app.get('/api/rentals', async (req, res) => {
+
+/* app.get('/api/rentals', async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
@@ -101,9 +77,9 @@ app.get('/api/rentals', async (req, res) => {
     if (conn) conn.release();
   }
 });
+ */
 
-
-app.get('/rentals', async (req, res) => {
+/* app.get('/rentals', async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT 
@@ -157,7 +133,7 @@ app.put('/rentals/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to complete rental' });
   }
 });
-
+ */
 
 
 
@@ -186,11 +162,10 @@ app.post('/api/pay/:id', async (req, res) => {
     if (conn) conn.release();
   }
 });
->>>>>>> feature/sim+revamped-admin
 
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend system running on http://localhost:${PORT}`);
 });

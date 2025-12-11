@@ -24,7 +24,7 @@ from simulator import Simulator
 from routes import MALMOE_ROUTES
 from redisbroadcast import ScooterBroadcaster
 from config import UPDATE_INTERVAL
-
+from helpers import wait_for_backend_response
 from behavior import special_malmoe_behavior_one
 """
 These will soon be supplanted by properly fetched ones from the db.
@@ -70,6 +70,8 @@ def run():
     """
     print("Simulation starting…", flush=True)
 
+    wait_for_backend_response()
+    
     rbroadcast = ScooterBroadcaster()
     scooters = init_scooters(rbroadcast)
 

@@ -27,6 +27,7 @@ export function addCompletedRental(msg) {
   li.innerHTML = `
     Uthyrning (id): ${msg.rental_id}<br>
     Kund (id): ${msg.user_id}<br>
+    Kund (namn): ${msg.user_name}<br>
     Sparkcykel (id): ${msg.scooter_id}</b><br>
     Längd: ${Math.floor(msg.duration_s / 60)}m ${msg.duration_s % 60}s
     <details><summary>Koordinater (${formattedCoords.length})</summary>

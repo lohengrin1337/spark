@@ -26,11 +26,12 @@
             </nav>
         </header>  
         <aside class="sidebar sidebar-vertical">
-          <a href="index.html">Karta</a>
-          <a href="admin-invoices.html">Fakturor</a>
-          <a href="admin-users.html">Användare</a>
-          <a href="admin-scooters.html">Sparkcyklar</a>
-          <a href="admin-rentals.html">Uthyrningar</a>
+            <a href="index.html">Karta</a>
+            <a href="admin-invoices.html">Fakturor</a>
+            <a href="admin-customers.html">Användare</a>
+            <a href="admin-scooters.html">Sparkcyklar</a>
+            <a href="admin-rentals.html">Uthyrningar</a>
+      
       </aside>
 
         <section class="content">
@@ -56,7 +57,7 @@
     </main>
 
     <script>
-        async function loadRentals() {
+/*         async function loadRentals() {
             try {
                 const res = await fetch('http://localhost:3000/api/rentals');
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -90,7 +91,7 @@
 
         loadRentals();
         setInterval(loadRentals, 10000);
-
+ */
         const html = document.documentElement;
         const toggle = document.getElementById("theme-toggle");
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;

@@ -28,7 +28,7 @@ def special_malmoe_behavior_one(scooter, trip_count, simulator):
         scooter.lon = charging_zone_lon
         scooter.speed_kmh = 0
 
-        def stand_still(scooter):
+        def stand_still(scooter, elapsed_time):
             """ Park scooter indefinitely."""
             return {
                 "lat": scooter.lat,

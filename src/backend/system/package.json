@@ -7,11 +7,12 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
-    "mariadb": "^3.2.0",
-    "ws": "^8.18.0",
+    "express-async-errors": "^3.1.1",
     "ioredis": "^5.4.1",
-    "cors": "^2.8.5"
+    "mariadb": "^3.2.0",
+    "ws": "^8.18.0"
   },
   "engines": {
     "node": ">=20"

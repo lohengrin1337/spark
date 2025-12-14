@@ -10,7 +10,7 @@ on:
     branches: [ "feature/ci-setup" ]
 
 jobs:
-  build:
+  backend-lint-and-test:
 
     runs-on: ubuntu-latest
 
@@ -34,3 +34,7 @@ jobs:
     - name: Run ESLint
       working-directory: src/backend/system
       run: npm run lint
+      # Will be adding tests for backend here
+    #- name: Run tests
+      #working-directory: src/backend/system
+      #run: npm run test

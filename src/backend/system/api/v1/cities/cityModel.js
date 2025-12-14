@@ -7,7 +7,7 @@ const cities = [
     {"id": 1, "name": "Malmö"},
     {"id": 2, "name": "Karlskrona"},
     {"id": 3, "name": "Umeå"}
-]
+];
 const cityModel = {
   /**
    * Fetch all citys in database ordered by issued date.

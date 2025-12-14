@@ -26,5 +26,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm install
-    - run: npx eslint src/backend/system
+    - name: Install dependencies
+      working-directory: src/backend/system
+      run: npm ci
+
+      # Run ESLint in the system subfolder
+    - name: Run ESLint
+      working-directory: src/backend/system
+      run: npm run lint

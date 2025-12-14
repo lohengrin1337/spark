@@ -28,7 +28,7 @@ jobs:
         cache: 'npm'
     - name: Install dependencies
       working-directory: src/backend/system
-      run: npm ci
+      run: npm install
 
       # Run ESLint in the system subfolder
     - name: Run ESLint

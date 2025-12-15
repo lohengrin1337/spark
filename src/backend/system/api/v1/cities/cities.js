@@ -10,11 +10,10 @@ router.get('/', async (req, res) => {
     res.status(200).json(cities);
 });
 
-router.get('/:id', async (req, res) => {
-    const cityId = req.params.id;
-    console.log(typeof(cityId));
-    const cities = await cityService.getCityById(cityId);
-    res.status(200).json(cities);
+router.get('/:name', async (req, res) => {
+    const cityName = req.params.name;
+    const city = await cityService.getOneCity(cityName);
+    res.status(200).json(city);
 });
 
 

@@ -12,11 +12,11 @@ async function getCities() {
 
 /**
  * Gets one city from model.
- * @param { number } id city id
+ * @param { string } name city name
  * @returns city as object (if found)
  */
-async function getCityById(id) {
-    return cityModel.getOneCity(id);
+async function getOneCity(name) {
+    return cityModel.getOneCity(name);
 }
 
-module.exports = { getCities, getCityById };
+module.exports = { getCities, getOneCity };

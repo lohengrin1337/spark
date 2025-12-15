@@ -3,11 +3,11 @@
 
 const pool = require('../../../database/database');
 
-const cities = [
-    {"id": 1, "name": "Malmö"},
-    {"id": 2, "name": "Karlskrona"},
-    {"id": 3, "name": "Umeå"}
-];
+// const cities = [
+//     {"id": 1, "name": "Malmö"},
+//     {"id": 2, "name": "Karlskrona"},
+//     {"id": 3, "name": "Umeå"}
+// ]
 const cityModel = {
   /**
    * Fetch all citys in database ordered by issued date.
@@ -17,8 +17,9 @@ const cityModel = {
   async getAllCities() {
     let conn;
     try {
-        // conn = await pool.getConnection();
-        // const cities = await conn.query("SELECT * FROM cities");
+        conn = await pool.getConnection();
+        const cities = await conn.query("SELECT * FROM city");
+        console.log(cities);
         return cities;
     } catch (err) {
         console.error("GET /api/cities error:", err);
@@ -29,16 +30,17 @@ const cityModel = {
   },
   /**
    * Fetch one city by id.
-   * @param { number } id - city id.
+   * @param { string } name city name
    * @returns { object|undefined } city object if found.
    * @throws { Error } if query fails.
    */
-  async getOneCity(id) {
+  async getOneCity(name) {
     let conn;
     try {
-        // conn = await pool.getConnection();
-        // const cities = await conn.query("SELECT * FROM cities WHERE id = ?", [id]);
-        return cities.filter(city => city.id == id)[0];
+        conn = await pool.getConnection();
+        const city = await conn.query("SELECT * FROM city WHERE name = ?", [name]);
+        // return cities.filter(city => city.name == name)[0];
+        return city[0];
     } catch (err) {
         console.error('');
         throw err;

@@ -15,7 +15,6 @@ router.get('/',
     //authorize, // k
     async (req, res) => {
     const bikes = await bikeService.getBikes();
-    console.log(bikes);
     res.status(200).json(bikes);
 });
 

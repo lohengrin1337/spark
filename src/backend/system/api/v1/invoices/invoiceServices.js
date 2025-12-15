@@ -19,4 +19,13 @@ async function getInvoiceById(id) {
     return invoiceModel.getOneInvoice(id);
 }
 
-module.exports = { getInvoices, getInvoiceById };
+/**
+ * Marks an invoice as paid.
+ * @param { number } id invoice id
+ * @returns void
+ */
+async function payInvoice(id) {
+    return invoiceModel.updateInvoice("paid", id);
+}
+
+module.exports = { getInvoices, getInvoiceById, payInvoice };

@@ -26,7 +26,7 @@ router.get('/:id',
     //validateInvoice, //validerar requesten
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
-    const invoiceId = req.params.id;
+    const invoiceId = parseInt(req.params.id, 10);
     try {
         const invoice = await invoiceServices.getInvoiceById(invoiceId);
         if (!invoice) {
@@ -36,6 +36,21 @@ router.get('/:id',
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch.'});
     }  
+});
+
+/**
+ * PUT /:id
+ * Mark payment by setting invoice status to paid.
+ */
+router.put('/:id', async (req, res) => {
+    const invoiceId = parseInt(req.params.id, 10);
+    if (isNaN(invoiceId)) return res.status(400).json({ error: "Invalid ID" });
+
+    const success = await invoiceServices.payInvoice(invoiceId);
+    if (!success) {
+        return res.status(500).json({ error: 'Internal server errrrrr'});
+    }
+    res.status(200).json({ success: true, message: "Payment recorded" });
 });
 
 module.exports = router;

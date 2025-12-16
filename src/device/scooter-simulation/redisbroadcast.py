@@ -3,10 +3,10 @@
 
 ScooterBroadcaster — the simulated e-scooter's transmitter.
 
-This class is the IoT-state emitter for each simulated scooter.
-It broadcasts live state (position, battery, status, speed) every tick and handles
-the rental path recording + rental completion events - emulating
-a real scooter's onboard cellular modules functionality would when sending data to the cloud.
+This class is the IoT-like state-emitter for each simulated scooter.
+It broadcasts live state (position, battery, status, speed) on every tick and handles
+the rental path recording + rental completion events - emulating a real scooter's
+transmitter sending data to the cloud.
 
 Uses Redis Pub/Sub (TCP-socket) for very fast and decoupled transmissions.
 """
@@ -17,9 +17,9 @@ import json
 
 class ScooterBroadcaster:
     """
-    The onboard telemetry broadcaster used by each scooter.
+    The onboard broadcaster used by each scooter.
     Emits real-time scooter state and rental events via Redis Pub/Sub to the backend,
-    mimicking a physical e-scooter's cellular connection.
+    mimicking a physical e-scooter's transmitter.
     """
     def __init__(self, host="redis", port=6379):
         self.r = redis.Redis(host=host, port=port, decode_responses=True)
@@ -48,8 +48,9 @@ class ScooterBroadcaster:
     def log_coord(self, rental_id, lat, lon, spd):
         """
         Records the coordinates, and the given speed, for a scooter at a given state snapshot,
-        i.e, in this implementation, a given simulation tick ()== UPDATE_INTERVAL).
-        Each call adds a breadcrumb to the scooter's trip path - that will later be
+        regulated by UPDATE_INTERVAL.
+        
+        Each call adds a breadcrumb to the scooter's trip path, that will later be
         used to draw the full route on the map for a user overlooking their rental history.
         """
         coord = json.dumps({"lat": lat, "lng": lon, "spd": spd})
@@ -91,9 +92,12 @@ class ScooterBroadcaster:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
     def publish_completed(self, rental):
         """
-        Publish the full rental object at a rental's completion, that will be picked up and persisted
-        to db promptly.
+        Publish the full rental object at a rental's completion. Only used to populate
+        the dynamic list of recent renatls in the admin interface.
+        
+        Persistence to the database is instead done with an API-call directly in simulator.py
+        in relation to the completion of the rental lifecycle.
         """
-        encoded = json.dumps(rental)
-        self.r.lpush("completed_rentals", encoded)
-        self.r.publish("rental:completed", encoded)
+        data = json.dumps(rental)
+        self.r.lpush("completed_rentals", data)
+        self.r.publish("rental:completed", data)

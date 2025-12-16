@@ -28,6 +28,12 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 
+
+// __________________________________________________________________________
+//
+// Herman's intrusion starts here, will tidy up later ..........
+// __________________________________________________________________________
+
 const clients = new Set();
 
 wss.on('connection', (ws) => {
@@ -60,81 +66,86 @@ redisSub.on('message', (channel, message) => {
 
 
 
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
 
-app.use(express.json());
+// __________________________________________________________________________
+//
+// Soon to be discarded placeholder functions
+// __________________________________________________________________________
 
-
-/* app.get('/api/rentals', async (req, res) => {
-  let conn;
+app.get('/api/rentals', async (req, res) => {
   try {
-    conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM rentals ORDER BY issued_date");
-    res.json(rows);
-  } catch (err) {
-    console.error("GET /api/rentals error:", err);
-    res.status(500).json({ error: "Database error" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
- */
-
-/* app.get('/rentals', async (req, res) => {
-  try {
-    const [rows] = await db.query(`
+    const rows = await pool.query(`
       SELECT 
-        rental_id, customer_id, bike_id, 
-        start_point, start_time, 
-        end_point, end_time, 
-        route
-      FROM rentals 
+        rental_id, 
+        customer_id, 
+        bike_id, 
+        start_point, 
+        start_time, 
+        end_point, 
+        end_time, 
+        route,
+        start_zone,
+        end_zone
+      FROM rental 
       ORDER BY start_time DESC
     `);
+
     res.json(rows);
   } catch (err) {
     console.error('DB Error:', err);
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
 
+app.post('/api/rentals', async (req, res) => {
+  const { customer_id, bike_id, start_point, start_zone } = req.body;
 
-app.post('/rentals', async (req, res) => {
-  const { customer_id, bike_id, start_point } = req.body;
-  if (!customer_id || !bike_id || !start_point) {
-    return res.status(400).json({ error: 'Missing required fields' });
+  if (!customer_id || !bike_id || !start_point || !start_zone || typeof start_point !== 'object') {
+    return res.status(400).json({ error: 'Missing or invalid fields: customer_id, bike_id, start_point, start_zone' });
   }
+
   try {
-    const [result] = await db.query(
-      `INSERT INTO rentals (customer_id, bike_id, start_point, start_time) 
-       VALUES (?, ?, ?, NOW())`,
-      [customer_id, bike_id, JSON.stringify(start_point)]
+    const result = await pool.query(
+      `INSERT INTO rental (customer_id, bike_id, start_point, start_zone, start_time) 
+       VALUES (?, ?, ?,?, NOW())`,
+      [customer_id, bike_id, JSON.stringify(start_point), start_zone]
     );
     res.status(201).json({ rental_id: result.insertId });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to create rental' });
+    console.error('INSERT Error:', err);
+    res.status(500).json({ error: 'Failed to create rental', details: err.message });
   }
 });
 
-app.put('/rentals/:id', async (req, res) => {
+app.put('/api/rentals/:id', async (req, res) => {
   const { id } = req.params;
-  const { end_point, route } = req.body;
+  const { end_point, end_zone, route } = req.body;
+
+  if (!end_point || typeof end_point !== 'object' || !Array.isArray(route)) {
+    return res.status(400).json({ error: 'Invalid end_point or route' });
+  }
 
   try {
-    await db.query(
-      `UPDATE rentals 
-       SET end_point = ?, end_time = NOW(), route = ?
+    const updateResult = await pool.query(
+      `UPDATE rental
+       SET end_point = ?, end_time = NOW(), end_zone = ?, route = ?
        WHERE rental_id = ? AND end_time IS NULL`,
-      [JSON.stringify(end_point), JSON.stringify(route), id]
+      [JSON.stringify(end_point), end_zone, JSON.stringify(route), id]
     );
+
+    if (updateResult.affectedRows === 0) {
+      return res.status(404).json({ error: 'Rental not found or already completed' });
+    }
+
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to complete rental' });
+    console.error('UPDATE Error:', err);
+    res.status(500).json({ error: 'Failed to complete rental', details: err.message });
   }
 });
- */
-
 
 
 
@@ -162,6 +173,12 @@ app.post('/api/pay/:id', async (req, res) => {
     if (conn) conn.release();
   }
 });
+
+
+// __________________________________________________________________________
+//
+// Finis....
+// __________________________________________________________________________
 
 
 

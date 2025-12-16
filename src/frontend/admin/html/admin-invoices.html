@@ -6,31 +6,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/view-component/admin-header.js"></script>
+
 </head>
 <body>
     <main class="admin-grid grid">
-        <header>
-            <button id="theme-toggle">Dark/Light</button>
-    
-            <h1 class="title">
-                spark<span class="title-blink">_</span>
-                <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter SVG">
-            </h1>
-    
-            <nav>
-                <div class="navlink-box">
-                    <a href="admin-index.html">
-                        <img class="invoice-spark" src="img/admin.svg" alt="Admin SVG">
-                    </a>
-                </div>
-            </nav>
-        </header>  
+
+        <admin-header style="z-index:1000000000000000000"></admin-header>
+
         <aside class="sidebar sidebar-vertical">
             <a href="index.html">Karta</a>
-            <a href="admin-invoices.html">Fakturor</a>
-            <a href="admin-customers.html">Användare</a>
-            <a href="admin-scooters.html">Sparkcyklar</a>
             <a href="admin-rentals.html">Uthyrningar</a>
+            <a href="admin-scooters.html">Sparkcyklar</a>
+            <a href="admin-customers.html">Användare</a>
+            <a href="admin-invoices.html">Fakturor</a>
       
       </aside>
 
@@ -86,30 +76,6 @@
 
         loadInvoices();
         setInterval(loadInvoices, 10000); */
-
-        document.querySelectorAll('.title-spark, .invoice-spark').forEach(el => {
-          el.addEventListener('animationend', () => {
-            el.style.pointerEvents = 'auto';
-          });
-        });
-    
-        const html = document.documentElement;
-        const toggle = document.getElementById("theme-toggle");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        let savedTheme = localStorage.getItem("theme");
-    
-        if (!savedTheme) {
-          savedTheme = prefersDark ? "dark" : "light";
-        }
-        html.classList.add(savedTheme + "-mode");
-    
-        toggle.addEventListener("click", () => {
-          const current = html.classList.contains("dark-mode") ? "dark" : "light";
-          const newTheme = current === "dark" ? "light" : "dark";
-          html.classList.remove(current + "-mode");
-          html.classList.add(newTheme + "-mode");
-          localStorage.setItem("theme", newTheme);
-        });
     </script>
 </body>
 </html>

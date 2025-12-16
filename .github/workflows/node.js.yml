@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "feature/ci-setup" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "feature/ci-setup" ]
+    branches: [ "main" ]
 
 jobs:
   backend-lint-and-test:

@@ -6,6 +6,9 @@ const Redis = require('ioredis');
 const mariadb = require('mariadb');
 const apiV1 = require('./api/v1/apiRoutes.js');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 const app = express();
 
 app.use(express.json());
@@ -21,11 +24,11 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
 const pool = mariadb.createPool({
-  host: 'mariadb',
-  user: 'root',
-  password: 'admin',
-  database: 'spark_db',
-  connectionLimit: 5,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT, 10),
 });
 
 

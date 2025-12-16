@@ -4,6 +4,7 @@ const cors = require('cors');
 const apiV1 = require('./api/v1/apiRoutes.js');
 
 const app = express();
+app.disable('x-powered-by');
 
 app.use(express.json());
 

@@ -1,27 +1,22 @@
-# src/frontend/admin/Caddyfile
-# FINAL VERSION — everything works: static files, SPA, /api, WebSocket, AND /scooters
-
 :80 {
-    # Serve static files
     root * /usr/share/caddy
     file_server
 
-    handle /scooters {
-        reverse_proxy system:3000
+    handle_path /shared/* {
+        root * /shared
+        file_server
     }
 
-    handle /api* {
-        reverse_proxy system:3000
-    }
+    try_files {path} {path}.html
 
+    reverse_proxy /api* system:3000
+    reverse_proxy /scooters* system:3000
 
     @websocket {
         header Connection *Upgrade*
-        header Upgrade    websocket
+        header Upgrade websocket
     }
     reverse_proxy @websocket system:3000
-
-    try_files {path} {path}/ index.html
 
     log {
         output stdout

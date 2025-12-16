@@ -1,0 +1,677 @@
+/* _________________________________________________________
+
+   SPACING VARIABLES - 12-POINT SYSTEM (REM)
+
+
+   Base unit = 8px = 0.5rem, Half unit = 4px = 0.25rem
+
+_________________________________________________________ */
+:root {
+  --unit-0: 0rem;        /* 0px */
+  --unit-0-5: 0.25rem;   /* 4px = half-unit */
+  --unit-1: 0.5rem;      /* 8px */
+  --unit-2: 1rem;        /* 16px */
+  --unit-3: 1.5rem;      /* 24px */
+  --unit-4: 2rem;        /* 32px */
+  --unit-5: 2.5rem;      /* 40px */
+  --unit-6: 3rem;        /* 48px */
+  --unit-7: 3.5rem;      /* 56px */
+  --unit-8: 4rem;        /* 64px */
+  --unit-9: 4.5rem;      /* 72px */
+  --unit-10: 5rem;       /* 80px */
+  --unit-11: 5.5rem;     /* 88px */
+  --unit-12: 6rem;       /* 96px */
+
+/* _________________________________________________________
+
+ COLOR VARIABLES - LIGHT MODE DEFAULT
+_________________________________________________________ */
+
+  --color-text-primary: black;
+  --color-text-secondary: #333;
+  --color-text-inverted: #ffffff;
+
+  --background-header: rgb(253, 157, 66);
+  --background-header-hover: rgb(255, 148, 48);
+
+  --alt-color: rgb(255, 167, 85);
+
+  --background-page: #ffffff;
+
+  --table-header-bg: rgb(255, 148, 48);
+
+  --table-header-text: #ffffff;
+  --table-row-even-bg: #facbb5;
+  --table-row-hover-bg: #faad89;
+  --table-row-text: #000000;
+
+  --payment-option-bg: #ffffff;
+  --pay-bg: #ffffff;
+  --pay-border: rgba(0, 0, 0, 0.08);
+  --pay-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+  --button-text: #000;
+
+  --button-hover-scale: 1.04;
+
+  --selection-bg: rgb(255, 242, 53);
+
+  --link-visited: #551A8B;
+}
+
+/* _________________________________________________________
+
+ COLOR VARIABLES - DARK MODE (SYSTEM/BROWSER PREFERENCE)
+
+_________________________________________________________ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+      --color-text-primary: #fbfdff;
+      --color-text-secondary: #ddd;
+      --color-text-inverted: #000000;
+
+      --alt-color: rgb(183, 102, 230);
+
+      --background-header: #563369;
+      --background-header-hover: #8048ad;
+
+      --background-page: #1f1f1f;
+
+      --table-header-bg: #574560;
+      --table-header-text: #ffffff;
+
+      --table-row-even-bg: #3a3a3a;
+      --table-row-hover-bg: #4a4a4a;
+      --table-row-text: #ffffff;
+
+      --payment-option-bg: #f0e8f3;
+      --pay-bg: #2b2b2b;
+      --pay-border: rgba(255, 255, 255, 0.1);
+      --pay-shadow: 0 4px 12px rgba(0,0,0,0.5);
+
+      --button-text: #ffffff;
+
+      --selection-bg: #921ae2;
+
+      --link-visited: rgb(219, 194, 236);
+  }
+}
+
+/* _________________________________________________________
+
+ MANUAL TOGGLE OVERRIDE - DARK MODE
+
+_________________________________________________________ */
+
+html.dark-mode {
+  --color-text-primary: #fbfdff;
+  --color-text-secondary: #ddd;
+  --color-text-inverted: #000000;
+
+  --alt-color: rgb(183, 102, 230);
+
+  --background-header: #563369;
+  --background-header-hover: #8048ad;
+
+  --background-page: #1f1f1f;
+
+  --table-header-bg: #574560;
+  --table-header-text: #ffffff;
+
+  --table-row-even-bg: #3a3a3a;
+  --table-row-hover-bg: #4a4a4a;
+  --table-row-text: #ffffff;
+
+  --payment-option-bg: #f0e8f3;
+  --pay-bg: #2b2b2b;
+  --pay-border: rgba(255, 255, 255, 0.1);
+  --pay-shadow: 0 4px 12px rgba(0,0,0,0.5);
+
+  --button-text: #ffffff;
+
+  --selection-bg: #921ae2;
+
+  --link-visited: rgb(219, 194, 236);
+}
+
+/* _________________________________________________________
+
+ MANUAL TOGGLE OVERRIDE - LIGHT MODE
+
+_________________________________________________________ */
+
+html.light-mode {
+  --color-text-primary: black;
+  --color-text-secondary: #333;
+  --color-text-inverted: #ffffff;
+
+  --alt-color: rgb(255, 167, 85);
+
+  --background-header: rgb(253, 157, 66);
+  --background-header-hover: rgb(255, 148, 48);
+
+  --background-page: #ffffff;
+
+  --table-header-bg: #ec7d22;
+  --table-header-text: #ffffff;
+  --table-row-even-bg: #facbb5;
+  --table-row-hover-bg: #faad89;
+  --table-row-text: #000000;
+
+  --payment-option-bg: #ffffff;
+  --pay-bg: #ffffff;
+  --pay-border: rgba(0, 0, 0, 0.08);
+  --pay-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+  --button-text: #000;
+
+  --selection-bg: rgb(255, 242, 53);
+
+  --link-visited: #551A8B;
+}
+
+/* _________________________________________________________
+
+ GLOBAL STYLES
+_________________________________________________________ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+}
+
+h2 {
+  color: var(--color-text-primary)
+}
+*::selection {
+  background-color: var(--selection-bg);
+}
+
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--background-page);
+  color: var(--color-text-primary);
+}
+
+/* _________________________________________________________
+
+ HEADER
+_________________________________________________________ */
+
+header {
+  background-color: var(--background-header);
+  height: 77px;
+  width: 100vw;
+  text-align: center;
+  transition: background-color 0.4s ease-in;
+}
+
+header:hover {
+  background-color: var(--background-header-hover);
+}
+
+/* _________________________________________________________
+
+ TITLE + ANIMATION
+_________________________________________________________ */
+
+.title {
+  position: relative;
+  font-size: 75px;
+  display: inline-block;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.title-spark {
+  position: absolute;
+  height: 94px;
+  width: auto;
+  opacity: 0;
+  pointer-events: none;
+  animation: spark-crash-bounce 1.2s ease forwards 0.6s;
+  top: var(--unit-0-5);
+  left: 12rem;
+}
+
+.invoice-spark,
+.user-spark {
+  position: absolute;
+  top: var(--unit-0-5);
+  left: var(--unit-2);
+  height: 70px;
+  width: auto;
+  opacity: 0;
+  pointer-events: none;
+  animation: spark-crash-bounce 3.2s ease forwards 2.2s;
+}
+
+@keyframes spark-crash-bounce {
+  0%   { transform: translateY(-100px); opacity: 0; }
+  20%  { transform: translateY(0); opacity: 1; }
+  30%  { transform: translateY(-15px); opacity: 1; }
+  44%  { transform: translateY(0); opacity: 1; }
+  54%  { transform: translateY(-9px); opacity: 1; }
+  64%  { transform: translateY(0); opacity: 1; }
+  72%  { transform: translateY(-7px); opacity: 1; }
+  82%  { transform: translateY(0); opacity: 1; }
+  88%  { transform: translateY(-3px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.title-blink {
+  display: none;
+  font-size: 50px;
+  animation: blink 1.25s steps(1, end) 5;
+  color: var(--color-text-primary);
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 0; }
+}
+
+/* _________________________________________________________
+
+ TABLE STYLING
+_________________________________________________________ */
+
+.table-wrapper {
+  margin: var(--unit-6) auto;
+  margin-top: 100px;
+  max-width: 700px;
+  background: var(--pay-bg);
+  padding: var(--unit-3);
+  border-radius: var(--unit-3);
+  box-shadow: var(--pay-shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--unit-2);
+  overflow: hidden;
+}
+
+
+table a:visited,
+table a {
+  color: var(--link-visited);
+}
+
+.table-header {
+  text-align: center;
+  margin-bottom: var(--unit-2);
+}
+
+thead {
+  background: var(--table-header-bg);
+  color: var(--table-header-text);
+}
+
+th, td {
+  padding: var(--unit-1) var(--unit-2);
+  text-align: left;
+  color: var(--table-row-text);
+}
+
+tbody tr:nth-child(even) {
+  background: var(--table-row-even-bg);
+}
+
+tbody tr:hover {
+  background: var(--table-row-hover-bg);
+}
+
+/* _________________________________________________________
+
+ PAYMENT-RELATED
+_________________________________________________________ */
+
+.pay-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: var(--unit-6) auto;
+  max-width: 700px;
+  min-width: 500px;
+  min-height: 500px;
+  background: var(--pay-bg);
+  padding: var(--unit-3);
+  border-radius: var(--unit-3);
+  box-shadow: var(--pay-shadow);
+  font-size: 0;
+}
+
+.pay-success-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.pay-option {
+  display: inline-flex;
+  justify-content: center;
+  margin: var(--unit-3);
+  width: 250px;
+  height: 90px;
+  background: var(--payment-option-bg);
+  border: 1px solid var(--pay-border);
+  padding: var(--unit-2);
+  border-radius: var(--unit-2);
+  box-shadow: 0 3px 6px var(--pay-border);
+  transition: transform 0.24s ease-in-out;
+}
+
+.pay-option:hover {
+  cursor: pointer;
+  transform: scale(var(--button-hover-scale));
+}
+
+.pay-button {
+  padding: var(--unit-1);
+  border-radius: var(--unit-1);
+  color: var(--button-text);
+}
+
+
+/* _________________________________________________________
+
+ TABLE RESPONSIVE ADJUSTMENTS
+_________________________________________________________ */
+
+@media (max-width: 768px) {
+  .table-wrapper {
+      width: calc(100% - var(--unit-2)) !important;
+      margin: var(--unit-1) !important;
+      padding: var(--unit-1) !important;
+  }
+
+  table {
+      width: 100% !important;
+  }
+
+  table th, table td {
+      padding: var(--unit-0-5) var(--unit-1) !important;
+  }
+
+  .table-header {
+      margin-bottom: var(--unit-1) !important;
+  }
+}
+
+.intro-text {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+#theme-toggle {
+  position:absolute;
+  background-color: transparent;
+  top: 0.25rem;
+  right: 0.6rem;
+  border-radius: 5px;
+}
+
+.title-sun{
+  width: 60px;
+}
+
+
+.gif-crop {
+  width: 270px;
+  height: 270px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.payment-success {
+  width: 290px;
+  height: 290px;
+}
+
+
+
+
+
+
+
+/* _________________________________________________________
+
+ Leaflet popup overrides
+_________________________________________________________ */
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-content {
+padding: 0 !important;
+margin: 0 !important;
+background: transparent;
+box-shadow: none;
+border-radius: 0;
+overflow: visible;
+}
+
+/* _________________________________________________________
+
+ Popup dashboard styling
+_________________________________________________________ */
+.popup-dashboard-box {
+width: 100%;
+height: 100%;
+box-sizing: border-box;
+margin: 0;
+padding: 12px 12px;
+background: var(--lighter-alternative);
+border: 2px solid var(--background-header);
+border-radius: 12px;
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.popup-dashboard-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid #ffe0b2;
+padding-bottom: 6px;
+font-weight: bold;
+font-size: 14px;
+color: #333;
+}
+
+.popup-section-container {
+display: flex;
+justify-content: space-between;
+gap: 12px;
+margin-top: 10px;
+}
+
+.popup-section {
+flex: 1;
+display: grid;
+grid-template-rows: auto 1fr;
+align-items: start;
+text-align: center;
+gap: 4px;
+padding: 2px;
+}
+
+.popup-section .label {
+font-size: 12px;
+color: #555;
+font-weight: bold;
+text-transform: uppercase;
+letter-spacing: 0.6px;
+}
+
+.popup-section .value,
+.popup-section .speedometer {
+font-size: 14px;
+font-weight: bold;
+color: #222;
+}
+
+#theme-toggle {
+  position:absolute;
+  background-color: transparent;
+  top: 0.25rem;
+  right: 0.6rem;
+  border-radius: 5px;
+}
+
+.title-sun{
+  width: 60px;
+}
+
+
+user-header{
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+z-index: 2000;
+}
+
+#map {
+position: absolute;
+top: 75px;       
+left: 0;
+right: 0;
+bottom: 0;
+}
+
+
+
+.stylish-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.stylish-popup .leaflet-popup-content {
+  margin: 0;
+  width: 160px !important;
+}
+
+#map a[href="rentals.html"] {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  z-index: 1000;
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+
+#info-box .table-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.dark-mode #info-box .table-wrapper {
+  background: rgba(30, 30, 30, 0.95);
+}
+
+#replay {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 5px;
+  background: var(--alt-color);
+  color: white;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+#replay:hover {
+  background: var(--background-header);
+}
+
+.stylish-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.stylish-popup .leaflet-popup-content {
+  margin: 0;
+  width: 160px !important;
+}
+
+.popup-header {
+  background-color: #86fcc1;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px 12px 0 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+
+.popup-header-end {
+  background-color: #f76565;
+}
+
+.popup-body {
+  background-color: #fff;
+  padding: 14px 16px;
+  border-radius: 0 0 12px 12px;
+  text-align: center;
+}
+
+.popup-dashboard-box {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+.popup-section {
+  display: flex;
+  justify-content: space-between;
+}
+
+.popup-section .label {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.popup-section .value {
+  font-weight: normal;
+}
+
+#info-box {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 5000;
+  max-width: 360px;
+}
+
+
+.map-back-link {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  z-index: 5000;
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.alt-section {
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  line-height: 1;
+}

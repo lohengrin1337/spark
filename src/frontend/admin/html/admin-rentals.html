@@ -1,111 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
+  <title>Admin – Uthyrningar</title>
+
+  <link rel="stylesheet" href="style/style.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/js/frontend-helpers.js"></script>
+  <script type="module">
+    import { loadRentals } from '/shared/js/api.js';
+    loadRentals();
+  </script>
+  <script type="module" src="/shared/view-component/admin-header.js"></script>
 </head>
+
 <body>
-    <main class="admin-grid grid">
-        <header>
-            <button id="theme-toggle">Dark/Light</button>
-    
-            <h1 class="title">
-                spark<span class="title-blink">_</span>
-                <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter SVG">
-            </h1>
-    
-            <nav>
-                <div class="navlink-box">
-                    <a href="admin-index.html">
-                        <img class="invoice-spark" src="img/admin.svg" alt="Admin SVG">
-                    </a>
-                </div>
-            </nav>
-        </header>  
-        <aside class="sidebar sidebar-vertical">
-            <a href="index.html">Karta</a>
-            <a href="admin-invoices.html">Fakturor</a>
-            <a href="admin-customers.html">Användare</a>
-            <a href="admin-scooters.html">Sparkcyklar</a>
-            <a href="admin-rentals.html">Uthyrningar</a>
-      
-      </aside>
+<main class="admin-grid grid">
 
-        <section class="content">
-          <div class="table-wrapper-admin">
-            <table>
-                <h1 class="table-header table-header-admin">Uthyrningar</h1>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Kund</th>
-                        <th>Cykel</th>
-                        <th>Starttid</th>
-                        <th>Sluttid</th>
-                        <th>Status</th>
-                        <th>Rutt</th>
-                    </tr>
-                </thead>
-                <tbody id="rentals-table-body">
-                </tbody>
-            </table>
-        </div>
-        </section>
-    </main>
+  <admin-header style="z-index:1000000000000000000"></admin-header>
 
-    <script>
-/*         async function loadRentals() {
-            try {
-                const res = await fetch('http://localhost:3000/api/rentals');
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const rentals = await res.json();
+  <aside class="sidebar sidebar-vertical">
+    <a href="index.html">Karta</a>
+    <a href="admin-rentals.html">Uthyrningar</a>
+    <a href="admin-scooters.html">Sparkcyklar</a>
+    <a href="admin-customers.html">Användare</a>
+    <a href="admin-invoices.html">Fakturor</a>
+  </aside>
 
-                const tbody = document.getElementById('rentals-table-body');
-                tbody.innerHTML = '';
+  <section class="content">
+    <div class="table-wrapper-admin">
+      <table>
+        <h1 class="table-header table-header-admin">Uthyrningar</h1>
 
-                rentals.forEach(r => {
-                    const status = r.end_time ? 'Avslutad' : 'Aktiv';
-                    const routeLink = r.route ? `<a href="#${r.rental_id}">Visa rutt</a>` : '-';
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Startad</th>
+            <th>Avslutad</th>
+            <th>Startzon</th>
+            <th>Slutzon</th>
+            <th>Varaktighet</th>
+            <th>Kostnad (SEK)</th>
+            <th>Rutt</th>
+          </tr>
+        </thead>
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${r.rental_id}</td>
-                        <td>${r.customer_id || '-'}</td>
-                        <td>${r.bike_id}</td>
-                        <td>${new Date(r.start_time).toLocaleString('sv-SE')}</td>
-                        <td>${r.end_time ? new Date(r.end_time).toLocaleString('sv-SE') : '-'}</td>
-                        <td>${status}</td>
-                        <td>${routeLink}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (err) {
-                console.error("Failed to load rentals:", err);
-                document.getElementById('rentals-table-body').innerHTML = 
-                    `<tr><td colspan="7">Kunde inte ladda uthyrningar: ${err.message}</td></tr>`;
-            }
-        }
+        <tbody id="rental-table-body">
+          <tr>
+            <td colspan="8" style="text-align:center; opacity:.6;">
+              Laddar uthyrningar...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-        loadRentals();
-        setInterval(loadRentals, 10000);
- */
-        const html = document.documentElement;
-        const toggle = document.getElementById("theme-toggle");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        let savedTheme = localStorage.getItem("theme");
-        if (!savedTheme) savedTheme = prefersDark ? "dark" : "light";
-        html.classList.add(savedTheme + "-mode");
+</main>
 
-        toggle.addEventListener("click", () => {
-            const current = html.classList.contains("dark-mode") ? "dark" : "light";
-            const newTheme = current === "dark" ? "light" : "dark";
-            html.classList.remove(current + "-mode");
-            html.classList.add(newTheme + "-mode");
-            localStorage.setItem("theme", newTheme);
-        });
-    </script>
+<script type="module">
+  import { loadRentals } from '/shared/js/api.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadRentals();
+  });
+  
+</script>
+
 </body>
 </html>

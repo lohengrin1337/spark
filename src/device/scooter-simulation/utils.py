@@ -6,14 +6,13 @@ Provides utility functions for the scooter simulation.
 """
 
 import math
-from typing import Tuple
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Calculate distance in meters
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def calculate_distance_in_m(coord1: Tuple[float, float], coord2: Tuple[float, float]) -> float:
+def calculate_distance_in_m(coord1, coord2):
     """
-    Boilerplate calculatory-code, above my paygrade, but uses the havergrade-formula to
+    Boilerplate calculatory-code. Uses the havergrade-formula to
     calculate and return the great-circle distance in metres between two lat/lon points.
 
     More than accurate enough for our purposes.

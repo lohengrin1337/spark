@@ -134,7 +134,7 @@ IGNORE 1 LINES
 
 
 
---
+/* --
 -- Insert into rental
 --
 
@@ -150,7 +150,7 @@ IGNORE 1 LINES
 (`customer_id`, `bike_id`, `start_point`, `start_time`, `end_point`, `end_time`, `route`)
 ;
 
-
+ */
 --
 -- Insert into customer
 --

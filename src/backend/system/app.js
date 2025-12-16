@@ -25,7 +25,6 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     if (process.env.NODE_ENV !== 'test') {
         console.error(err);
-        console.log("eeeeerrrr")
     }
 
     if (res.headersSent) {

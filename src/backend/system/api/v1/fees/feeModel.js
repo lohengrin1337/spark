@@ -11,7 +11,7 @@ const fees = [
         "discount": 10,
         "penalty": 15
     }
-]
+];
 const pricingModel = {
   /**
    * Fetch all price lists from db
@@ -51,7 +51,7 @@ const pricingModel = {
         if (conn) conn.release();
     }
   }
-}
+};
 
 
 module.exports = pricingModel;

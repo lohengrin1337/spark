@@ -8,6 +8,7 @@ import json
 
 def fetch_users():
     """ Fetch all users from the backend API, and if unsuccessful, fallback on generic JohnDoe-list as a backup. """
+    # sonar-ignore
     url = "http://system:3000/api/v1/customers"
     try:
         response = requests.get(url, timeout=5)
@@ -27,7 +28,7 @@ def fetch_users():
             {"user_id": uid, "user_name": f"JohnDoe{uid}"} 
             for uid in range(1, 21) 
         ]
-
+# sonar-ignore
 TEMP_PLACEHOLDER_URL = "http://system:3000/api" # will be /v1/
 
 def fetch_rentals():

@@ -41,7 +41,7 @@ const pricingModel = {
 //         if (conn) conn.release();
 //     }
 //   }
-}
+};
 
 
 module.exports = pricingModel;

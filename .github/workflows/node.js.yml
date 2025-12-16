@@ -38,6 +38,4 @@ jobs:
     #- name: Run tests
       #working-directory: src/backend/system
       #run: npm run test
-    - name: Run tests
-      working-directory: src/backend/system
-      run: npm run test
+

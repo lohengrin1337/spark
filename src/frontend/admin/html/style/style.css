@@ -678,8 +678,7 @@ body {
 _________________________________________________________ */
 .stats-panel {
   width: 100%;
-  min-height: 92.8%;
-  max-height: 92.8%;
+  height: 90%;
   margin-top: 0.4rem;
   overflow: hidden;
   background: var(--lighter-alternative);
@@ -783,7 +782,8 @@ _________________________________________________________ */
   letter-spacing: 0.6px;
 }
 
-.popup-section .value {
+.popup-section .value,
+.popup-section .speedometer {
   font-size: 14px;
   font-weight: bold;
   color: #222;
@@ -908,4 +908,36 @@ _________________________________________________________ */
 @keyframes pulse {
   0%   { opacity: 0.6; }
   100% { opacity: 1; }
+}
+
+admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+}
+
+#map {
+  position: absolute;  
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.table-wrapper-admin {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+.table-wrapper-admin table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrapper-admin th,
+.table-wrapper-admin td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }

@@ -35,6 +35,9 @@ jobs:
       working-directory: src/backend/system
       run: npm run lint
       # Will be adding tests for backend here
+    #- name: Run tests
+      #working-directory: src/backend/system
+      #run: npm run test
     - name: Run tests
       working-directory: src/backend/system
       run: npm run test

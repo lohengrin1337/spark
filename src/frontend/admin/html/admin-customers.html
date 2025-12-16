@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style/style.css">
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="admin-grid grid">
+    <header>
+      <button id="theme-toggle">Dark/Light</button>
+      <h1 class="title">
+        spark<span class="title-blink">_</span>
+        <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter SVG">
+      </h1>
+      <nav>
+        <div class="navlink-box">
+          <a href="admin-index.html">
+            <img class="invoice-spark" src="img/admin.svg" alt="Admin SVG">
+          </a>
+        </div>
+      </nav>
+    </header>  
+
+    <aside class="sidebar sidebar-vertical">
+        <a href="index.html">Karta</a>
+        <a href="admin-invoices.html">Fakturor</a>
+        <a href="admin-customers.html">Användare</a>
+        <a href="admin-scooters.html">Sparkcyklar</a>
+        <a href="admin-rentals.html">Uthyrningar</a>
+  
+    </aside>
+
+    <section class="content">
+      <div class="table-wrapper-admin">
+        <table>
+          <h1 class="table-header table-header-admin">Kunder</h1>
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Blocked</th>
+            </tr>
+          </thead>
+          <tbody id="customers-table-body">
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function loadCustomers() {
+      try {
+        const res = await fetch('http://localhost:3000/api/v1/customers');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const customers = await res.json();
+
+        const tbody = document.getElementById('customers-table-body');
+        tbody.innerHTML = '';
+
+        customers.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${c.customer_id}</td>
+            <td>${c.email}</td>
+            <td>${c.name}</td>
+            <td>${c.blocked ? 'Yes' : 'No'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Failed to load customers:", err);
+        document.getElementById('customers-table-body').innerHTML = 
+          `<tr><td colspan="4">Kunde inte ladda kunder: ${err.message}</td></tr>`;
+      }
+    }
+
+    loadCustomers();
+    setInterval(loadCustomers, 10000);
+
+    // theme toggle code remains the same
+    const html = document.documentElement;
+    const toggle = document.getElementById("theme-toggle");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    let savedTheme = localStorage.getItem("theme");
+    if (!savedTheme) savedTheme = prefersDark ? "dark" : "light";
+    html.classList.add(savedTheme + "-mode");
+
+    toggle.addEventListener("click", () => {
+      const current = html.classList.contains("dark-mode") ? "dark" : "light";
+      const newTheme = current === "dark" ? "light" : "dark";
+      html.classList.remove(current + "-mode");
+      html.classList.add(newTheme + "-mode");
+      localStorage.setItem("theme", newTheme);
+    });
+  </script>
+</body>
+</html>

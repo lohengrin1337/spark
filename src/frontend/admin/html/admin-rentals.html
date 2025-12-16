@@ -37,17 +37,19 @@
         <section class="content">
           <div class="table-wrapper-admin">
             <table>
-                <h1 class="table-header table-header-admin">Fakturor</h1>
+                <h1 class="table-header table-header-admin">Uthyrningar</h1>
                 <thead>
                     <tr>
-                        <th>Fakturadatum</th>
-                        <th>Förfallodatum</th>
-                        <th>Summa (SEK)</th>
-                        <th>Betald</th>
-                        <th>Relaterar till</th>
+                        <th>ID</th>
+                        <th>Kund</th>
+                        <th>Cykel</th>
+                        <th>Starttid</th>
+                        <th>Sluttid</th>
+                        <th>Status</th>
+                        <th>Rutt</th>
                     </tr>
                 </thead>
-                <tbody id="invoice-table-body">
+                <tbody id="rentals-table-body">
                 </tbody>
             </table>
         </div>
@@ -55,60 +57,54 @@
     </main>
 
     <script>
-/*         async function loadInvoices() {
+/*         async function loadRentals() {
             try {
-                const res = await fetch('http://localhost:3000/api/v1/invoices');
-                const invoices = await res.json();
+                const res = await fetch('http://localhost:3000/api/rentals');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const rentals = await res.json();
 
-                const tbody = document.getElementById('invoice-table-body');
+                const tbody = document.getElementById('rentals-table-body');
                 tbody.innerHTML = '';
 
-                invoices.forEach(inv => {
+                rentals.forEach(r => {
+                    const status = r.end_time ? 'Avslutad' : 'Aktiv';
+                    const routeLink = r.route ? `<a href="#${r.rental_id}">Visa rutt</a>` : '-';
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${inv.issued_date}</td>
-                        <td>${inv.due_date}</td>
-                        <td>${inv.amount}</td>
-                        <td class="pay-cell">
-                            ${inv.paid 
-                                ? '<span class="checkmark">✔</span>' 
-                                : 'Nej'
-                            }
-                        </td>
-                        <td><a href="#${inv.rental_id}">${inv.rental_id}</a></td>
+                        <td>${r.rental_id}</td>
+                        <td>${r.customer_id || '-'}</td>
+                        <td>${r.bike_id}</td>
+                        <td>${new Date(r.start_time).toLocaleString('sv-SE')}</td>
+                        <td>${r.end_time ? new Date(r.end_time).toLocaleString('sv-SE') : '-'}</td>
+                        <td>${status}</td>
+                        <td>${routeLink}</td>
                     `;
                     tbody.appendChild(tr);
                 });
             } catch (err) {
-                console.error("Failed to load invoices:", err);
+                console.error("Failed to load rentals:", err);
+                document.getElementById('rentals-table-body').innerHTML = 
+                    `<tr><td colspan="7">Kunde inte ladda uthyrningar: ${err.message}</td></tr>`;
             }
         }
 
-        loadInvoices();
-        setInterval(loadInvoices, 10000); */
-
-        document.querySelectorAll('.title-spark, .invoice-spark').forEach(el => {
-          el.addEventListener('animationend', () => {
-            el.style.pointerEvents = 'auto';
-          });
-        });
-    
+        loadRentals();
+        setInterval(loadRentals, 10000);
+ */
         const html = document.documentElement;
         const toggle = document.getElementById("theme-toggle");
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         let savedTheme = localStorage.getItem("theme");
-    
-        if (!savedTheme) {
-          savedTheme = prefersDark ? "dark" : "light";
-        }
+        if (!savedTheme) savedTheme = prefersDark ? "dark" : "light";
         html.classList.add(savedTheme + "-mode");
-    
+
         toggle.addEventListener("click", () => {
-          const current = html.classList.contains("dark-mode") ? "dark" : "light";
-          const newTheme = current === "dark" ? "light" : "dark";
-          html.classList.remove(current + "-mode");
-          html.classList.add(newTheme + "-mode");
-          localStorage.setItem("theme", newTheme);
+            const current = html.classList.contains("dark-mode") ? "dark" : "light";
+            const newTheme = current === "dark" ? "light" : "dark";
+            html.classList.remove(current + "-mode");
+            html.classList.add(newTheme + "-mode");
+            localStorage.setItem("theme", newTheme);
         });
     </script>
 </body>

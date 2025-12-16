@@ -1,9 +1,55 @@
-// src/backend/system/server.js
-
+require('express-async-errors');
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const cors = require('cors');
+const { createServer } = require('http');
+const { WebSocketServer } = require('ws');
+const Redis = require('ioredis');
 const mariadb = require('mariadb');
+const apiV1 = require('./api/v1/apiRoutes.js');
+
+const app = express();
+
+app.use(express.json());
+
+app.use(cors({
+  origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
+  credentials: true
+}));
+
+app.use("/api/v1", apiV1);
+
+// Catch undefined routes
+app.use((req, res, next) => {
+    const err = new Error(`Path '${req.path}' could not be found`);
+    err.name = "Not Found";
+    err.status = 404;
+    next(err);
+});
+
+// Error handler (async with 'express-async-errors')
+app.use((err, req, res, next) => {
+    if (process.env.NODE_ENV !== 'test') {
+        console.error(err);
+    }
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    const status = err.status || 500;
+    res.status(status).json({
+       errors: [
+            {
+                status: status,
+                title: err.name,
+                detail: err.message
+            }
+        ]  
+    });
+});
+
+const server = createServer(app);
+const wss = new WebSocketServer({ server });
 
 const pool = mariadb.createPool({
   host: 'mariadb',
@@ -13,26 +59,112 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const clients = new Set();
 
-app.use(express.json());
-app.use(express.static('public'));
+wss.on('connection', (ws) => {
+  console.log('Frontend connected via raw WebSocket');
+  clients.add(ws);
 
-app.get('/api/invoices', async (req, res) => {
+  ws.on('close', () => {
+    clients.delete(ws);
+    console.log('Frontend disconnected');
+  });
+});
+
+
+const redisSub = new Redis({
+  host: process.env.REDIS_HOST || 'redis',
+  port: 6379
+});
+
+redisSub.subscribe('scooter:delta', 'rental:completed');
+
+redisSub.on('message', (channel, message) => {
+  const data = JSON.parse(message);
+
+  for (const client of clients) {
+    if (client.readyState === client.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  }
+});
+
+
+
+
+/* app.get('/api/rentals', async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM invoices ORDER BY issued_date");
+    const rows = await conn.query("SELECT * FROM rentals ORDER BY issued_date");
     res.json(rows);
   } catch (err) {
-    console.error("GET /api/invoices error:", err);
+    console.error("GET /api/rentals error:", err);
     res.status(500).json({ error: "Database error" });
   } finally {
     if (conn) conn.release();
   }
 });
+ */
+
+/* app.get('/rentals', async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        rental_id, customer_id, bike_id, 
+        start_point, start_time, 
+        end_point, end_time, 
+        route
+      FROM rentals 
+      ORDER BY start_time DESC
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('DB Error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+
+app.post('/rentals', async (req, res) => {
+  const { customer_id, bike_id, start_point } = req.body;
+  if (!customer_id || !bike_id || !start_point) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  try {
+    const [result] = await db.query(
+      `INSERT INTO rentals (customer_id, bike_id, start_point, start_time) 
+       VALUES (?, ?, ?, NOW())`,
+      [customer_id, bike_id, JSON.stringify(start_point)]
+    );
+    res.status(201).json({ rental_id: result.insertId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create rental' });
+  }
+});
+
+app.put('/rentals/:id', async (req, res) => {
+  const { id } = req.params;
+  const { end_point, route } = req.body;
+
+  try {
+    await db.query(
+      `UPDATE rentals 
+       SET end_point = ?, end_time = NOW(), route = ?
+       WHERE rental_id = ? AND end_time IS NULL`,
+      [JSON.stringify(end_point), JSON.stringify(route), id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to complete rental' });
+  }
+});
+ */
+
+
+
 
 app.post('/api/pay/:id', async (req, res) => {
   const id = parseInt(req.params.id, 10);
@@ -59,9 +191,7 @@ app.post('/api/pay/:id', async (req, res) => {
   }
 });
 
-io.on("connection", (socket) => {
-  console.log("Frontend connected:", socket.id);
-});
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {

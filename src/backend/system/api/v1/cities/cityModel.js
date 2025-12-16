@@ -3,11 +3,12 @@
 
 const pool = require('../../../database/database');
 
-// const cities = [
-//     {"id": 1, "name": "Malmö"},
-//     {"id": 2, "name": "Karlskrona"},
-//     {"id": 3, "name": "Umeå"}
-// ]
+const cities = [
+    {"id": 1, "name": "Malmö"},
+    {"id": 2, "name": "Karlskrona"},
+    {"id": 3, "name": "Umeå"}
+];
+
 const cityModel = {
   /**
    * Fetch all citys in database ordered by issued date.
@@ -18,9 +19,10 @@ const cityModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const cities = await conn.query("SELECT * FROM city");
-        console.log(cities);
-        return cities;
+        // const cities = await conn.query("SELECT * FROM city");
+        // console.log(cities);
+        const allCities = cities;
+        return allCities;
     } catch (err) {
         console.error("GET /api/cities error:", err);
         throw err;
@@ -38,9 +40,9 @@ const cityModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const city = await conn.query("SELECT * FROM city WHERE name = ?", [name]);
-        // return cities.filter(city => city.name == name)[0];
-        return city[0];
+        // const city = await conn.query("SELECT * FROM city WHERE name = ?", [name]);
+        return cities.filter(city => city.name == name)[0];
+        // return city[0];
     } catch (err) {
         console.error('');
         throw err;

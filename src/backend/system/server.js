@@ -1,63 +1,64 @@
-require('express-async-errors');
-const express = require('express');
-const cors = require('cors');
+// require('express-async-errors');
+// const express = require('express');
+// const cors = require('cors');
 const { createServer } = require('http');
 const { WebSocketServer } = require('ws');
 const Redis = require('ioredis');
-const mariadb = require('mariadb');
-const apiV1 = require('./api/v1/apiRoutes.js');
+// const mariadb = require('mariadb');
+// const apiV1 = require('./api/v1/apiRoutes.js');
 
-const app = express();
+// const app = express();
+const app = require('./app');
 
-app.use(express.json());
+// app.use(express.json());
 
-app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
-  credentials: true
-}));
+// app.use(cors({
+//   origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
+//   credentials: true
+// }));
 
-app.use("/api/v1", apiV1);
+// app.use("/api/v1", apiV1);
 
 // Catch undefined routes
-app.use((req, res, next) => {
-    const err = new Error(`Path '${req.path}' could not be found`);
-    err.name = "Not Found";
-    err.status = 404;
-    next(err);
-});
+// app.use((req, res, next) => {
+//     const err = new Error(`Path '${req.path}' could not be found`);
+//     err.name = "Not Found";
+//     err.status = 404;
+//     next(err);
+// });
 
-// Error handler (async with 'express-async-errors')
-app.use((err, req, res, next) => {
-    if (process.env.NODE_ENV !== 'test') {
-        console.error(err);
-    }
+// // Error handler (async with 'express-async-errors')
+// app.use((err, req, res, next) => {
+//     if (process.env.NODE_ENV !== 'test') {
+//         console.error(err);
+//     }
 
-    if (res.headersSent) {
-        return next(err);
-    }
+//     if (res.headersSent) {
+//         return next(err);
+//     }
 
-    const status = err.status || 500;
-    res.status(status).json({
-       errors: [
-            {
-                status: status,
-                title: err.name,
-                detail: err.message
-            }
-        ]  
-    });
-});
+//     const status = err.status || 500;
+//     res.status(status).json({
+//        errors: [
+//             {
+//                 status: status,
+//                 title: err.name,
+//                 detail: err.message
+//             }
+//         ]  
+//     });
+// });
 
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-const pool = mariadb.createPool({
-  host: 'mariadb',
-  user: 'root',
-  password: 'admin',
-  database: 'spark_db',
-  connectionLimit: 5,
-});
+// const pool = mariadb.createPool({
+//   host: 'mariadb',
+//   user: 'root',
+//   password: 'admin',
+//   database: 'spark_db',
+//   connectionLimit: 5,
+// });
 
 const clients = new Set();
 
@@ -166,30 +167,30 @@ app.put('/rentals/:id', async (req, res) => {
 
 
 
-app.post('/api/pay/:id', async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
+// app.post('/api/pay/:id', async (req, res) => {
+//   const id = parseInt(req.params.id, 10);
+//   if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
 
-  let conn;
-  try {
-    conn = await pool.getConnection();
-    const result = await conn.query(
-      "UPDATE invoices SET paid = TRUE WHERE id = ? AND paid = FALSE",
-      [id]
-    );
+//   let conn;
+//   try {
+//     conn = await pool.getConnection();
+//     const result = await conn.query(
+//       "UPDATE invoices SET paid = TRUE WHERE id = ? AND paid = FALSE",
+//       [id]
+//     );
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "Invoice not found or already paid" });
-    }
+//     if (result.affectedRows === 0) {
+//       return res.status(404).json({ error: "Invoice not found or already paid" });
+//     }
 
-    res.json({ success: true, message: "Payment recorded!" });
-  } catch (err) {
-    console.error("POST /api/pay error:", err);
-    res.status(500).json({ error: "Payment failed" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
+//     res.json({ success: true, message: "Payment recorded!" });
+//   } catch (err) {
+//     console.error("POST /api/pay error:", err);
+//     res.status(500).json({ error: "Payment failed" });
+//   } finally {
+//     if (conn) conn.release();
+//   }
+// });
 
 
 

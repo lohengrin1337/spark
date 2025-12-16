@@ -91,6 +91,7 @@ services:
     volumes:
       - ./src/frontend/admin/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./src/frontend/admin/html:/usr/share/caddy:ro
+      - ./src/frontend/shared:/shared:ro
     depends_on: [system]
     develop:
       watch:
@@ -114,6 +115,7 @@ services:
     volumes:
       - ./src/frontend/user-web/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./src/frontend/user-web/html:/usr/share/caddy:ro
+      - ./src/frontend/shared:/shared:ro
     depends_on: [system]
     develop:
       watch:
@@ -135,6 +137,7 @@ services:
     volumes:
       - ./src/frontend/user-app/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./src/frontend/user-app/html:/usr/share/caddy:ro
+      - ./src/frontend/shared:/shared:ro
     depends_on: [system]
     develop:
       watch:

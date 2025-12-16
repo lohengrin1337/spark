@@ -1,14 +1,21 @@
 :80 {
-  root * /usr/share/caddy
-  file_server
-  try_files {path} {path}.html
-  reverse_proxy /api* system:3000
-  reverse_proxy /socket.io* system:3000 {
-    transport http {
-      keepalive 30s
+    root * /usr/share/caddy
+    file_server
+
+    handle_path /shared/* {
+    root * /shared
+    file_server
     }
-  }
-  log {
-    output stdout
-  }
+
+    handle /api/* {
+        reverse_proxy system:3000
+    }
+
+    # handle /ws {
+    #     reverse_proxy system:3000
+    # }
+
+    handle {
+        try_files {path} {path}/index.html /index.html
+    }
 }

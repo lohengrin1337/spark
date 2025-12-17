@@ -67,9 +67,7 @@ CREATE TABLE `zone_type`
 
     PRIMARY KEY (`zone_type`)
 );
-
-
-/* 
+ 
 CREATE TABLE `rental`
 (
     `rental_id` INT AUTO_INCREMENT NOT NULL,
@@ -86,26 +84,7 @@ CREATE TABLE `rental`
     FOREIGN KEY (`bike_id`) REFERENCES `bike`(`bike_id`),
     FOREIGN KEY (`start_zone`) REFERENCES `zone_type`(`zone_type`),
     FOREIGN KEY (`end_zone`) REFERENCES `zone_type`(`zone_type`)
-); */
-
-CREATE TABLE `rental` (
-    `rental_id` INT AUTO_INCREMENT NOT NULL,
-    `customer_id` INT NOT NULL,
-    `bike_id` INT NOT NULL,
-    `start_point` JSON,
-    `start_time` DATETIME,
-    `end_point` JSON,
-    `end_time` DATETIME,
-    `start_zone` TEXT,
-    `end_zone` TEXT,
-    `route` JSON,
-
-    PRIMARY KEY (`rental_id`)
-
-    -- FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`),
-    -- FOREIGN KEY (`bike_id`) REFERENCES `bike`(`bike_id`)
 );
-
 
 
 

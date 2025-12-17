@@ -117,11 +117,12 @@ INTO TABLE rental
 CHARSET utf8
 FIELDS
     TERMINATED BY ','
-    -- ENCLOSED BY '"'
+    ENCLOSED BY '"'
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`customer_id`, `bike_id`, `start_point`, `start_time`, `end_point`, `end_time`, `route`)
+(`customer_id`, `bike_id`, `start_zone`, `start_time`, `end_zone`, `end_time`, @route)
+SET `route` = ST_LineStringFromText(@route)
 ;
 
 

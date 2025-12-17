@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – Uthyrningar</title>
+
+  <link rel="stylesheet" href="style/style.css">
+
+  <title>[Admin] Rentals</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/js/frontend-helpers.js"></script>
+  <script type="module">
+    import { loadRentals } from '/shared/js/api.js';
+    loadRentals();
+  </script>
+  <script type="module" src="/shared/view-component/admin-header.js"></script>
+</head>
+
+<body>
+<main class="admin-grid grid">
+
+  <admin-header style="z-index:1000000000000000000"></admin-header>
+
+  <aside class="sidebar sidebar-vertical">
+    <a href="index.html">Karta</a>
+    <a href="admin-rentals.html">Uthyrningar</a>
+    <a href="admin-scooters.html">Sparkcyklar</a>
+    <a href="admin-customers.html">Användare</a>
+    <a href="admin-invoices.html">Fakturor</a>
+  </aside>
+
+  <section class="content">
+    <div class="table-wrapper-admin">
+      <table>
+        <h1 class="table-header table-header-admin">Uthyrningar</h1>
+
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Startad</th>
+            <th>Avslutad</th>
+            <th>Startzon</th>
+            <th>Slutzon</th>
+            <th>Varaktighet</th>
+            <th>Kostnad (SEK)</th>
+            <th>Rutt</th>
+          </tr>
+        </thead>
+
+        <tbody id="rental-table-body">
+          <tr>
+            <td colspan="8" style="text-align:center; opacity:.6;">
+              Laddar uthyrningar...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { loadRentals } from '/shared/js/api.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadRentals();
+  });
+  
+</script>
+
+</body>
+</html>

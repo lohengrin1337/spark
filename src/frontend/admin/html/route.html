@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spark - Ruttvisning</title>
+
+  <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="/shared/style/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <script type="module" src="/shared/view-component/admin-header.js"></script>
+</head>
+<body>
+
+  <admin-header></admin-header>
+
+  <div id="map">
+    <a href="admin-rentals.html" class="back-button">⇐ Tillbaka</a>
+  </div>
+
+  <div id="info-box" class="table-wrapper">
+    <table>
+      <h1 class="table-header">Uthyrning #<span id="rental-id">-</span></h1>
+      <tbody>
+        <tr><td>Kund-ID</td><td id="customer-id">-</td></tr>
+        <tr><td>Spark-ID</td><td id="bike-id">-</td></tr>
+        <tr><td>Start</td><td id="start-time">-</td></tr>
+        <tr><td>Slut</td><td id="end-time">-</td></tr>
+        <tr><td>Varaktighet</td><td id="duration">-</td></tr>
+        <tr><td>Kostnad</td><td id="cost">-</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="2"><button id="replay">⟳ Spela om</button></td></tr>
+      </tfoot>
+    </table>
+  </div>
+  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module">
+    import { getRental } from '/shared/js/api.js';
+    import { updateInfo, initMap, updateTileLayer } from '/shared/js/route-helpers.js';
+
+    const rentalId = location.hash.substring(1);
+
+    if (!rentalId) {
+      document.getElementById('info-box').innerHTML =
+        '<div class="error-msg">Ingen rutt vald</div>';
+    } else {
+      loadTrip(rentalId);
+    }
+
+    async function loadTrip(id) {
+      try {
+        const data = await getRental(id);
+        if (!data.route || data.route.length < 2) throw new Error('Tom rutt');
+
+        updateInfo(data);
+        initMap(data);
+      } catch (e) {
+        document.getElementById('info-box').innerHTML =
+          `<div class="error-msg">Fel: ${e.message}</div>`;
+      }
+    }
+
+    document.addEventListener('themeChanged', e => {
+      updateTileLayer(e.detail.tileURL);
+    });
+  </script>
+</body>
+</html>

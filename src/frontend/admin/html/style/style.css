@@ -34,7 +34,7 @@ _________________________________________________________ */
     --background-header: rgb(253, 157, 66);
     --background-header-hover: rgb(255, 148, 48);
 
-    --lighter-alternative: rgb(255, 184, 118);
+    --lighter-alternative: rgb(252, 195, 142);
 
     --background-page: #ffffff;
 
@@ -158,7 +158,7 @@ html.light-mode {
     --background-header: rgb(253, 157, 66);
     --background-header-hover: rgb(255, 148, 48);
 
-    --lighter-alternative: rgb(255, 184, 118);
+    --lighter-alternative: rgb(252, 195, 142);
 
     --background-page: #ffffff;
 
@@ -613,49 +613,331 @@ _________________________________________________________ */
 
   .karlskrona { 
     background: #dd8043; 
-    color: #7c2d12;
     }
 
   .malmo { 
     background: #fdd160;
-    color: #7c2d12; 
 }
   .umea { 
     background: #bfe9fc; 
-    color: #0c4a6e; 
 }
 
 
-  .table-wrapper-admin {
-    width: 100%;
-    padding: 2rem;
-  }
+.table-wrapper-admin {
+  width: 100%;
+  padding: 2rem;
+}
 
-  .leaflet-map {
-    width: 100%;
-    height: 100%;
-    min-height: 400px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    overflow: hidden;
-  }
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
 
-  .content {
-    padding: 0;
-    border: 1px solid var(--border-color);
-  }
-  .title {
-    z-index: 98988998989898989889;
-  }
+.content {
+  padding: 0;
+  border: 1px solid var(--border-color);
+}
+
+.title {
+  z-index: 98988998989898989889;
+}
 
 .table-header-admin {
-    margin-right:18%;
-  }
+  margin-right: 18%;
+}
 
 .map-options {
-    width: 100%;
-    padding: 2%;
-    height: 100%;
-    border-radius: 8px;
-    background-color: var(--background-header);
-    color: var(--color-text-primary);
+  width: 100%;
+  padding: 2%;
+  height: 100%;
+  border-radius: 8px;
+  background-color: var(--background-header);
+  color: var(--color-text-primary);
+}
+
+/* _________________________________________________________
+
+   Base layout
+_________________________________________________________ */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* _________________________________________________________
+
+   Stats panel (sidebar)
+_________________________________________________________ */
+.stats-panel {
+  width: 100%;
+  height: 90%;
+  margin-top: 0.4rem;
+  overflow: hidden;
+  background: var(--lighter-alternative);
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  z-index: 2000;
+  font-size: 13px;
+}
+
+/* _________________________________________________________
+
+   Recent rentals list
+_________________________________________________________ */
+
+#completedRentals {
+  margin-top: 10px;
+  padding-left: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+#completedRentals li {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+details summary {
+  cursor: pointer;
+  color: #444;
+  margin: 4px 0;
+  font-weight: 500;
+}
+
+/* _________________________________________________________
+
+   Leaflet popup overrides
+_________________________________________________________ */
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* _________________________________________________________
+
+   Popup dashboard styling
+_________________________________________________________ */
+.popup-dashboard-box {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px 12px;
+  background: var(--lighter-alternative);
+  border: 2px solid var(--background-header);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.popup-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ffe0b2;
+  padding-bottom: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+.popup-section-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.popup-section {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  text-align: center;
+  gap: 4px;
+  padding: 2px;
+}
+
+.popup-section .label {
+  font-size: 12px;
+  color: #555;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.popup-section .value,
+.popup-section .speedometer {
+  font-size: 14px;
+  font-weight: bold;
+  color: #222;
+}
+
+/* _________________________________________________________
+
+   Status indicators
+_________________________________________________________ */
+
+.status-box {
+  padding: 4px 2px;
+  border-radius: 6px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  min-width: 80px;
+}
+
+.status-active         { background: #2196f3; }
+.status-idle           { background: #94c479; }
+.status-charging       { background: #f4f74c; }
+.status-needs-service  { background: #fd6161; }
+
+/* _________________________________________________________
+
+   Modern battery bar (used in the scooter popups)
+_________________________________________________________ */
+.battery-bar-modern {
+  width: 60px;
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.battery-fill-modern {
+  height: 100%;
+  background: linear-gradient(to right, #4caf50, #8bc34a);
+  transition: width 0.44s ease;
+}
+
+.battery-fill-modern.low    { background: linear-gradient(to right, #e53935, #f44336); }
+.battery-fill-modern.medium { background: linear-gradient(to right, #f5e345, #f9fc59); }
+.battery-fill-modern.charging {
+  animation: pulse 1.25s infinite alternate;
+}
+
+/* _________________________________________________________
+
+   Popup tip styling
+_________________________________________________________ */
+.leaflet-popup-tip-container {
+  margin-top: 1px !important;
+}
+
+.leaflet-popup-tip {
+  background-color: #ffeede !important;
+}
+
+/* _________________________________________________________
+
+   Dark mode support
+_________________________________________________________ */
+
+.dark .stats-panel,
+.dark-mode .stats-panel {
+  background: rgba(30, 30, 30, 0.95);
+  color: #eee;
+  border: 1px solid #444;
+}
+
+.dark .stats-panel h3,
+.dark .stats-panel h4,
+.dark-mode .stats-panel h3,
+.dark-mode .stats-panel h4 {
+  color: #88578a;
+}
+
+.dark #completedRentals li,
+.dark-mode #completedRentals li {
+  border-color: #444;
+}
+
+
+/* _________________________________________________________
+
+   Layout fixes
+_________________________________________________________ */
+
+.content {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.rental-sidebar-header {
+  margin: 8px 6px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.coords-pre {
+  font-size: 11px;
+  white-space: pre-wrap;
+  font-family: monospace;
+  margin: 4px 0;
+  padding: 4px;
+}
+
+@keyframes pulse {
+  0%   { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+}
+
+#map {
+  position: absolute;  
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.table-wrapper-admin {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+.table-wrapper-admin table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrapper-admin th,
+.table-wrapper-admin td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }

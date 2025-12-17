@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style/style.css">
+  <meta charset="UTF-8">
+  <title>Admin Customers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/view-component/admin-header.js"></script>
+</head>
+<body>
+  <main class="admin-grid grid">
+
+    <admin-header style="z-index:1000000000000000000"></admin-header>
+
+    <aside class="sidebar sidebar-vertical">
+      <a href="index.html">Karta</a>
+      <a href="admin-rentals.html">Uthyrningar</a>
+      <a href="admin-scooters.html">Sparkcyklar</a>
+      <a href="admin-customers.html">Användare</a>
+      <a href="admin-invoices.html">Fakturor</a>
+    </aside>
+
+    <section class="content">
+      <div class="table-wrapper-admin">
+        <table>
+          <h1 class="table-header table-header-admin">Kunder</h1>
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Blocked</th>
+            </tr>
+          </thead>
+          <tbody id="customers-table-body">
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function loadCustomers() {
+      try {
+        const res = await fetch('http://localhost:3000/api/v1/customers');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const customers = await res.json();
+
+        const tbody = document.getElementById('customers-table-body');
+        tbody.innerHTML = '';
+
+        customers.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${c.customer_id}</td>
+            <td>${c.email}</td>
+            <td>${c.name}</td>
+            <td>${c.blocked ? 'Yes' : 'No'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Failed to load customers:", err);
+        document.getElementById('customers-table-body').innerHTML = 
+          `<tr><td colspan="4">Kunde inte ladda kunder: ${err.message}</td></tr>`;
+      }
+    }
+
+    loadCustomers();
+    setInterval(loadCustomers, 10000);
+  </script>
+</body>
+</html>

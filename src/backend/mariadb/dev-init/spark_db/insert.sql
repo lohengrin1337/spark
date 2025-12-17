@@ -129,6 +129,9 @@ SET `route` = ST_LineStringFromText(@route)
 
 Insert into invoice
 
+/* --
+-- Insert into rental
+--
 
 LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/invoice.csv'
 INTO TABLE invoice
@@ -142,6 +145,7 @@ IGNORE 1 LINES
 (`rental_id`, `status`, `due_date`)
 ;
 
+ */
 --
 -- Insert into zone_type
 --

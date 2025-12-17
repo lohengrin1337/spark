@@ -1,6 +1,0 @@
-rental_id,status,due_date
-1,paid,2025-12-01
-2,unpaid,2026-01-01
-3,void,2025-12-10
-4,overdue,2025-12-01
-5,unpaid,2026-01-07

@@ -31,7 +31,7 @@ SHOW VARIABLES LIKE 'local_infile';
 -- LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/spark_db/admin_account'
 
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/admin_account.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/admin_account.csv'
 INTO TABLE admin_account
 CHARSET utf8
 FIELDS
@@ -47,8 +47,8 @@ IGNORE 1 LINES
 -- Insert into bike_status
 --
 
--- LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/spark_db/bike_status'
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/bike_status.csv'
+-- LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/spark_db/data/bike_status'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/bike_status.csv'
 INTO TABLE bike_status
 CHARSET utf8
 FIELDS
@@ -64,7 +64,7 @@ IGNORE 1 LINES
 -- Insert into city
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/city.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/city.csv'
 INTO TABLE city
 CHARSET utf8
 FIELDS
@@ -81,7 +81,7 @@ IGNORE 1 LINES
 -- Insert into bike
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/bike.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/bike.csv'
 INTO TABLE bike
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
@@ -96,7 +96,7 @@ SET
 -- Insert into customer
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/customer.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/customer.csv'
 INTO TABLE customer
 CHARSET utf8
 FIELDS
@@ -112,7 +112,7 @@ IGNORE 1 LINES
 -- Insert into rental
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/rental.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/rental.csv'
 INTO TABLE rental
 CHARSET utf8
 FIELDS
@@ -129,7 +129,7 @@ IGNORE 1 LINES
 Insert into invoice
 
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/invoice.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/invoice.csv'
 INTO TABLE invoice
 CHARSET utf8
 FIELDS
@@ -145,7 +145,7 @@ IGNORE 1 LINES
 -- Insert into zone_type
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/zone_type.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/zone_type.csv'
 INTO TABLE zone_type
 CHARSET utf8
 FIELDS
@@ -161,7 +161,7 @@ IGNORE 1 LINES
 -- Insert into spark_zone
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/spark_zone.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/spark_zone.csv'
 INTO TABLE spark_zone
 CHARSET utf8
 FIELDS
@@ -170,7 +170,8 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`city`, `zone_type`, `coordinates`)
+(`city`, `zone_type`, @geo)
+SET coordinates = ST_PolygonFromText(@geo)
 ;
 
 
@@ -178,7 +179,7 @@ IGNORE 1 LINES
 -- Insert into fee
 --
 
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/fee.csv'
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/fee.csv'
 INTO TABLE fee
 CHARSET utf8
 FIELDS

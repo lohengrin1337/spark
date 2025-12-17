@@ -8,9 +8,9 @@
 DROP TABLE IF EXISTS `admin_account`;
 DROP TABLE IF EXISTS `fee`;
 DROP TABLE IF EXISTS `spark_zone`;
-DROP TABLE IF EXISTS `zone_type`;
 DROP TABLE IF EXISTS `invoice`;
 DROP TABLE IF EXISTS `rental`;
+DROP TABLE IF EXISTS `zone_type`;
 DROP TABLE IF EXISTS `customer`;
 DROP TABLE IF EXISTS `bike`;
 DROP TABLE IF EXISTS `city`;
@@ -60,20 +60,31 @@ CREATE TABLE `customer`
     PRIMARY KEY (`customer_id`)
 );
 
+CREATE TABLE `zone_type`
+(
+    `zone_type` VARCHAR(45) NOT NULL,
+    `speed_limit` INT NOT NULL,
+
+    PRIMARY KEY (`zone_type`)
+);
+
+
 CREATE TABLE `rental`
 (
     `rental_id` INT AUTO_INCREMENT NOT NULL,
     `customer_id` INT NOT NULL,
     `bike_id` INT NOT NULL,
-    `start_point` POINT,
-    `start_time` DATETIME,
-    `end_point` POINT,
-    `end_time` DATETIME,
+    `start_zone` VARCHAR(45) NOT NULL,
+    `start_time` TIMESTAMP,
+    `end_zone` VARCHAR(45) NOT NULL,
+    `end_time` TIMESTAMP,
     `route` JSON, 
 
     PRIMARY KEY (`rental_id`),
     FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`),
-    FOREIGN KEY (`bike_id`) REFERENCES `bike`(`bike_id`)
+    FOREIGN KEY (`bike_id`) REFERENCES `bike`(`bike_id`),
+    FOREIGN KEY (`start_zone`) REFERENCES `zone_type`(`zone_type`),
+    FOREIGN KEY (`end_zone`) REFERENCES `zone_type`(`zone_type`)
 );
 
 CREATE TABLE `invoice`
@@ -87,13 +98,7 @@ CREATE TABLE `invoice`
     FOREIGN KEY (`rental_id`) REFERENCES `rental`(`rental_id`)
 );
 
-CREATE TABLE `zone_type`
-(
-    `zone_type` VARCHAR(45) NOT NULL,
-    `speed_limit` INT NOT NULL,
 
-    PRIMARY KEY (`zone_type`)
-);
 
 
 CREATE TABLE `spark_zone`
@@ -109,7 +114,7 @@ CREATE TABLE `spark_zone`
 
 CREATE TABLE `fee`
 (
-    `fee_id` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `fee_id` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `start` INT NOT NULL,
     `minute` INT NOT NULL,
     `discount` INT NOT NULL,

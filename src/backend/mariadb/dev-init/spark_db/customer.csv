@@ -1,6 +1,0 @@
-email,name,password,blocked,oauth_provider,oauth_provider_id
-lisa@lisa.se,Lisa,null,0,null,null
-emma@emma.se,Emma,null,0,null,null
-herman@herman.se,Herman,null,0,null,null
-olof@olof.se,Olof,null,0,null,null
-marvin@marvin.se,Marvin,null,1,null,null

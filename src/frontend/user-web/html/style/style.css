@@ -636,19 +636,6 @@ user-header{
     padding: 4px;
   }
   
-  .popup-section {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .popup-section .label {
-    font-weight: bold;
-    margin-right: 4px;
-  }
-  
-  .popup-section .value {
-    font-weight: normal;
-  }
   
   #info-box {
     position: absolute;

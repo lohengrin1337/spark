@@ -1,0 +1,6 @@
+rental_id,status,due_date
+1,paid,1765876656
+2,unpaid,1767259086
+3,void,1765271886
+4,unpaid,1764667086
+5,unpaid,1767777486

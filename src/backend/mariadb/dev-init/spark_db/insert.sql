@@ -123,7 +123,7 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`customer_id`, `bike_id`, `start_zone`, `start_time`, `end_zone`, `end_time`, @route)
+(`customer_id`, `bike_id`, `discount`, `start_time`, `penalty`, `end_time`, @route)
 SET `route` = ST_LineStringFromText(@route)
 ;
 
@@ -193,7 +193,7 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`fee_id`, `start`, `minute`, `discount`,  `penalty`)
+(`created`, `start`, `minute`, `discount`, `penalty`)
 ;
 
 

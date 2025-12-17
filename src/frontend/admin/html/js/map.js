@@ -7,7 +7,7 @@ import { TRAIL_MIN_DIST } from './utils.js';
 
 export const scooterMarkers = {};
 export const trails = {};
-export const map = null;
+export let map = null;
 let tileLayer = null;
 
 // ─────────────────────────────────────────────────────────────

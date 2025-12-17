@@ -89,7 +89,7 @@ IGNORE 1 LINES
 (@city, @coordinates)
 SET 
     city = @city,
-    coordinates = ST_GeomFromText(@coordinates);
+    coordinates = ST_PointFromText(@coordinates);
 
 
 --
@@ -126,11 +126,8 @@ SET `route` = ST_LineStringFromText(@route)
 ;
 
 
-
-Insert into invoice
-
-/* --
--- Insert into rental
+--
+-- Insert into invoice
 --
 
 LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/invoice.csv'
@@ -145,7 +142,8 @@ IGNORE 1 LINES
 (`rental_id`, `status`, `due_date`)
 ;
 
- */
+
+
 --
 -- Insert into zone_type
 --

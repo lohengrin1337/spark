@@ -84,6 +84,7 @@ IGNORE 1 LINES
 LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/bike.csv'
 INTO TABLE bike
 FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (@city, @coordinates)

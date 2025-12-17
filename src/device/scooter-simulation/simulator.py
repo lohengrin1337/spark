@@ -177,106 +177,156 @@ class Simulator:
 
         # Normal route movement
         return self.compute_update(scooter, route)
-
+   
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Rental lifecycle logic - now persists to real DB via API
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _handle_rental_tick(self, scooter, prev_lat, prev_lon, route_finished, current_time):
         scooter_id = scooter.id
         rental_state = self.rentals[scooter_id]
 
-        # ___START RENTAL___
+        # ___ START RENTAL ___
         if scooter.status == "active" and rental_state["rental_id"] is None:
-            simulated_id = self._new_rental_id()
-            rental_state["rental_id"] = simulated_id
+            rental_state["rental_id"] = self._new_rental_id()
             rental_state["start_ts"] = current_time
-            
-            # Determine the start zone-type
             rental_state["start_zone"] = self.classify_zone_at_point(prev_lat, prev_lon)
 
-            # Pick a user
-            if self.user_pool:
-                user = random.choice(self.user_pool)
-                rental_state["user_id"] = user["user_id"]
-                rental_state["user_name"] = user["user_name"]
-                self.user_pool.remove(user)
-            else:
-                rental_state["user_id"] = 1        # fallback – at least one customer must exist
-                rental_state["user_name"] = "Simulated User"
+            self._assign_user(rental_state)
 
-            if scooter.status == "active" and rental_state["rental_id"] is None:
-                print(f"[DEBUG] STARTING RENTAL for scooter {scooter_id} at {scooter.lat},{scooter.lon}")
-
-            # Try to persist the start in the real DB
             real_data = create_rental(
                 customer_id=rental_state["user_id"],
                 bike_id=scooter_id,
                 start_point={"lat": float(scooter.lat), "lng": float(scooter.lon)},
-                start_zone= rental_state["start_zone"],
+                start_zone=rental_state["start_zone"],
             )
+
             real_id = real_data.get("rental_id") if isinstance(real_data, dict) else None
             if real_id:
-                rental_state["rental_id"] = real_id   # switch to real ID
+                rental_state["rental_id"] = real_id
 
-            # Coordinate logging in Redis
             self.rbroadcast.clear_coords(rental_state["rental_id"])
-            self.rbroadcast.log_coord(rental_state["rental_id"], scooter.lat, scooter.lon, scooter.speed_kmh)
+            self.rbroadcast.log_coord(
+                rental_state["rental_id"],
+                scooter.lat,
+                scooter.lon,
+                scooter.speed_kmh,
+            )
 
         # ___ LOG COORDINATES ___
-        if rental_state["rental_id"] is not None and scooter.status == "active":
-            self.rbroadcast.log_coord(rental_state["rental_id"], scooter.lat, scooter.lon, scooter.speed_kmh)
+        if scooter.status == "active" and rental_state["rental_id"]:
+            self.rbroadcast.log_coord(
+                rental_state["rental_id"],
+                scooter.lat,
+                scooter.lon,
+                scooter.speed_kmh,
+            )
 
-        # ___ END RENTAL ____
-        if route_finished:
-            # Determine the end zone-type
-            rental_state["end_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lon)
-            rental_id = rental_state["rental_id"]
-            if rental_id:
-                path_coordinates = self.rbroadcast.load_coords(rental_id)
+        # ___ END RENTAL ___
+        if not route_finished:
+            return
 
-                complete_rental(
-                    rental_id=rental_id,
-                    end_point={"lat": float(scooter.lat), "lng": float(scooter.lon)},
-                    end_zone= rental_state["end_zone"],
-                    route=path_coordinates
-                )
+        rental_id = rental_state["rental_id"]
+        if not rental_id:
+            return
 
-                duration_seconds = int(current_time - rental_state["start_ts"])
-                completed_rental = {
-                    "type": "completed_rental",
-                    "rental_id": rental_id,
-                    "scooter_id": scooter_id,
-                    "duration_s": duration_seconds,
-                    "coords": path_coordinates,
-                    "user_id": rental_state.get("user_id"),
-                    "user_name": rental_state.get("user_name"),
-                    "start_zone": rental_state.get("start_zone"),
-                    "end_zone": rental_state.get("end_zone"),
-                }
-                self.rbroadcast.publish_completed(completed_rental)
+        rental_state["end_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lon)
+        path_coordinates = self.rbroadcast.load_coords(rental_id)
 
-                # Return user to pool
-                if rental_state.get("user_id") is not None:
-                    self.user_pool.append({
-                        "user_id": rental_state["user_id"],
-                        "user_name": rental_state["user_name"]
-                    })
+        complete_rental(
+            rental_id=rental_id,
+            end_point={"lat": float(scooter.lat), "lng": float(scooter.lon)},
+            end_zone=rental_state["end_zone"],
+            route=path_coordinates,
+        )
 
-            # Reset rental state
-            next_trip_count = self.trip_counter[scooter_id] + 1
-            if self.on_trip_completed and self.on_trip_completed(scooter, next_trip_count, self):
-                self.trip_counter[scooter_id] = next_trip_count
-                rental_state["rental_id"] = rental_state["start_ts"] = rental_state["user_id"] = rental_state["user_name"] = None
-                return
+        self._publish_completed_rental(
+            scooter,
+            rental_state,
+            current_time,
+            path_coordinates,
+        )
 
+        self._return_user_to_pool(rental_state)
+        self._finalize_trip(scooter, rental_state)
+
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Rental helpers
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _assign_user(self, rental_state):
+        """
+        Assign a user from the pool or fall back to a simulated user
+        """
+        if self.user_pool:
+            user = random.choice(self.user_pool)
+            self.user_pool.remove(user)
+        else:
+            user = {"user_id": 1, "user_name": "Simulated User"}
+
+        rental_state["user_id"] = user["user_id"]
+        rental_state["user_name"] = user["user_name"]
+
+
+    def _publish_completed_rental(self, scooter, rental_state, current_time, coords):
+        """
+        Publish completed rental summary to Redis
+        """
+        duration_seconds = int(current_time - rental_state["start_ts"])
+
+        self.rbroadcast.publish_completed({
+            "type": "completed_rental",
+            "rental_id": rental_state["rental_id"],
+            "scooter_id": scooter.id,
+            "duration_s": duration_seconds,
+            "coords": coords,
+            "user_id": rental_state.get("user_id"),
+            "user_name": rental_state.get("user_name"),
+            "start_zone": rental_state.get("start_zone"),
+            "end_zone": rental_state.get("end_zone"),
+        })
+
+
+    def _return_user_to_pool(self, rental_state):
+        """
+        Make user available for future simulated rentals
+        """
+        if rental_state.get("user_id") is not None:
+            self.user_pool.append({
+                "user_id": rental_state["user_id"],
+                "user_name": rental_state["user_name"],
+            })
+
+
+    def _finalize_trip(self, scooter, rental_state):
+        """
+        Update trip count and end or continue simulation
+        """
+        scooter_id = scooter.id
+        next_trip_count = self.trip_counter[scooter_id] + 1
+
+        if self.on_trip_completed and self.on_trip_completed(scooter, next_trip_count, self):
             self.trip_counter[scooter_id] = next_trip_count
-            rental_state["rental_id"] = None
-            rental_state["start_ts"] = None
-            rental_state["user_id"] = None
-            rental_state["user_name"] = None
-            rental_state["start_zone"] = "free"
-            rental_state["end_zone"] = "free"
-            scooter.end_trip()
+            self._reset_rental_state(rental_state)
+            return
+
+        self.trip_counter[scooter_id] = next_trip_count
+        self._reset_rental_state(rental_state)
+        scooter.end_trip()
+
+
+    def _reset_rental_state(self, rental_state):
+        """
+        Clear per-rental state for next trip
+        """
+        rental_state.update({
+            "rental_id": None,
+            "start_ts": None,
+            "user_id": None,
+            "user_name": None,
+            "start_zone": "free",
+            "end_zone": "free",
+        })
+
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Normal route - next movement on tick

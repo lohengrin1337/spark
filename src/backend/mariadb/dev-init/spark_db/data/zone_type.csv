@@ -1,5 +1,5 @@
 zone_type,speed_limit
-parking,0
-charging,0
+parking,5
+charging,5
 city,20
 slow,10

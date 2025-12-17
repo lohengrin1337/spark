@@ -1,0 +1,6 @@
+customer_id,bike_id,start_zone,start_time,end_zone,end_time,route
+2,7,parking,null,charging,null,null
+3,9,null,null,null,null,null
+4,7,null,null,null,null,null
+5,8,null,null,null,null,null
+5,8,null,null,null,null,null

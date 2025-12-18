@@ -193,7 +193,7 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`created`, `start`, `minute`, `discount`, `penalty`)
+(`updated`, `start`, `minute`, `discount`, `penalty`)
 ;
 
 

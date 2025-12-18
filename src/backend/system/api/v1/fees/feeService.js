@@ -12,10 +12,14 @@ async function getAll() {
 
 /**
  * Gets one price list from model, defaults to current.
- * @param { Date } dateTime default now
+ * @param { Date } date default now
  */
-async function getOne(dateTime) {
-    const feeAtDate = await feeModel.getFeesAtDate(dateTime);
+async function getOne(date) {
+    if (!date) {
+        date = new Date().toISOString();
+        console.log(date);
+    }
+    const feeAtDate = await feeModel.getFeesAtDate(date);
     return feeAtDate;
 }
 

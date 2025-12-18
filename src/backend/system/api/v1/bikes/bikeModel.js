@@ -2,7 +2,6 @@
 // Handles database queries for bike data.
 
 const pool = require('../../../database/database');
-const bikes = [{ "bike_id": 1 }, {"bike_id": 2}];
 
 const bikeModel = {
   /**
@@ -14,7 +13,7 @@ const bikeModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        // const bikes = await conn.query("SELECT * FROM bike");
+        const bikes = await conn.query("SELECT * FROM bike;");
         return bikes;
     } catch (err) {
         console.error("GET /api/bikes error:", err);
@@ -24,20 +23,57 @@ const bikeModel = {
     }
   },
   /**
-   * Fetch one bike by id.
-   * @param { number } id - bike id.
-   * @returns { object|undefined } bike object if found.
+   * Fetch bikes by city.
+   * @param { string } city
+   * @returns { object|undefined } bike objects if found.
    * @throws { Error } if query fails.
    */
-  async getOneBike(id) {
+  async getBikesByCity(city) {
     let conn;
     try {
         conn = await pool.getConnection();
-        // const bike = await conn.query("SELECT * FROM bike WHERE bike_id = ?", [id]);
-        return bikes.filter(bike => bike.bike_id == id)[0];
+        const bikes = await conn.query("SELECT * FROM bike WHERE city = ?", [city]);
+        return bikes;
     } catch (err) {
         console.error('');
         throw err;
+    } finally {
+        if (conn) conn.release();
+    }
+  },
+  async getBikesByStatus(status) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const bikes = await conn.query("SELECT * FROM bike WHERE status = ?", [status]);
+        return bikes;
+    } catch (err) {
+        console.error('');
+        throw err;
+    } finally {
+        if (conn) conn.release();
+    }
+  },
+  async getBikesCityStatus(city, status) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const bike = await conn.query("SELECT * FROM bike WHERE city = ? AND status = ?", [city, status]);
+        return bike[0];
+    } finally {
+        if (conn) conn.release();
+    }
+  },
+  /**
+   * Fetch bike by id.
+   * @param { number } id - bike id
+   */
+  async getBikeById(id) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const bike = await conn.query("SELECT * FROM bike WHERE bike_id = ?", [id]);
+        return bike[0];
     } finally {
         if (conn) conn.release();
     }

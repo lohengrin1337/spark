@@ -112,7 +112,7 @@ app.post('/api/rentals', async (req, res) => {
     const result = await pool.query(
       `INSERT INTO rental (customer_id, bike_id, start_point, start_zone, start_time) 
        VALUES (?, ?, ?,?, NOW())`,
-      [customer_id, bike_id, JSON.stringify(start_point), start_zone, start_time]
+      [customer_id, bike_id, JSON.stringify(start_point), start_zone]
     );
     res.status(201).json({ rental_id: result.insertId });
   } catch (err) {
@@ -124,7 +124,7 @@ app.post('/api/rentals', async (req, res) => {
 /** Temporary API endpoint to complete a rental with end point, zone, and route */
 app.put('/api/rentals/:id', async (req, res) => {
   const { id } = req.params;
-  const { end_point, end_time, end_zone, route } = req.body;
+  const { end_point, end_zone, route } = req.body;
 
   if (!end_point || typeof end_point !== 'object' || !Array.isArray(route)) {
     return res.status(400).json({ error: 'Invalid end_point or route' });

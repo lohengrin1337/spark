@@ -112,7 +112,7 @@ CREATE TABLE `spark_zone` (
 CREATE TABLE `fee`
 (
     `fee_id` INT AUTO_INCREMENT NOT NULL,
-    `created` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updated` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `start` INT NOT NULL,
     `minute` INT NOT NULL,
     `discount` INT NOT NULL,

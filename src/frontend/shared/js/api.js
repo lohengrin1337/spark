@@ -49,8 +49,8 @@ export async function loadRentals() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${rent.rental_id}</td>
-          <td>${startDate.toLocaleString()}</td>
-          <td>${endDate ? endDate.toLocaleString() : 'Pågår'}</td>
+/*           <td>${startDate.toLocaleString()}</td>
+          <td>${endDate ? endDate.toLocaleString() : 'Pågår'}</td> */
           <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
           <td>${translateZoneToSwedish(rent.end_zone) ?? '-'}</td>
           <td>${duration}</td>
@@ -125,3 +125,4 @@ export async function getRental(id) {
     throw err;
   }
 }
+

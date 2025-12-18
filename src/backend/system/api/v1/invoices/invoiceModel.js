@@ -2,20 +2,6 @@
 // Handles database queries for invoice data.
 
 const pool = require('../../../database/database');
-const invoiceMock = [
-    {
-        "invoice_id": 1,
-        "rental_id": 1,
-        "status": "paid",
-        "due_date": "2025-12-01"
-    },
-    {
-        "invoice_id": 2,
-        "rental_id": 2,
-        "status": "unpaid",
-        "due_date": "2025-12-01" 
-    }
-];
 
 const invoiceModel = {
   /**
@@ -27,8 +13,7 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        // const invoices = await conn.query("SELECT * FROM invoice");
-        const invoices = invoiceMock;
+        const invoices = await conn.query("SELECT * FROM invoice");
         return invoices;
     } catch (err) {
         console.error("GET /api/invoices error:", err);
@@ -37,7 +22,7 @@ const invoiceModel = {
         if (conn) conn.release();
     }
   },
-  /**
+    /**
    * Fetch one invoice by id.
    * @param { number } id - Invoice id.
    * @returns { object|undefined } invoice object if found.
@@ -47,9 +32,27 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        // const invoices = await conn.query("SELECT * FROM invoice WHERE invoice_id = ?", [id]);
-        return invoiceMock.filter(invoice => invoice.invoice_id == id)[0];
-        // return invoices[0];
+        const invoices = await conn.query("SELECT * FROM invoice WHERE invoice_id = ?", [id]);
+        return invoices[0];
+    } catch (err) {
+        console.error('');
+        throw err;
+    } finally {
+        if (conn) conn.release();
+    }
+  },
+  /**
+   * Fetch one invoice by customer id.
+   * @param { number } customerId - customer id.
+   * @returns { object|undefined } invoice objects if found.
+   * @throws { Error } if query fails.
+   */
+  async getOneInvoice(customerId) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const invoices = await conn.query("SELECT * FROM invoice WHERE customer_id = ?", [customerId]);
+        return invoices;
     } catch (err) {
         console.error('');
         throw err;
@@ -66,10 +69,7 @@ const invoiceModel = {
      let conn;
      try {
         conn = await pool.getConnection();
-        const invoice = invoiceMock.filter(invoice => invoice.invoice_id == id)[0];
-        invoice.status = "paid";
-        return invoice;
-        //  await conn.query("UPDATE invoice SET status = ? WHERE invoice_id = ?", [status, id]);
+         await conn.query("UPDATE invoice SET status = ? WHERE invoice_id = ?", [status, id]);
         } finally {
             if (conn) conn.release();
         }

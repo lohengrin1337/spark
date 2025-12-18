@@ -9,7 +9,7 @@ const zoneService = require('./zoneService');
  */
 router.get('/',
     async (req, res) => {
-        let { type } = req.query;
+        const { type } = req.query;
         console.log("req.query", req.query);
         console.log("zoneType", type);
         if (!type) {

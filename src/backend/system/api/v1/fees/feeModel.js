@@ -16,12 +16,12 @@ const pricingModel = {
   /**
    * Fetch all price lists from db
    */
-  async getAllPriceLists() {
+  async getAllFees() {
     let conn;
     try {
         conn = await pool.getConnection();
-        // const priceLists = await conn.query("SELECT * FROM fee");
-        const priceLists = fees;
+        const priceLists = await conn.query("SELECT * FROM fee");
+        // const priceLists = fees;
         return priceLists;
     } catch (err) {
         console.error("Error, could not fetch price lists from database", err);
@@ -33,17 +33,19 @@ const pricingModel = {
   /**
    * Fetch one price list, defaults to current/latest.
    */
-    async getOnePriceList() {
+    async getFeesAtDate(dateTime) {
     let conn;
     try {
         conn = await pool.getConnection();
-        if (!id) {
-            const priceList = await conn.query("SELECT * FROM fee ORDER BY fee_id DESC LIMIT 1");
-            return priceList[0];
-        } else {
-            const priceList = await conn.query("SELECT * FROM fee WHERE fee_id = ?", [id]);
-            return priceList[0];
-        }
+        // if (!dateTime) {
+        //     const priceList = await conn.query("SELECT * FROM fee ORDER BY created DESC LIMIT 1");
+        //     return priceList[0];
+        // } else {
+        //     const priceList = await conn.query("SELECT * FROM fee WHERE created = ?", [dateTime]);
+        //     return priceList[0];
+        // }
+        const priceList = await conn.query("SELECT * FROM fee WHERE created <= ? LIMIT 1", [dateTime]);
+        return priceList[0];
     } catch (err) {
         console.error('');
         throw err;

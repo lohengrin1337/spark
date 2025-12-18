@@ -12,11 +12,11 @@ async function getZones() {
 
 /**
  * Gets one zone from model.
- * @param { number } id zone id
+ * @param { number } zoneType zone type
  * @returns zone as object (if found)
  */
-async function getZoneById(id) {
-    return zoneModel.getOneZone(id);
+async function getZoneByType(zoneType) {
+    return zoneModel.getOneZone(zoneType);
 }
 
-module.exports = { getZones, getZoneById };
+module.exports = { getZones, getZoneByType };

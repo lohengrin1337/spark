@@ -2,6 +2,7 @@
 // Handles database queries for invoice data.
 
 const pool = require('../../../database/database');
+const { getInvoiceById } = require('./invoiceServices');
 
 const invoiceModel = {
   /**
@@ -28,7 +29,7 @@ const invoiceModel = {
    * @returns { object|undefined } invoice object if found.
    * @throws { Error } if query fails.
    */
-  async getOneInvoice(id) {
+  async getInvoiceById(id) {
     let conn;
     try {
         conn = await pool.getConnection();
@@ -47,7 +48,7 @@ const invoiceModel = {
    * @returns { object|undefined } invoice objects if found.
    * @throws { Error } if query fails.
    */
-  async getOneInvoice(customerId) {
+  async getInvoiceByCustomer(customerId) {
     let conn;
     try {
         conn = await pool.getConnection();

@@ -74,6 +74,7 @@ BigInt.prototype.toJSON = function () {
 };
 
 
+/** Temporary API endpoint to fetch all rentals from the database */
 app.get('/api/rentals', async (req, res) => {
   try {
     const rows = await pool.query(`
@@ -99,6 +100,7 @@ app.get('/api/rentals', async (req, res) => {
   }
 });
 
+/** Temporary API endpoint to create a new rental */
 app.post('/api/rentals', async (req, res) => {
   const { customer_id, bike_id, start_point, start_zone } = req.body;
 
@@ -119,6 +121,7 @@ app.post('/api/rentals', async (req, res) => {
   }
 });
 
+/** Temporary API endpoint to complete a rental with end point, zone, and route */
 app.put('/api/rentals/:id', async (req, res) => {
   const { id } = req.params;
   const { end_point, end_zone, route } = req.body;
@@ -146,8 +149,7 @@ app.put('/api/rentals/:id', async (req, res) => {
   }
 });
 
-
-
+/** Temporary API endpoint to mark an invoice as paid */
 app.post('/api/pay/:id', async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
@@ -170,6 +172,31 @@ app.post('/api/pay/:id', async (req, res) => {
     res.status(500).json({ error: "Payment failed" });
   } finally {
     if (conn) conn.release();
+  }
+});
+
+/** Temporary API endpoint to fetch all (three) zones for rendering on the map */
+app.get('/api/zones', async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        zone_id,
+        city,
+        zone_type,
+        ST_AsText(coordinates) AS coordinates
+      FROM spark_zone
+      ORDER BY city ASC, zone_id ASC
+    `;
+
+    const rows = await pool.query(query);
+
+    res.json(rows);
+  } catch (err) {
+    console.error('DB Error (/api/zones):', err);
+    res.status(500).json({ 
+      error: 'Failed to fetch zones', 
+      details: err.message 
+    });
   }
 });
 

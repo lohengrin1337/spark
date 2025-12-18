@@ -73,17 +73,16 @@ CREATE TABLE `rental`
     `rental_id` INT AUTO_INCREMENT NOT NULL,
     `customer_id` INT NOT NULL,
     `bike_id` INT NOT NULL,
-    `discount` BOOLEAN NOT NULL,
     `start_time` DATETIME NOT NULL,
-    `penalty` BOOLEAN NOT NULL,
-    `end_time` DATETIME NOT NULL,
-    `route` LINESTRING, 
+    `end_time` DATETIME,
+    `start_zone` VARCHAR(20),
+    `end_zone` VARCHAR(20),
+    `route` JSON, 
 
     PRIMARY KEY (`rental_id`),
     FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`),
     FOREIGN KEY (`bike_id`) REFERENCES `bike`(`bike_id`)
 );
-
 
 
 CREATE TABLE `invoice`
@@ -100,12 +99,11 @@ CREATE TABLE `invoice`
 
 
 
-CREATE TABLE `spark_zone`
-(
+CREATE TABLE `spark_zone` (
     `zone_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45) NOT NULL,
     `zone_type` VARCHAR(45) NOT NULL,
-    `coordinates` POLYGON NULL,    
+    `coordinates` GEOMETRY NULL,    -- Changed from POLYGON to more flexible GEOMETRY (enable POINT)
 
     PRIMARY KEY (`zone_id`),
     FOREIGN KEY (`city`) REFERENCES `city`(`name`)
@@ -114,7 +112,7 @@ CREATE TABLE `spark_zone`
 CREATE TABLE `fee`
 (
     `fee_id` INT AUTO_INCREMENT NOT NULL,
-    `created` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updated` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `start` INT NOT NULL,
     `minute` INT NOT NULL,
     `discount` INT NOT NULL,

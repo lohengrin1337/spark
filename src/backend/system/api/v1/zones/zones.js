@@ -9,14 +9,14 @@ const zoneService = require('./zoneService');
  */
 router.get('/',
     async (req, res) => {
-        let { zoneType } = req.query;
-        console.log(req.query);
-        console.log(zoneType);
-        if (!zoneType) {
-            return res.json(await zoneService.getZones());
+        let { type } = req.query;
+        console.log("req.query", req.query);
+        console.log("zoneType", type);
+        if (!type) {
+            const zones = await zoneService.getZones();
+            return res.status(200).json(zones);
         }
-        const zones = await zoneService.getZoneByType(zoneType);
-        res.status(200).json(zones);
+        const zones = await zoneService.getZoneByType(type);
     res.status(200).json(zones);
 });
 

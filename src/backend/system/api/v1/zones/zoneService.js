@@ -16,7 +16,7 @@ async function getZones() {
  * @returns zone as object (if found)
  */
 async function getZoneByType(zoneType) {
-    return zoneModel.getOneZone(zoneType);
+    return zoneModel.getZoneByType(zoneType);
 }
 
 module.exports = { getZones, getZoneByType };

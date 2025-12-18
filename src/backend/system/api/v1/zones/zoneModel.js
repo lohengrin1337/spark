@@ -31,10 +31,10 @@ const zoneModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const sparkZone = await conn.query("SELECT * FROM spark_zone WHERE zone_type IN", [zoneType]);
+        const sparkZone = await conn.query("SELECT * FROM spark_zone WHERE zone_type IN (?)", [zoneType]);
         console.log(zoneType);
         console.log(sparkZone);
-        return sparkZone[0];
+        return sparkZone;
     } catch (err) {
         console.error('');
         throw err;

@@ -20,7 +20,6 @@ router.get('/all',
 router.get('/',
     async (req, res) => {
         const { city, status } = req.query;
-        // const { city } = req.query.city;
         console.log("req.query", req.query);
         console.log("query - city", city);
         console.log("query - status", status);

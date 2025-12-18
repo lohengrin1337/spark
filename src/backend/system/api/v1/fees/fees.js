@@ -5,7 +5,7 @@ const feeService = require('./feeService');
 /**
  * GET all price lists
  */
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
     const allFees = await feeService.getAll();
     res.status(200).json(allFees);
 });
@@ -13,9 +13,20 @@ router.get('/', async (req, res) => {
 /**
  * GET current price list
  */
-router.get('/current',
-    async (req, res) => {
-    const fees = await feeService.getOne();
+// router.get('/',
+//     async (req, res) => {
+//     const fees = await feeService.getOne();
+//     res.status(200).json(fees);
+// });
+
+/**
+ * GET fees that were in effect on the sent in date
+ * defaults to current date
+ */
+router.get('/', async (req, res) => {
+    const { date } = req.query;
+    const viewDate = date ? new Date(date) : new Date();
+    const fees = await feeService.getOne(viewDate);
     res.status(200).json(fees);
 });
 
@@ -23,7 +34,9 @@ router.get('/current',
  * Update price list
  */
 router.put('/', async (req, res) => {
-    const feeUpdate = req.body;
+    const newFees = req.body;
+    await feeService.feeUpdate(newFees);
+    res.status(200).json();
 });
 
 module.exports = router;

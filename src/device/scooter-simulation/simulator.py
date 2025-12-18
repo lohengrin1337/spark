@@ -196,6 +196,7 @@ class Simulator:
             real_data = create_rental(
                 customer_id=rental_state["user_id"],
                 bike_id=scooter_id,
+                start_point={"lat": float(scooter.lat), "lng": float(scooter.lon)},
                 start_zone=rental_state["start_zone"],
             )
 
@@ -233,6 +234,7 @@ class Simulator:
 
         complete_rental(
             rental_id=rental_id,
+            end_point={"lat": float(scooter.lat), "lng": float(scooter.lon)},
             end_zone=rental_state["end_zone"],
             route=path_coordinates,
         )

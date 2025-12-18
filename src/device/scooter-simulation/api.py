@@ -7,9 +7,7 @@ import requests
 import json
 
 def fetch_users():
-    """
-    Fetch all users from the backend API, and if unsuccessful, fallback on generic JohnDoe-list as a backup.
-    """
+    """ Fetch all users from the backend API, and if unsuccessful, fallback on generic JohnDoe-list as a backup. """
     url = "http://system:3000/api/v1/customers" # noqa: S112
     try:
         response = requests.get(url, timeout=5)
@@ -33,9 +31,7 @@ def fetch_users():
 TEMP_PLACEHOLDER_URL = "http://system:3000/api" # noqa: S112
 
 def fetch_rentals():
-    """
-    Fetch all rentals from the backend API.
-    """
+    """ Fetch all rentals from the backend API. """
     url = f"{TEMP_PLACEHOLDER_URL}/rentals"
     try:
         response = requests.get(url, timeout=10)
@@ -45,15 +41,16 @@ def fetch_rentals():
         print("Failed to fetch rentals from API:", e)
         return []
 
-def create_rental(customer_id, bike_id, start_zone):
+def create_rental(customer_id, bike_id, start_point, start_zone):
     """
-    Create a new rental by sending customer_id, bike_id and start_zone.
+    Create a new rental by sending customer_id, bike_id and start_point.
     Returns the created rental object (including rental_id) on success, None on failure.
     """
     url = f"{TEMP_PLACEHOLDER_URL}/rentals"
     payload = {
         "customer_id": customer_id,
         "bike_id": bike_id,
+        "start_point": start_point,
         "start_zone": start_zone
     }
 
@@ -78,9 +75,9 @@ def create_rental(customer_id, bike_id, start_zone):
 
     return None
 
-def complete_rental(rental_id, end_zone, route):
+def complete_rental(rental_id, end_point, end_zone, route):
     """
-    Complete an existing rental by providing end_zone and full route.
+    Complete an existing rental by providing end_point and full route.
     Returns True on success, False on failure.
     """
     if not route:
@@ -89,12 +86,14 @@ def complete_rental(rental_id, end_zone, route):
 
     url = f"{TEMP_PLACEHOLDER_URL}/rentals/{rental_id}"
     payload = {
+        "end_point": end_point,
         "end_zone": end_zone,
         "route": route
     }
 
     try:
         print(f"[API] Completing rental -> PUT {url}")
+        print(f"[API] Payload size: {len(route)} points")
         response = requests.put(url, json=payload, timeout=15)
         print(f"[API] Response {response.status_code}: {response.text}")
 

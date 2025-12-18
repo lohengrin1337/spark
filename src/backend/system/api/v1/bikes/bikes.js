@@ -11,9 +11,6 @@ const bikeService = require('./bikeService');
 router.get('/',
     async (req, res) => {
         const { city, status } = req.query;
-        console.log("req.query", req.query);
-        console.log("query - city", city);
-        console.log("query - status", status);
         if (!status) {
             const bikes = await bikeService.getAllBikes(city);
             return res.status(200).json(bikes);

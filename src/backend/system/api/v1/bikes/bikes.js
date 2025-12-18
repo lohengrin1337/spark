@@ -8,21 +8,9 @@ const bikeService = require('./bikeService');
  * GET bikes
  * Response: 200 ok and array of bike objects.
  */
-router.get('/all',
-    //authenticate, // koll valid token
-    //validate, // koll valid request
-    //authorize, // k
-    async (req, res) => {
-        const bikes = await bikeService.getAllBikes();
-        res.status(200).json(bikes);
-});
-
 router.get('/',
     async (req, res) => {
         const { city, status } = req.query;
-        console.log("req.query", req.query);
-        console.log("query - city", city);
-        console.log("query - status", status);
         if (!status) {
             const bikes = await bikeService.getAllBikes(city);
             return res.status(200).json(bikes);

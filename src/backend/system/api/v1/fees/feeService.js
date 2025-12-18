@@ -12,12 +12,18 @@ async function getAll() {
 
 /**
  * Gets one price list from model, defaults to current.
- * @param { Date } timeStamp specified timestamp or now
+ * @param { Date } dateTime default now
  */
-async function getOne(timeStamp = new Date()) {
-    const feeAtDate = await feeModel.getFeeAtDate(timeStamp);
+async function getOne(dateTime) {
+    const feeAtDate = await feeModel.getFeesAtDate(dateTime);
     return feeAtDate;
 }
 
+/**
+ * Update one or more fees
+ */
+async function updateFee(newFees) {
+    console.log(newFees);
+}
 
-module.exports = { getAll, getOne };
+module.exports = { getAll, getOne, updateFee };

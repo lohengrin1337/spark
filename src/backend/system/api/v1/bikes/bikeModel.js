@@ -58,8 +58,8 @@ const bikeModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const bike = await conn.query("SELECT * FROM bike WHERE city = ? AND status = ?", [city, status]);
-        return bike[0];
+        const bikes = await conn.query("SELECT * FROM bike WHERE city = ? AND status = ?", [city, status]);
+        return bikes;
     } finally {
         if (conn) conn.release();
     }

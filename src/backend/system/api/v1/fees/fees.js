@@ -11,22 +11,12 @@ router.get('/all', async (req, res) => {
 });
 
 /**
- * GET current price list
- */
-// router.get('/',
-//     async (req, res) => {
-//     const fees = await feeService.getOne();
-//     res.status(200).json(fees);
-// });
-
-/**
  * GET fees that were in effect on the sent in date
  * defaults to current date
  */
 router.get('/', async (req, res) => {
     const { date } = req.query;
-    const viewDate = date ? new Date(date) : new Date();
-    const fees = await feeService.getOne(viewDate);
+    const fees = await feeService.getOne(date);
     res.status(200).json(fees);
 });
 

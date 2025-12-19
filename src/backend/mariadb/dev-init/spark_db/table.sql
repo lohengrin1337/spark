@@ -73,6 +73,8 @@ CREATE TABLE `rental`
     `rental_id` INT AUTO_INCREMENT NOT NULL,
     `customer_id` INT NOT NULL,
     `bike_id` INT NOT NULL,
+    `start_point` JSON,
+    `end_point` JSON,
     `start_time` DATETIME NOT NULL,
     `end_time` DATETIME,
     `start_zone` VARCHAR(20),

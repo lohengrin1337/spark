@@ -121,11 +121,18 @@ FIELDS
     TERMINATED BY ','
     ENCLOSED BY '"'
 LINES
-        TERMINATED BY '\n'
+    TERMINATED BY '\n'
 IGNORE 1 LINES
-(`customer_id`, `bike_id`, `discount`, `start_time`, `penalty`, `end_time`, @route)
-SET `route` = ST_LineStringFromText(@route)
-;
+(
+  customer_id,
+  bike_id,
+  start_zone,
+  start_time,
+  end_zone,
+  end_time,
+  @route
+)
+SET route = @route;
 
 
 --

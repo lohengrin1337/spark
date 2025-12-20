@@ -153,11 +153,11 @@ export async function loadInvoices() {
 
     invoices.forEach(inv => {
       const created = inv.creation_date
-        ? new Date(inv.creation_date).toLocaleString()
+        ? new Date(inv.creation_date).toLocaleDateString()
         : '-';
 
       const due = inv.due_date
-        ? new Date(inv.due_date).toLocaleString()
+        ? new Date(inv.due_date).toLocaleDateString()
         : '-';
 
       const tr = document.createElement('tr');

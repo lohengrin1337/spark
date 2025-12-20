@@ -5,6 +5,7 @@ const { WebSocketServer } = require('ws');
 const Redis = require('ioredis');
 const mariadb = require('mariadb');
 const apiV1 = require('./api/v1/apiRoutes.js');
+const oauth = require('./api/v1/auth/oauth.js');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(cors({
   credentials: true
 }));
 
+app.use("/oauth", oauth);
 app.use("/api/v1", apiV1);
 
 const server = createServer(app);

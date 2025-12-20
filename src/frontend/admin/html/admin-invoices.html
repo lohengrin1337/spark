@@ -1,82 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
-  <title>[Admin] Invoices</title>
+  <title>Admin - Fakturor</title>
+
+  <link rel="stylesheet" href="style/style.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/js/frontend-helpers.js"></script>
+  <script type="module">
+    import { loadInvoices } from '/shared/js/api.js';
+    loadInvoices();
+  </script>
 
   <script type="module" src="/shared/view-component/admin-header.js"></script>
-
 </head>
+
 <body>
-    <main class="admin-grid grid">
+<main class="admin-grid grid">
 
-        <admin-header style="z-index:1000000000000000000"></admin-header>
+  <admin-header style="z-index:1000000000000000000"></admin-header>
 
-        <aside class="sidebar sidebar-vertical">
-            <a href="index.html">Karta</a>
-            <a href="admin-rentals.html">Uthyrningar</a>
-            <a href="admin-scooters.html">Sparkcyklar</a>
-            <a href="admin-customers.html">Användare</a>
-            <a href="admin-invoices.html">Fakturor</a>
-      
-      </aside>
+  <aside class="sidebar sidebar-vertical">
+    <a href="index.html">Karta</a>
+    <a href="admin-rentals.html">Uthyrningar</a>
+    <a href="admin-scooters.html">Sparkcyklar</a>
+    <a href="admin-customers.html">Användare</a>
+    <a href="admin-invoices.html" class="active">Fakturor</a>
+  </aside>
 
-        <section class="content">
-          <div class="table-wrapper-admin">
-            <table>
-                <h1 class="table-header table-header-admin">Fakturor</h1>
-                <thead>
-                    <tr>
-                        <th>Fakturadatum</th>
-                        <th>Förfallodatum</th>
-                        <th>Summa (SEK)</th>
-                        <th>Betald</th>
-                        <th>Relaterar till</th>
-                    </tr>
-                </thead>
-                <tbody id="invoice-table-body">
-                </tbody>
-            </table>
-        </div>
-        </section>
-    </main>
+  <section class="content">
+    <div class="table-wrapper-admin">
+      <table>
+        <h1 class="table-header table-header-admin">Fakturor</h1>
 
-    <script>
-/*         async function loadInvoices() {
-            try {
-                const res = await fetch('http://localhost:3000/api/v1/invoices');
-                const invoices = await res.json();
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Uthyrning</th>
+            <th>Skapad</th>
+            <th>Förfallodatum</th>
+            <th>Status</th>
+            <th>Belopp (SEK)</th>
+          </tr>
+        </thead>
 
-                const tbody = document.getElementById('invoice-table-body');
-                tbody.innerHTML = '';
+        <tbody id="invoice-table-body">
+          <tr>
+            <td colspan="6" style="text-align:center; opacity:.6;">
+              Laddar fakturor...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-                invoices.forEach(inv => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${inv.issued_date}</td>
-                        <td>${inv.due_date}</td>
-                        <td>${inv.amount}</td>
-                        <td class="pay-cell">
-                            ${inv.paid 
-                                ? '<span class="checkmark">✔</span>' 
-                                : 'Nej'
-                            }
-                        </td>
-                        <td><a href="#${inv.rental_id}">${inv.rental_id}</a></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (err) {
-                console.error("Failed to load invoices:", err);
-            }
-        }
+</main>
 
-        loadInvoices();
-        setInterval(loadInvoices, 10000); */
-    </script>
+<script type="module">
+  import { loadInvoices } from '/shared/js/api.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadInvoices();
+  });
+</script>
+
 </body>
 </html>

@@ -1,3 +1,4 @@
+require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
 const { createServer } = require('http');
@@ -5,6 +6,7 @@ const { WebSocketServer } = require('ws');
 const Redis = require('ioredis');
 const mariadb = require('mariadb');
 const apiV1 = require('./api/v1/apiRoutes.js');
+const oauth = require('./api/v1/auth/oauth.js');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -18,6 +20,7 @@ app.use(cors({
   credentials: true
 }));
 
+app.use("/oauth", oauth);
 app.use("/api/v1", apiV1);
 
 const server = createServer(app);
@@ -207,6 +210,35 @@ app.get('/api/zones', async (req, res) => {
 // __________________________________________________________________________
 
 
+// Catch undefined routes
+app.use((req, res, next) => {
+    const err = new Error(`Path '${req.path}' could not be found`);
+    err.name = "Not Found";
+    err.status = 404;
+    next(err);
+});
+
+// Error handler (async with 'express-async-errors')
+app.use((err, req, res, next) => {
+    if (process.env.NODE_ENV !== 'test') {
+        console.error(err);
+    }
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    const status = err.status || 500;
+    res.status(status).json({
+       errors: [
+            {
+                status: status,
+                title: err.name,
+                detail: err.message
+            }
+        ]  
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {

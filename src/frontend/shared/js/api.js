@@ -49,6 +49,7 @@ export async function loadRentals() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${rent.rental_id}</td>
+          <td>${rent.customer_id}</td>
           <td>${startDate.toLocaleString()}</td>
           <td>${endDate ? endDate.toLocaleString() : 'Pågår'}</td>
           <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
@@ -125,4 +126,116 @@ export async function getRental(id) {
     throw err;
   }
 }
+
+/**
+ * Fetches all invoices from the API and populates the invoice table in the DOM.
+ * @async
+ */
+export async function loadInvoices() {
+  try {
+    const res = await fetch('/api/v1/invoices');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const invoices = await res.json();
+    const tbody = document.getElementById('invoice-table-body');
+    tbody.innerHTML = '';
+
+    if (!invoices.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; opacity: 0.6;">
+            Inga fakturor ännu...
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    invoices.forEach(inv => {
+      const created = inv.creation_date
+        ? new Date(inv.creation_date).toLocaleString()
+        : '-';
+
+      const due = inv.due_date
+        ? new Date(inv.due_date).toLocaleString()
+        : '-';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${inv.invoice_id}</td>
+        <td>
+          <a href="admin-rentals.html#${inv.rental_id}">
+            ${inv.rental_id}
+          </a>
+        </td>
+        <td>${created}</td>
+        <td>${due}</td>
+        <td>${inv.status}</td>
+        <td>${inv.amount}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('invoice-table-body').innerHTML = `
+      <tr>
+        <td colspan="6" style="color:red;">
+          Kunde inte ladda fakturor
+        </td>
+      </tr>
+    `;
+  }
+}
+
+
+/**
+ * Fetches all bikes from the API and populates the invoice table in the DOM.
+ * @async
+ */
+export async function loadBikes() {
+  try {
+    const res = await fetch('/api/v1/bikes');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const bikes = await res.json();
+    const tbody = document.getElementById('bike-table-body');
+    tbody.innerHTML = '';
+
+    if (!bikes.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; opacity: 0.6;">
+            Inga sparkcyklar ännu...
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    bikes.forEach(bk => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${bk.bike_id}</td>
+        <td>${bk.city}</td>
+        <td>${bk.status}</td>
+        <td><a href="#${bk.bike_id}">Ta ur drift</a>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('invoice-table-body').innerHTML = `
+      <tr>
+        <td colspan="6" style="color:red;">
+          Kunde inte ladda sparkcyklar
+        </td>
+      </tr>
+    `;
+  }
+}
+
 

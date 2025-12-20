@@ -4,20 +4,31 @@ const zoneService = require('./zoneService');
 
 /**
  * GET zones
- * If no query parameters are sent in it shows all zones.
+ * Returns all zones or zones matching query
  * Response: 200 ok and array of zone objects.
  */
 router.get('/',
     async (req, res) => {
-        const { type } = req.query;
-        console.log("req.query", req.query);
-        console.log("zoneType", type);
-        if (!type) {
-            const zones = await zoneService.getZones();
-            return res.status(200).json(zones);
-        }
-        const zones = await zoneService.getZoneByType(type);
+        const filter = req.query;
+        const zones = await zoneService.getZones(filter);
     res.status(200).json(zones);
+});
+
+/**
+ * GET zone by id
+ * Response: 200 ok and zone object.
+ */
+router.get('/:id',
+    async (req, res) => {
+        const id =Number(req.params.id);
+        const zone = await zoneService.getZoneById(id);
+        if (!zone) {
+            const err = new Error('Zone not found');
+            err.status = 404;
+            console.error(err);
+            throw err;
+        }
+        res.status(200).json(zone);
 });
 
 module.exports = router;

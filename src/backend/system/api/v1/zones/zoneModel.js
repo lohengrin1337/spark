@@ -14,30 +14,51 @@ const zoneModel = {
         conn = await pool.getConnection();
         const zones = await conn.query("SELECT * FROM spark_zone");
         return zones;
-    } catch (err) {
-        console.error("GET /api/zones error:", err);
-        throw err;
     } finally {
         if (conn) conn.release();
     }
   },
   /**
-   * Fetch one zone by type
-   * @param { string } zoneType zone type
-   * @returns { object|undefined } zone object if found.
-   * @throws { Error } if query fails.
+   * Fetch one zone, filter on zone_id.
+   * @returns { object } Zone data as object.
    */
-  async getZoneByType(zoneType) {
+  async getZoneById(id) {
     let conn;
     try {
         conn = await pool.getConnection();
-        const sparkZone = await conn.query("SELECT * FROM spark_zone WHERE zone_type IN (?)", [zoneType]);
-        console.log(zoneType);
-        console.log(sparkZone);
-        return sparkZone;
-    } catch (err) {
-        console.error('');
-        throw err;
+        const zone = await conn.query("SELECT * FROM spark_zone WHERE zone_id = ?", [id]);
+        return zone[0];
+    } finally {
+        if (conn) conn.release();
+    }
+  },
+
+  /**
+   * Fetch zones filtered on zone type
+   * @param { object } filter may contain city and/or zone_type
+   * @returns { Array } array of zones that match
+   */
+  async getFilteredZones(filter) {
+    let conn;
+    let query = "SELECT * FROM spark_zone WHERE ";
+    const params = [];
+    console.log("model: filter =", filter);
+    console.log(filter.city, filter.type);
+    if (filter.city) {
+        query += "city = ?";
+        params.push(filter.city);
+    }
+    if (filter.city && filter.type) {
+        query += " AND ";
+    }
+    if (filter.type) {
+        query += "zone_type = ?";
+        params.push(filter.type);
+    }
+    try {
+        conn = await pool.getConnection();
+        const zones = await conn.query(`${query};`, params);
+        return zones;
     } finally {
         if (conn) conn.release();
     }

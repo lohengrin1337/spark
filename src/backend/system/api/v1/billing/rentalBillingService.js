@@ -15,7 +15,7 @@ const { calculateRentalCost } = require('../pricing/calculateRentalCost');
  *
  * It intentionally contains no persistence or pricing logic itself,
  * delegating those responsibilities to their respective models/services,
- * for clean seperation of concerns.
+ * for clean separation of concerns.
  *
  * @param {string|number} rental_id - The completed rental to invoice.
  * @param {number} [dueDays=30] - Number of days until the invoice is due (default=30).

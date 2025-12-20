@@ -163,6 +163,7 @@ export async function loadInvoices() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${inv.invoice_id}</td>
+        <td>Bör vara här, antingen direkt i schema eller via en join</td>
         <td>
           <a href="admin-rentals.html#${inv.rental_id}">
             ${inv.rental_id}

@@ -1,74 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
-  <title>[Admin] Scooters</title>
+  <title>[Admin] Sparkcyklar</title>
+
+  <link rel="stylesheet" href="style/style.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet">
 
+  <script type="module" src="/shared/js/frontend-helpers.js"></script>
   <script type="module" src="/shared/view-component/admin-header.js"></script>
+
+  <script type="module">
+    import { loadBikes } from '/shared/js/api.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadBikes();
+    });
+  </script>
 </head>
+
 <body>
 
-    
-    <main class="admin-grid grid">
+<main class="admin-grid grid">
 
-        <admin-header style="z-index:1000000000000000000"></admin-header>
+  <admin-header style="z-index:1000000000000000000"></admin-header>
 
-        <aside class="sidebar sidebar-vertical">
-            <a href="index.html">Karta</a>
-            <a href="admin-rentals.html">Uthyrningar</a>
-            <a href="admin-scooters.html">Sparkcyklar</a>
-            <a href="admin-customers.html">Användare</a>
-            <a href="admin-invoices.html">Fakturor</a>
-      </aside>
+  <aside class="sidebar sidebar-vertical">
+    <a href="index.html">Karta</a>
+    <a href="admin-rentals.html">Uthyrningar</a>
+    <a href="admin-scooters.html">Sparkcyklar</a>
+    <a href="admin-customers.html">Användare</a>
+    <a href="admin-invoices.html">Fakturor</a>
+  </aside>
 
+  <section class="content">
+    <div class="table-wrapper-admin">
+      <table>
+        <h1 class="table-header table-header-admin">Sparkcyklar</h1>
 
-        <section class="content">
-          
-          <div class="table-wrapper-admin">
-            <table>
-                <h1 class="table-header table-header-admin">Sparkcyklar</h1>
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Stad</th>
-                        <th>Status</th>
-                        <th>Batteriprocent</th>
-                        <th>Alternativ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="#id9124">#9124</a></td>
-                        <td>Malmö</td>
-                        <td>active</td>
-                        <td>40%</td>
-                        <td class="pay-cell"><a href="delete-scooter.html" class="pay-button">Ta ur drift</a></td>
-                    </tr>
-                    <tr>
-                        <td><a href="#id5531">#9125</a></td>
-                        <td>Karlskrona</td>
-                        <td>inactive</td>
-                        <td>25%</td>
-                        <td class="pay-cell"><a href="delete-scooter.html" class="pay-button">Ta ur drift</a></td>
-                    </tr>
-                    <tr>
-                        <td><a href="#id5531">#9126</a></td>
-                        <td>Umeå</td>
-                        <td>isCharging</td>
-                        <td>11%</td>
-                        <td class="pay-cell"><a href="delete-scooter.html" class="pay-button">Ta ur drift</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Stad</th>
+            <th>Status</th>
+<!--             <th>Position</th> -->
+            <th>Alternativ</th>
+          </tr>
+        </thead>
 
-        </section>
+        <tbody id="bike-table-body">
+          <tr>
+            <td colspan="5" style="text-align:center; opacity:.6;">
+              Laddar sparkcyklar...
+            </td>
+          </tr>
+        </tbody>
 
-      </main>
+      </table>
+    </div>
+  </section>
+
+</main>
 
 </body>
 </html>

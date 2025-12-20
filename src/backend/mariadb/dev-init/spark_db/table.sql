@@ -91,17 +91,18 @@ CREATE TABLE `invoice`
 (
     `invoice_id` INT AUTO_INCREMENT NOT NULL,
     `rental_id` INT NOT NULL,
-    `status` VARCHAR(45) NOT NULL,
-    `due_date`DATE,    
+    `status` VARCHAR(45) NOT NULL DEFAULT 'unpaid',
+    `amount` INT NOT NULL,
+    `creation_date` DATETIME NOT NULL,
+    `due_date` DATETIME NOT NULL,
 
     PRIMARY KEY (`invoice_id`),
     FOREIGN KEY (`rental_id`) REFERENCES `rental`(`rental_id`)
 );
 
 
-
-
 CREATE TABLE `spark_zone` (
+    
     `zone_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45) NOT NULL,
     `zone_type` VARCHAR(45) NOT NULL,

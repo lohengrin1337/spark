@@ -22,5 +22,5 @@ describe('GET /customers, invalid id', () => {
     it('should throw a 404 not found', async () => {
         const res = await request(app).get('/api/v1/customers/abc');
         expect(res.statusCode).toEqual(404);
-    })
+    });
 });

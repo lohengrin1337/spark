@@ -16,7 +16,7 @@ describe('GET /bikes, filter on status', () => {
         const res = await request(app).get('/api/v1/bikes?status=available');
         expect(res.statusCode).toEqual(200);
         expect(res.body[0].status).toEqual('available');
-    })
+    });
 });
 
 describe('GET /bikes, filter on bike_id', () => {
@@ -24,12 +24,12 @@ describe('GET /bikes, filter on bike_id', () => {
         const res = await request(app).get('/api/v1/bikes/5');
         expect(res.statusCode).toEqual(200);
         expect(res.body.bike_id).toEqual(5);
-    })
+    });
 });
 
 describe('GET /bikes, invalid id', () => {
     it('should throw a 404 not found', async () => {
         const res = await request(app).get('/api/v1/bikes/abc');
         expect(res.statusCode).toEqual(404);
-    })
+    });
 });

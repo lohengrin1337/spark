@@ -11,22 +11,45 @@ router.get('/all', async (req, res) => {
 });
 
 /**
+ * The default index GET-route. Returns the latest and current fee that is the basis
+ * for the current pricing state.
+ */
+router.get('/', async (req, res) => {
+    const { date } = req.query;
+    const fees = await feeService.getLatest();
+    res.status(200).json(fees);
+});
+
+/**
  * GET fees that were in effect on the sent in date
  * defaults to current date
  */
-router.get('/', async (req, res) => {
+router.get('/date', async (req, res) => {
     const { date } = req.query;
     const fees = await feeService.getOne(date);
     res.status(200).json(fees);
 });
 
-/**
- * Update price list
- */
-router.put('/', async (req, res) => {
-    const newFees = req.body;
-    await feeService.feeUpdate(newFees);
-    res.status(200).json();
-});
 
+
+/**
+ * POST default route that creates a new fee row with the values supplied
+ */
+router.post('/', async (req, res) => {
+    const { start, minute, discount, penalty } = req.body;
+  
+    if (start == null || minute == null || discount == null || penalty == null) {
+      return res.status(400).json({ error: "All fee values must be provided" });
+    }
+  
+    try {
+      const newFee = await feeService.createFee({ start, minute, discount, penalty });
+      res.status(201).json(newFee);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to create new fee row" });
+    }
+});
+  
+  
 module.exports = router;

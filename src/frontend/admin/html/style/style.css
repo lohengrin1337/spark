@@ -538,6 +538,28 @@ _________________________________________________________ */
     transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+input[type="number"] {
+  width: 90px;
+  height: 33px;
+  font-size: 15px;
+  font-family: inherit;
+  padding: 0.2rem 0.4rem;
+  
+}
+
+.fee-button {
+  font-size: 20px;
+  margin-bottom: 1rem;
+  margin-top: 0.8rem;
+  color: var(--color-text-primary);
+  padding: 0.6rem 1rem;
+  background: linear-gradient(175deg, var(--table-header-bg), var(--background-header-hover));
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: none;
+
+}
+
 
 .sidebar-vertical a:hover {
     transform: translateX(4px);

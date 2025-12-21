@@ -1,4 +1,4 @@
-import { translateZoneToSwedish, calculateRentalCost } from './frontend-helpers.js';
+import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } from './frontend-helpers.js';
 
 /**
  * Fetches all rentals from the API and populates the rental table in the DOM.
@@ -37,13 +37,6 @@ export async function loadRentals() {
   
           duration = Math.floor(minutes) + ' min';
   
-          const calculated = calculateRentalCost(
-            rent.start_zone,
-            rent.end_zone,
-            minutes
-          );
-  
-          cost = calculated !== null ? calculated : '-';
         }
   
         const tr = document.createElement('tr');
@@ -55,7 +48,6 @@ export async function loadRentals() {
           <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
           <td>${translateZoneToSwedish(rent.end_zone) ?? '-'}</td>
           <td>${duration}</td>
-          <td>${cost}</td>
           <td>
             ${endDate
               ? `<a href="route.html#${rent.rental_id}">Se på karta</a>`
@@ -163,7 +155,7 @@ export async function loadInvoices() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${inv.invoice_id}</td>
-        <td>Bör vara här, antingen direkt i schema eller via en join</td>
+        <td>*Här*(Via schemat/join)</td>
         <td>
           <a href="admin-rentals.html#${inv.rental_id}">
             ${inv.rental_id}
@@ -171,8 +163,13 @@ export async function loadInvoices() {
         </td>
         <td>${created}</td>
         <td>${due}</td>
-        <td>${inv.status}</td>
+        <td>${translateInvStatusToSwe(inv.status)}</td>
         <td>${inv.amount}</td>
+        <td>
+          <a href="admin-invoices.html#void/${inv.rental_id}">
+            Makulera faktura
+          </a>
+        </td>
       `;
 
       tbody.appendChild(tr);
@@ -240,3 +237,47 @@ export async function loadBikes() {
 }
 
 
+/**
+ * Load all fees
+ */
+export async function loadFees() {
+  const res = await fetch('/api/v1/fees/all');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+/**
+ * Load current fee
+ */
+export async function loadCurrentFee() {
+  const res = await fetch('/api/v1/fees');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+
+
+
+/**
+ * Create a new entry in the fee table (= a new current pricing state)
+ * @param {Object} fee - { start, minute, discount, penalty }
+ */
+export async function newFees(fee) {
+  try {
+    const res = await fetch('/api/v1/fees', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fee)
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || 'Failed to create new fee-row');
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('newFee error:', err);
+    throw err;
+  }
+}

@@ -41,3 +41,21 @@ export function translateZoneToSwedish(engZone) {
   
     return translations[engZone] || "";
 }
+
+/**
+ * Translates an English invoice status to Swedish.
+ * @param {string} engStatus - "paid" | "unpaid" | "void"
+ * @returns {string} Swedish translation: "betald" | "obetald" | "makulerad", or empty string if invalid
+ */
+export function translateInvStatusToSwe(engStatus) {
+  if (!engStatus) return "";
+
+  const translations = {
+    paid: "betald",
+    unpaid: "obetald",
+    void: "makulerad"
+  };
+
+  return translations[engStatus] || "";
+}
+

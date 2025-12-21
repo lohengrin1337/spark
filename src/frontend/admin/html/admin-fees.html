@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Fees</title>
+
+  <link rel="stylesheet" href="style/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@200..1000&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/view-component/admin-header.js"></script>
+
+</head>
+
+<body>
+<main class="admin-grid grid">
+
+  <admin-header></admin-header>
+
+  <aside class="sidebar sidebar-vertical">
+    <a href="index.html">Karta</a>
+    <a href="admin-rentals.html">Uthyrningar</a>
+    <a href="admin-scooters.html">Sparkcyklar</a>
+    <a href="admin-customers.html">Användare</a>
+    <a href="admin-invoices.html">Fakturor</a>
+    <a href="admin-fees.html">Prissättning</a>
+  </aside>
+
+  <section class="content">
+    <div class="table-wrapper-admin">
+      <form id="fee-form">
+        <table class="admin-table">
+          <h1 class="table-header table-header-admin">
+            Nuvarande avgifter och prissättning
+          </h1>
+
+          <thead>
+            <tr>
+              <th>Senast uppdaterad</th>
+              <th>Startavgift</th>
+              <th>Kostnad / min</th>
+              <th>Avgift (fri parkering)</th>
+              <th>Avdrag (upphämtad från fri parkering)</th>
+            </tr>
+          </thead>
+
+          <tbody id="fee-table-body">
+            <tr>
+              <td colspan="5" style="text-align:center; opacity:.6;">
+                Laddar prisuppgifter…
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <button id="save-btn" class="fee-button" type="submit" disabled>
+          Spara ändringar
+        </button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  import { loadFees, loadCurrentFee, newFees } from '/shared/js/api.js';
+  
+  document.addEventListener('DOMContentLoaded', async () => {
+    const tbody = document.getElementById('fee-table-body');
+    const form = document.getElementById('fee-form');
+    const saveBtn = document.getElementById('save-btn');
+
+    async function renderLatestFee() {
+      const fee = await loadCurrentFee();
+      tbody.innerHTML = '';
+
+      if (!fee) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; opacity:.6;">Inga prisuppgifter hittades</td></tr>`;
+      } else {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${fee.updated ? new Date(fee.updated).toLocaleString() : '-'}</td>
+          <td><input type="number" name="start" value="${fee.start}"></td>
+          <td><input type="number" name="minute" value="${fee.minute}"></td>
+          <td><input type="number" name="discount" value="${fee.discount}"></td>
+          <td><input type="number" name="penalty" value="${fee.penalty}"></td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      saveBtn.disabled = true;
+    }
+
+    await renderLatestFee();
+
+    // Enable save button on input
+    form.addEventListener('input', () => saveBtn.disabled = false);
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      saveBtn.disabled = true;
+
+      const row = tbody.querySelector('tr');
+      const payload = {
+        start: row.querySelector('[name=start]').value,
+        minute: row.querySelector('[name=minute]').value,
+        discount: row.querySelector('[name=discount]').value,
+        penalty: row.querySelector('[name=penalty]').value
+      };
+
+      try {
+        await newFees(payload);
+        alert('Ny prissättning applicerad');
+        // Re-fetch and re-render
+        await renderLatestFee();
+      } catch (err) {
+        console.error(err);
+        alert('Kunde inte applicera den föreslagna prisändringen');
+        saveBtn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

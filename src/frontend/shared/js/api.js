@@ -275,7 +275,7 @@ export async function newFees(fee) {
       throw new Error(errData.error || 'Failed to create new fee-row');
     }
 
-    return await res.json();
+    return;
   } catch (err) {
     console.error('newFee error:', err);
     throw err;

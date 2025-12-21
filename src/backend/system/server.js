@@ -1,3 +1,4 @@
+require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
 const { createServer } = require('http');
@@ -5,6 +6,9 @@ const { WebSocketServer } = require('ws');
 const Redis = require('ioredis');
 const mariadb = require('mariadb');
 const apiV1 = require('./api/v1/apiRoutes.js');
+const oauth = require('./api/v1/auth/oauth.js');
+
+const { createInvoiceForRental } = require('./api/v1/billing/rentalBillingService');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -18,6 +22,7 @@ app.use(cors({
   credentials: true
 }));
 
+app.use("/oauth", oauth);
 app.use("/api/v1", apiV1);
 
 const server = createServer(app);
@@ -121,17 +126,20 @@ app.post('/api/rentals', async (req, res) => {
   }
 });
 
-/** Temporary API endpoint to complete a rental with end point, zone, and route */
+/** Temp-API endpoint to complete a rental and generate invoice */
 app.put('/api/rentals/:id', async (req, res) => {
   const { id } = req.params;
   const { end_point, end_zone, route } = req.body;
 
-  if (!end_point || typeof end_point !== 'object' || !Array.isArray(route)) {
-    return res.status(400).json({ error: 'Invalid end_point or route' });
+  if (!end_point || !Array.isArray(route) || !end_zone) {
+    return res.status(400).json({ error: 'Invalid end_point, end_zone, or route' });
   }
 
+  let conn;
   try {
-    const updateResult = await pool.query(
+    conn = await pool.getConnection();
+
+    const updateResult = await conn.query(
       `UPDATE rental
        SET end_point = ?, end_time = NOW(), end_zone = ?, route = ?
        WHERE rental_id = ? AND end_time IS NULL`,
@@ -142,10 +150,19 @@ app.put('/api/rentals/:id', async (req, res) => {
       return res.status(404).json({ error: 'Rental not found or already completed' });
     }
 
-    res.json({ success: true });
+    const invoice = createInvoiceForRental(id);
+
+    res.json({
+      success: true,
+      rental_id: id,
+      invoice
+    });
+
   } catch (err) {
-    console.error('UPDATE Error:', err);
-    res.status(500).json({ error: 'Failed to complete rental', details: err.message });
+    console.error('UPDATE/Invoice Error:', err);
+    res.status(500).json({ error: 'Failed to complete rental or generate invoice', details: err.message });
+  } finally {
+    if (conn) conn.release();
   }
 });
 
@@ -207,6 +224,35 @@ app.get('/api/zones', async (req, res) => {
 // __________________________________________________________________________
 
 
+// Catch undefined routes
+app.use((req, res, next) => {
+    const err = new Error(`Path '${req.path}' could not be found`);
+    err.name = "Not Found";
+    err.status = 404;
+    next(err);
+});
+
+// Error handler (async with 'express-async-errors')
+app.use((err, req, res, next) => {
+    if (process.env.NODE_ENV !== 'test') {
+        console.error(err);
+    }
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    const status = err.status || 500;
+    res.status(status).json({
+       errors: [
+            {
+                status: status,
+                title: err.name,
+                detail: err.message
+            }
+        ]  
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {

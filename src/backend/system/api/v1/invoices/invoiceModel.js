@@ -14,7 +14,7 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const invoices = await conn.query("SELECT * FROM invoice");
+        const invoices = await conn.query("SELECT * FROM invoice ORDER BY invoice_id DESC");
         return invoices;
     } catch (err) {
         console.error("GET /api/invoices error:", err);
@@ -74,7 +74,37 @@ const invoiceModel = {
         } finally {
             if (conn) conn.release();
         }
+    },
+
+    /**
+     * Create a new invoice.
+     * @param { number } rentalId - Rental id.
+     * @param { number } amount - Final invoice amount.
+     * @param { Date } dueDate - Due date for the invoice.
+     * @returns { number } Created invoice id.
+     * @throws { Error } If query fails.
+     */
+    async createInvoice({ rental_id, amount, due_date }) {
+        let conn;
+        try {
+            conn = await pool.getConnection();
+            const result = await conn.query(
+                `INSERT INTO invoice
+                 (rental_id, amount, creation_date, due_date)
+                 VALUES (?, ?, NOW(), ?)`,
+                [rental_id, amount, due_date]
+            );
+            return result.insertId;
+        } catch (err) {
+            console.error('Invoice creation error:', err);
+            throw err;
+        } finally {
+            if (conn) conn.release();
+        }
     }
+        
 };
+
+
 
 module.exports = invoiceModel;

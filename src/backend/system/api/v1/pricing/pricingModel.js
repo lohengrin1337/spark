@@ -19,6 +19,16 @@ const pricingModel = {
     } finally {
         if (conn) conn.release();
     }
+  },
+  /**
+   * Fetch current pricing details from db
+   */
+  async getCurrentPricing() {
+    const fees = await this.getPriceList();
+    if (!fees.length) {
+      throw new Error('No pricing details found in the fee-table');
+    }
+    return fees[0];
   }
 //   /**
 //    * Fetch one price list, defaults to current/latest.

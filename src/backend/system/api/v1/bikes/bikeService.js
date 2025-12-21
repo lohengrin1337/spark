@@ -26,7 +26,13 @@ async function getBikesByStatus(city, status) {
  * @returns bike as object (if found)
  */
 async function getBikeById(id) {
-    return bikeModel.getBikeById(id);
+    const bike = await bikeModel.getBikeById(id);
+    if (!bike) {
+        const err = new Error(`No bike with id ${id} found`);
+        err.status = 404;
+        throw err;
+    }
+    return bike;
 }
 
 module.exports = { getAllBikes, getBikeById, getBikesByStatus };

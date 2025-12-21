@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
+process.env.NODE_ENV = "test";
 
 describe('invoices endpoint', () => {
 

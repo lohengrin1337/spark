@@ -1,6 +1,7 @@
 //Tests for customers endpoint
 const request = require('supertest');
 const app = require('../app');
+process.env.NODE_ENV = "test";
 
 describe('GET /customers', () => {
     it('should get all customers', async () => {

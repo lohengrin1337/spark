@@ -76,7 +76,7 @@ Result:
   }
 ]
 ```
-Fetch all bikes belonging to a city with a certain status:
+Fetch all bikes from a city filtered on status:
 
 >GET /bikes?city=\<city>&status=\<status>
 ```javascript

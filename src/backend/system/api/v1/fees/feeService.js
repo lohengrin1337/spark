@@ -24,10 +24,18 @@ async function getOne(date) {
 }
 
 /**
- * Update one or more fees
+ * Gets current price list
  */
-async function updateFee(newFees) {
-    console.log(newFees);
+async function getLatest() {
+    return feeModel.getLatestFee();
 }
 
-module.exports = { getAll, getOne, updateFee };
+
+/**
+ * Insert a new fee version
+ */
+async function createFee(fee) {
+  return feeModel.insertFee(fee);
+}
+
+module.exports = { getAll, getOne, getLatest, createFee };

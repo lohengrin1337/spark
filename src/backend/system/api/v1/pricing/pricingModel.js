@@ -11,7 +11,7 @@ const pricingModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const priceLists = await conn.query("SELECT * FROM fee");
+        const priceLists = await conn.query("SELECT * FROM fee ORDER BY fee_id DESC");
         return priceLists;
     } catch (err) {
         console.error("Error, could not fetch price lists from database", err);

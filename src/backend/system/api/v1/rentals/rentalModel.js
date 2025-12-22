@@ -40,7 +40,62 @@ const rentalModel = {
     } finally {
         if (conn) conn.release();
     }
-  }
+  },
+
+  /**
+   * Create a new rental.
+   * @param {number} customer_id
+   * @param {number} bike_id
+   * @param {object} start_point - GeoJSON point object.
+   * @param {number} start_zone
+   * @returns {number} Inserted rental_id.
+   * @throws {Error} If query fails.
+   */
+  async createRental(customer_id, bike_id, start_point, start_zone) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      const result = await conn.query(
+        `INSERT INTO rental (customer_id, bike_id, start_point, start_zone, start_time) 
+         VALUES (?, ?, ?, ?, NOW())`,
+        [customer_id, bike_id, JSON.stringify(start_point), start_zone]
+      );
+      return result.insertId;
+    } catch (err) {
+      console.error("CREATE rental error:", err);
+      throw err;
+    } finally {
+      if (conn) conn.release();
+    }
+  },
+
+  /**
+   * Complete an ongoing rental.
+   * @param {number} id - Rental ID.
+   * @param {object} end_point - GeoJSON point object.
+   * @param {number} end_zone
+   * @param {Array} route - Array of coordinates.
+   * @returns {number} Number of affected rows (1 if successful).
+   * @throws {Error} If query fails.
+   */
+  async completeRental(id, end_point, end_zone, route) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      const result = await conn.query(
+        `UPDATE rental
+         SET end_point = ?, end_time = NOW(), end_zone = ?, route = ?
+         WHERE rental_id = ? AND end_time IS NULL`,
+        [JSON.stringify(end_point), end_zone, JSON.stringify(route), id]
+      );
+      return result.affectedRows;
+    } catch (err) {
+      console.error("COMPLETE rental error:", err);
+      throw err;
+    } finally {
+      if (conn) conn.release();
+    }
+  },
 };
 
 module.exports = rentalModel;

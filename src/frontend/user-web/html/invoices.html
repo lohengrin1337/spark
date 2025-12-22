@@ -1,68 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
-  <title>Spark - Fakturor</title>
+  <title>Admin - Fakturor</title>
+
+  <link rel="stylesheet" href="style/style.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/js/frontend-helpers.js"></script>
+  <script type="module">
+    import { loadInvoices } from '/shared/js/api.js';
+    loadInvoices();
+  </script>
 
   <script type="module" src="/shared/view-component/user-header.js"></script>
 </head>
+
 <body>
-    <user-header style="z-index:1000000000"></user-header>
+  <user-header style="z-index:1000000000000000000"></user-header>
+
 
     <div class="table-wrapper">
-        <table>
-            <h1 class="table-header">Invoices</h1>
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Issued</th>
-                    <th>Due Date</th>
-                    <th>Amount (SEK)</th>
-                    <th>Paid</th>
-                    <th>Relates to</th>
-                </tr>
-            </thead>
-            <tbody id="invoice-table-body">
-            </tbody>
-        </table>
+      <table>
+        <h1 class="table-header table-header">Fakturor</h1>
+
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Kund-Id</th>
+            <th>Uthyrnings-Id</th>
+            <th>Skapad</th>
+            <th>Förfallodatum</th>
+            <th>Status</th>
+            <th>Belopp (SEK)</th>
+            <th>Alternativ</th>
+          </tr>
+        </thead>
+
+        <tbody id="invoice-table-body">
+          <tr>
+            <td colspan="6" style="text-align:center; opacity:.6;">
+              Laddar fakturor...
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </section>
 
-    <script>
-        async function loadInvoices() {
-            try {
-                const res = await fetch('/api/invoices');
-                const invoices = await res.json();
+</main>
 
-                const tbody = document.getElementById('invoice-table-body');
-                tbody.innerHTML = '';
+<script type="module">
+  import { loadInvoices } from '/shared/js/api.js';
 
-                invoices.forEach(inv => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${inv.id}</td>
-                        <td>${inv.issued_date}</td>
-                        <td>${inv.due_date}</td>
-                        <td>${inv.amount}</td>
-                        <td class="pay-cell">
-                            ${inv.paid 
-                                ? '<span class="checkmark">Paid</span>' 
-                                : `<a href="pay.html?id=${inv.id}" class="pay-button">Pay</a>`
-                            }
-                        </td>
-                        <td><a href="#${inv.rental_id}">${inv.rental_id}</a></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (err) {
-                console.error("Failed to load invoices:", err);
-            }
-        }
+  document.addEventListener('DOMContentLoaded', () => {
+    loadInvoices('user');
+  });
+</script>
 
-        loadInvoices();
-    </script>
 </body>
 </html>

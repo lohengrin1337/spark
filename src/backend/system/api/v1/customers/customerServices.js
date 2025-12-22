@@ -19,4 +19,15 @@ async function getCustomerById(id) {
     return customerModel.getOneCustomer(id);
 }
 
-module.exports = { getCustomers, getCustomerById };
+/**
+ * Change/toggle blocked status for a customer
+ * @param {number} id 
+ * @param {boolean} blocked 
+ * @returns {number} affected rows
+ */
+async function changeCustomerBlocked(id, blocked) {
+    return customerModel.toggleCustomerBlocked(id, blocked);
+}
+
+
+module.exports = { getCustomers, getCustomerById, changeCustomerBlocked };

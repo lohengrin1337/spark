@@ -3,7 +3,7 @@
 <head>
   <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
-  <title>Admin Customers</title>
+  <title>Admin - Customers</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
@@ -33,45 +33,29 @@
               <th>Kund-Id</th>
               <th>Email</th>
               <th>Namn</th>
-              <th>Blockerad</th>
+              <th>Spärrad</th>
+              <th>Alternativ</th>
             </tr>
           </thead>
           <tbody id="customers-table-body">
+            <tr>
+              <td colspan="4" style="text-align:center; opacity:.6;">
+                Laddar kunder...
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </section>
   </main>
 
-  <script>
-    async function loadCustomers() {
-      try {
-        const res = await fetch('http://localhost:3000/api/v1/customers');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const customers = await res.json();
+  <script type="module">
+    import { loadCustomers } from '/shared/js/api.js';
 
-        const tbody = document.getElementById('customers-table-body');
-        tbody.innerHTML = '';
-
-        customers.forEach(c => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${c.customer_id}</td>
-            <td>${c.email}</td>
-            <td>${c.name}</td>
-            <td>${c.blocked ? 'Yes' : 'No'}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        console.error("Failed to load customers:", err);
-        document.getElementById('customers-table-body').innerHTML = 
-          `<tr><td colspan="4">Kunde inte ladda kunder: ${err.message}</td></tr>`;
-      }
-    }
-
-    loadCustomers();
-    setInterval(loadCustomers, 10000);
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCustomers();
+      setInterval(loadCustomers, 10000);
+    });
   </script>
 </body>
 </html>

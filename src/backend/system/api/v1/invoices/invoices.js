@@ -59,15 +59,33 @@ router.get('/:id',
  * PUT /:id
  * Mark payment by setting invoice status to paid.
  */
-router.put('/:id', async (req, res) => {
+router.put('/pay/:id', async (req, res) => {
     const invoiceId = parseInt(req.params.id, 10);
     if (isNaN(invoiceId)) return res.status(400).json({ error: "Invalid ID" });
 
     const success = await invoiceServices.payInvoice(invoiceId);
     if (!success) {
-        return res.status(500).json({ error: 'Internal server errrrrr'});
+        return res.status(500).json({ error: 'Internal server error'});
     }
     res.status(200).json({ success: true, message: "Payment recorded" });
+});
+
+/**
+ * PUT /void/:id
+ * Void an invoice by setting its status to 'void'.
+ */
+router.put('/void/:id', async (req, res) => {
+    const invoiceId = parseInt(req.params.id, 10);
+    if (isNaN(invoiceId)) {
+        return res.status(400).json({ error: "Invalid ID" });
+    }
+
+    const success = await invoiceServices.voidInvoice(invoiceId);
+    if (!success) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    res.status(200).json({ success: true, message: "Invoice successfully voided" });
 });
 
 module.exports = router;

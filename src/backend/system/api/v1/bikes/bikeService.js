@@ -20,6 +20,7 @@ async function getBikesByStatus(city, status) {
     }
     return bikeModel.getBikesCityStatus(city, status);
 }
+
 /**
  * Gets one bike from model.
  * @param { number } id bike id
@@ -35,4 +36,14 @@ async function getBikeById(id) {
     return bike;
 }
 
-module.exports = { getAllBikes, getBikeById, getBikesByStatus };
+/**
+ * (Soft) delete one bike
+ * @param { number } id bike id
+ * @returns 1 if successful, 0 if not found
+ */
+async function removeBikeById(id) {
+    return bikeModel.softDeleteBikeById(id);
+}
+
+
+module.exports = { getAllBikes, getBikeById, getBikesByStatus, removeBikeById };

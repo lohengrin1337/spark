@@ -28,4 +28,14 @@ async function payInvoice(id) {
     return invoiceModel.updateInvoice("paid", id);
 }
 
-module.exports = { getInvoices, getInvoiceById, payInvoice };
+/**
+ * Marks an invoice as void.
+ * @param { number } id - Invoice id
+ * @returns { boolean } true if update was successful (one row affected)
+ */
+async function voidInvoice(id) {
+    const affectedRows = await invoiceModel.updateInvoice("void", id);
+    return affectedRows === 1;
+}
+
+module.exports = { getInvoices, getInvoiceById, payInvoice, voidInvoice };

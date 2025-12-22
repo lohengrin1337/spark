@@ -42,40 +42,49 @@ const invoiceModel = {
         if (conn) conn.release();
     }
   },
-  /**
-   * Fetch one invoice by customer id.
-   * @param { number } customerId - customer id.
-   * @returns { object|undefined } invoice objects if found.
-   * @throws { Error } if query fails.
-   */
-  async getInvoiceByCustomer(customerId) {
-    let conn;
-    try {
-        conn = await pool.getConnection();
-        const invoices = await conn.query("SELECT * FROM invoice WHERE customer_id = ?", [customerId]);
-        return invoices;
-    } catch (err) {
-        console.error('');
-        throw err;
-    } finally {
-        if (conn) conn.release();
-    }
-  },
-  
-  /**
-   * Update an invoice
-   * @param { number } id - invoice id.
-  */
- async updateInvoice(status, id) {
-     let conn;
-     try {
-        conn = await pool.getConnection();
-         await conn.query("UPDATE invoice SET status = ? WHERE invoice_id = ?", [status, id]);
+    /**
+     * Fetch one invoice by customer id.
+     * @param { number } customerId - customer id.
+     * @returns { object|undefined } invoice objects if found.
+     * @throws { Error } if query fails.
+     */
+    async getInvoiceByCustomer(customerId) {
+        let conn;
+        try {
+            conn = await pool.getConnection();
+            const invoices = await conn.query("SELECT * FROM invoice WHERE customer_id = ?", [customerId]);
+            return invoices;
+        } catch (err) {
+            console.error('');
+            throw err;
         } finally {
             if (conn) conn.release();
         }
     },
 
+    /**
+     * Updates the status of an existing invoice.
+     * @param { string } status - The new status value (e.g. 'paid', 'void')
+     * @param { number } id     - Invoice id
+     * @returns { number } Number of affected rows (normally 1 on success)
+     * @throws { Error } If query fails
+     */
+    async updateInvoice(status, id) {
+        let conn;
+        try {
+            conn = await pool.getConnection();
+            const result = await conn.query(
+                "UPDATE invoice SET status = ? WHERE invoice_id = ?",
+                [status, id]
+            );
+            return result.affectedRows;
+        } catch (err) {
+            console.error('Invoice status update error:', err);
+            throw err;
+        } finally {
+            if (conn) conn.release();
+        }
+    },
     /**
      * Create a new invoice.
      * @param { number } rentalId - Rental id.
@@ -102,9 +111,7 @@ const invoiceModel = {
             if (conn) conn.release();
         }
     }
-        
+
 };
-
-
 
 module.exports = invoiceModel;

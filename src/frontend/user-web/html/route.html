@@ -22,8 +22,8 @@
     <table>
       <h1 class="table-header">Uthyrning #<span id="rental-id">-</span></h1>
       <tbody>
-        <tr><td>Kund-ID</td><td id="customer-id">-</td></tr>
-        <tr><td>Spark-ID</td><td id="bike-id">-</td></tr>
+        <tr><td>Kund-Id</td><td id="customer-id">-</td></tr>
+        <tr><td>Sparkcykel-Id</td><td id="bike-id">-</td></tr>
         <tr><td>Start</td><td id="start-time">-</td></tr>
         <tr><td>Slut</td><td id="end-time">-</td></tr>
         <tr><td>Varaktighet</td><td id="duration">-</td></tr>
@@ -37,7 +37,7 @@
   
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module">
-    import { getRental } from '/shared/js/api.js';
+    import { getRentalForRouteShowcase } from '/shared/js/api.js';
     import { updateInfo, initMap, updateTileLayer } from '/shared/js/route-helpers.js';
 
     const rentalId = location.hash.substring(1);
@@ -51,8 +51,8 @@
 
     async function loadTrip(id) {
       try {
-        const data = await getRental(id);
-        if (!data.route || data.route.length < 2) throw new Error('Tom rutt');
+        const data = await getRentalForRouteShowcase(id);
+        if (!data.route || data.route.length < 2) throw new Error('Empty route');
 
         updateInfo(data);
         initMap(data);

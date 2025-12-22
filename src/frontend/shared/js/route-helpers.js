@@ -22,7 +22,7 @@ export function updateInfo(data) {
     } else {
       document.getElementById('duration').textContent = '-';
     }
-    document.getElementById('cost').textContent = data.cost != null ? `${data.cost} kr` : '-';
+/*     document.getElementById('cost').textContent = data.cost != null ? `${data.cost} kr` : '-'; */
   }
   
   /**

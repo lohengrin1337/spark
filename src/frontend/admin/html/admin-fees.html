@@ -82,8 +82,8 @@
           <td>${fee.updated ? new Date(fee.updated).toLocaleString() : '-'}</td>
           <td><input type="number" name="start" value="${fee.start}"></td>
           <td><input type="number" name="minute" value="${fee.minute}"></td>
-          <td><input type="number" name="discount" value="${fee.discount}"></td>
           <td><input type="number" name="penalty" value="${fee.penalty}"></td>
+          <td><input type="number" name="discount" value="${fee.discount}"></td>
         `;
         tbody.appendChild(tr);
       }

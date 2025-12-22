@@ -40,4 +40,38 @@ router.get('/:id',
     }  
 });
 
+/**
+ * PUT route that blocks/unblocks a given customer/user given its current blocked status
+ */
+router.put('/block/:id', async (req, res) => {
+    const customerId = parseInt(req.params.id, 10);
+    const { blocked } = req.body;
+
+    if (isNaN(customerId)) {
+        return res.status(400).json({ error: "Invalid customer id" });
+    }
+
+    if (typeof blocked !== 'boolean') {
+        return res.status(400).json({ error: "'blocked' must be true or false" });
+    }
+
+    try {
+        const affectedRows = await customerServices.changeCustomerBlocked(customerId, blocked);
+
+        if (affectedRows === 0) {
+            return res.json({ 
+                success: false, 
+                message: "Error: customer could not be found, or the attempted toggle is moot" 
+            });
+        }
+
+        res.json({
+            success: true,
+            message: blocked ? "Kund spärrad" : "Kund avspärrad"
+        });
+    } catch (err) {
+        console.error("Error toggling customer blocked status:", err);
+        res.status(500).json({ success: false, error: "Error when updating" });
+    }
+});
 module.exports = router;

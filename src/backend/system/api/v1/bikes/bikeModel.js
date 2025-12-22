@@ -13,7 +13,7 @@ const bikeModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const bikes = await conn.query("SELECT * FROM bike;");
+        const bikes = await conn.query("SELECT * FROM bike WHERE status != 'deleted'");
         return bikes;
     } catch (err) {
         console.error("GET /api/bikes error:", err);
@@ -77,7 +77,26 @@ const bikeModel = {
     } finally {
         if (conn) conn.release();
     }
-  }
+  },
+  /**
+     * (Soft) delete bike by id.
+     * @param { number } id - bike id
+     */
+    async softDeleteBikeById(id) {
+        let conn;
+        try {
+            conn = await pool.getConnection();
+
+            const result = await conn.query(
+                "UPDATE bike SET status = 'deleted' WHERE bike_id = ?",
+                [id]
+            );
+            return result.affectedRows;
+        } finally {
+            if (conn) conn.release();
+        }
+    }
+
 };
 
 module.exports = bikeModel;

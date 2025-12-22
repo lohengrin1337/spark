@@ -28,11 +28,11 @@ def fetch_users():
             for uid in range(1, 21) 
         ]
 
-TEMP_PLACEHOLDER_URL = "http://system:3000/api" # noqa: S112
+RENTAL_API = "http://system:3000/api/v1/rentals" # noqa: S112
 
 def fetch_rentals():
     """ Fetch all rentals from the backend API. """
-    url = f"{TEMP_PLACEHOLDER_URL}/rentals"
+    url = f"{RENTAL_API}"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -46,7 +46,7 @@ def create_rental(customer_id, bike_id, start_point, start_zone):
     Create a new rental by sending customer_id, bike_id and start_point.
     Returns the created rental object (including rental_id) on success, None on failure.
     """
-    url = f"{TEMP_PLACEHOLDER_URL}/rentals"
+    url = f"{RENTAL_API}"
     payload = {
         "customer_id": customer_id,
         "bike_id": bike_id,
@@ -84,7 +84,7 @@ def complete_rental(rental_id, end_point, end_zone, route):
         print(f"[API] No route coordinates to send for rental {rental_id}")
         return False
 
-    url = f"{TEMP_PLACEHOLDER_URL}/rentals/{rental_id}"
+    url = f"{RENTAL_API}/{rental_id}"
     payload = {
         "end_point": end_point,
         "end_zone": end_zone,

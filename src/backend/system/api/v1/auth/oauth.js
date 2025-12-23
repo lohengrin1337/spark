@@ -22,7 +22,7 @@ router.get("/github/callback", async (req, res) => {
     // Code from github
     const code = req.query.code;
 
-    console.log("CODE FROM GITHUB:", code);
+    // console.log("CODE FROM GITHUB:", code);
 
     // Exchange code for token
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
@@ -36,7 +36,7 @@ router.get("/github/callback", async (req, res) => {
     });
     const { access_token } = await tokenRes.json();
 
-    console.log("TOKEN FROM GITHUB:", access_token);
+    // console.log("TOKEN FROM GITHUB:", access_token);
 
     // Fetch user profile with token
     const userRes = await fetch("https://api.github.com/user", {
@@ -44,7 +44,7 @@ router.get("/github/callback", async (req, res) => {
     });
     const user = await userRes.json();
 
-    console.log("USER FROM GITHUB:", user);
+    // console.log("USER FROM GITHUB:", user);
 
     // Example of some real user data
     // {
@@ -60,24 +60,27 @@ router.get("/github/callback", async (req, res) => {
         headers: { Authorization: `Bearer ${access_token}` }
     });
     const emails = await emailsRes.json();
-    console.log("emails FROM GITHUB:", emails);
+    // console.log("emails FROM GITHUB:", emails);
 
     // Get the primary email address
     const primaryEmail = emails.find(e => e.primary)?.email;
-    console.log("primaryEmail FROM GITHUB:", primaryEmail);
-    
+    // console.log("primaryEmail FROM GITHUB:", primaryEmail);
+
     // Prepare customer for database
     const customer = {
-        name: user.name || null,
+        name: user.name || user.login,
         email: primaryEmail || null,
         oauth_provider: "github",
         oauth_provider_id: user.id,
     };
-    
-    console.log("CUSTOMER:", customer);
+    console.log(customer);
+    // Register new user or log in existing user
+    const jwtToken = await authService.oauthRegisterOrLogin(customer);
+    res.json({ token: jwtToken });
+    // console.log("CUSTOMER:", customer);
 
     // TOKEN SHOULD BE RETURNED HERE LATER
-    res.json({ customer });
+    // res.json({ customer });
 });
 
 module.exports = router;

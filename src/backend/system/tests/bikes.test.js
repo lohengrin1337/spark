@@ -3,7 +3,7 @@ const request = require('supertest');
 const app = require('../app');
 process.env.NODE_ENV = "test";
 
-describe('bikes endpoint', () => {
+describe.only('bikes endpoint', () => {
 
     it('GET /bikes', async () => {
         const res = await request(app).get('/api/v1/bikes');

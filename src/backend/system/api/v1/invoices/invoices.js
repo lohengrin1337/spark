@@ -18,21 +18,22 @@ router.get('/',
 });
 
 /**
- * GET /:customer_id
- * Response: 200 ok and invoice object or 404 not found.
+ * Gets all invoices belonging to a customer.
+ * Response: 200 ok and invoice array or 404 not found.
  */
-router.get('/:customer_id',
+router.get('/customer/:customer_id',
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const customerId = Number.parseInt(req.params.customer_id, 10);
+    console.log("customer id", customerId);
     try {
-        const invoice = await invoiceServices.getInvoiceByCustomer(customerId);
-        if (!invoice) {
-            return res.status(404).json({ error: 'Invoice not found'});
+        const invoices = await invoiceServices.getInvoicesByCustomer(customerId);
+        if (!invoices) {
+            return res.status(404).json({ error: 'Invoices not found'});
         }
-        res.status(200).json(invoice);
+        res.status(200).json(invoices);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch.'});
     }  

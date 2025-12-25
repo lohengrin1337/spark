@@ -16,7 +16,15 @@ async function getInvoices() {
  * @returns invoice as object (if found)
  */
 async function getInvoiceById(id) {
-    return invoiceModel.getOneInvoice(id);
+    return invoiceModel.getInvoiceById(id);
+}
+/**
+ * Gets one invoice from model.
+ * @param { number } customer_id customer id
+ * @returns invoice as object (if found)
+ */
+async function getInvoicesByCustomer(customer_id) {
+    return invoiceModel.getInvoicesByCustomer(customer_id);
 }
 
 /**
@@ -38,4 +46,4 @@ async function voidInvoice(id) {
     return affectedRows === 1;
 }
 
-module.exports = { getInvoices, getInvoiceById, payInvoice, voidInvoice };
+module.exports = { getInvoices, getInvoiceById, payInvoice, voidInvoice, getInvoicesByCustomer };

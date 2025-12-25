@@ -23,6 +23,7 @@ const invoiceModel = {
         if (conn) conn.release();
     }
   },
+
     /**
    * Fetch one invoice by id.
    * @param { number } id - Invoice id.
@@ -43,20 +44,20 @@ const invoiceModel = {
     }
   },
     /**
-     * Fetch one invoice by customer id.
+     * Fetch invoices by customer id.
      * @param { number } customerId - customer id.
-     * @returns { object|undefined } invoice objects if found.
+     * @returns { object|undefined } invoice array if found.
      * @throws { Error } if query fails.
      */
-    async getInvoiceByCustomer(customerId) {
+    async getInvoicesByCustomer(customerId) {
         let conn;
         try {
             conn = await pool.getConnection();
-            const invoices = await conn.query("SELECT * FROM invoice WHERE customer_id = ?", [customerId]);
+            const invoices = await conn.query(
+                `SELECT i.* FROM invoice AS i
+                JOIN rental AS r ON i.rental_id = r.rental_id
+                WHERE r.customer_id = ?`, [customerId]);
             return invoices;
-        } catch (err) {
-            console.error('');
-            throw err;
         } finally {
             if (conn) conn.release();
         }

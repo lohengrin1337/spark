@@ -1,4 +1,6 @@
 const express = require("express");
+const auth = require("./auth/auth.js");
+const oauth = require("./auth/oauth.js");
 const cities = require("./cities/cities.js");
 const invoices = require("./invoices/invoices.js");
 const customers = require("./customers/customers.js");
@@ -11,6 +13,8 @@ const zones = require("./zones/zones.js");
 // Bundle all api v1 routers together
 const router = express.Router();
 
+router.use("/auth", auth);
+router.use("/oauth", oauth);
 router.use("/cities", cities);
 router.use("/invoices", invoices);
 router.use("/customers", customers);

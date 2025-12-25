@@ -53,7 +53,6 @@ const authModel = {
    * @param { string } email - new customer email.
    * @param { string|null } - customer name if provided.
    * @param { string } password - hashed password.
-   * @returns { number } customer_id of newly inserted customer.
   */
  async saveEmailCustomer(email, name, password) {
     let conn;

@@ -65,7 +65,7 @@ async function customerEmailLogin(email, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = await createJsonWebToken(email, customer.id);
+    const token = createJsonWebToken(email, customer.id);
     return token;
 }
 /**

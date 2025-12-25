@@ -55,12 +55,12 @@ const authModel = {
    * @param { string } password - hashed password.
    * @returns { number } customer_id of newly inserted customer.
   */
- async saveEmailCustomer(email, password, name = null) {
+ async saveEmailCustomer(email, name, password) {
     let conn;
     try {
         conn = await pool.getConnection();
         const newCustomer = await conn.query("INSERT INTO customer (email, name, password) VALUES (?, ?, ?)", [email, name, password]);
-        return newCustomer[0].insertId;
+        return Number(newCustomer.insertId);
     } finally {
         if (conn) conn.release();
     }

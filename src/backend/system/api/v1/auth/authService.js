@@ -32,7 +32,7 @@ async function oauthRegisterOrLogin(customer) {
 async function registerCustomer(email, name, password) {
     const emailInUse = await authModel.getCustomerByEmail(email);
     if (!name) {
-        name = "placeholder"
+        name = "placeholder";
     };
     if (!emailInUse) {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -44,7 +44,7 @@ async function registerCustomer(email, name, password) {
     }
     const err = new Error(
         "This email address is already in use, try another address or log in instead."
-    )
+    );
     err.status = 409;
     err.name = "Conflict";
     throw err;

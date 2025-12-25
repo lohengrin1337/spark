@@ -17,10 +17,10 @@ const authModel = require('./authModel');
  * @returns { object } jwt
  */
 async function oauthRegisterOrLogin(customer) {
-    const oauthCustomer = await authModel.getCustomerByOauth(customer.oauth_provider_id);
+    const oauthCustomer = authModel.getCustomerByOauth(customer.oauth_provider_id);
     let customerId = oauthCustomer.customer_id;
     if (!oauthCustomer) {
-        customerId = await authModel.saveOauthCustomer(customer);
+        customerId = authModel.saveOauthCustomer(customer);
     }
     const token = await createJsonWebToken(customer.email, customerId);
     return token;
@@ -36,10 +36,8 @@ async function registerCustomer(email, name, password) {
     };
     if (!emailInUse) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        // const salt = await bcrypt.genSalt(10);
-        // const hashedPassword = await bcrypt.hash(password, salt);// hash password
         const newCustomerId = await authModel.saveEmailCustomer(email, name, hashedPassword); //saves in db
-        const token = await createJsonWebToken(email, newCustomerId);// get jwt
+        const token = createJsonWebToken(email, newCustomerId);// get jwt
         return token;
     }
     const err = new Error(
@@ -58,7 +56,6 @@ async function registerCustomer(email, name, password) {
  */
 async function customerEmailLogin(email, password) {
     const customer = await authModel.getCustomerByEmail(email);
-    // const salt = await bcrypt.genSalt(10);
     const passwordOk = await bcrypt.compare(password, customer.password);
     if (!passwordOk) {
         const err = new Error(

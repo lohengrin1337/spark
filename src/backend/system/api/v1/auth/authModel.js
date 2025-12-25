@@ -39,9 +39,14 @@ const authModel = {
    * @param { string } email - 
    */
   async getCustomerByEmail(email) {
-    conn = await pool.getConnection();
-    const customer = await conn.query("SELECT * FROM customer WHERE email = ?", [email]);
-    return customer[0];
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const customer = await conn.query("SELECT * FROM customer WHERE email = ?", [email]);
+        return customer[0];
+    } finally {
+        if (conn) conn.release();
+    }
   },
   /** 
    * Insert a customer with email and password.
@@ -50,12 +55,12 @@ const authModel = {
    * @param { string } password - hashed password.
    * @returns { number } customer_id of newly inserted customer.
   */
- async saveEmailCustomer(email, name = null, password) {
+ async saveEmailCustomer(email, password, name = null) {
     let conn;
     try {
         conn = await pool.getConnection();
         const newCustomer = await conn.query("INSERT INTO customer (email, name, password) VALUES (?, ?, ?)", [email, name, password]);
-        return newCustomer.insertId;
+        return newCustomer[0].insertId;
     } finally {
         if (conn) conn.release();
     }

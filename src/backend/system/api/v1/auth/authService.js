@@ -18,7 +18,7 @@ const authModel = require('./authModel');
  */
 async function oauthRegisterOrLogin(customer) {
     const oauthCustomer = await authModel.getCustomerByOauth(customer.oauth_provider_id);
-    const customerId = oauthCustomer.customer_id;
+    let customerId = oauthCustomer.customer_id;
     if (!oauthCustomer) {
         customerId = await authModel.saveOauthCustomer(customer);
     }

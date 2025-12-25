@@ -14,7 +14,6 @@ const authModel = require('./authModel');
  * Registers customer if not already registered.
  * Returns a jwt if successful.
  * @param { object } customer - contains { name, email, oauth_provider, oauth_provicer_id }
- * @returns { object } jwt
  */
 async function oauthRegisterOrLogin(customer) {
     const oauthCustomer = authModel.getCustomerByOauth(customer.oauth_provider_id);
@@ -27,7 +26,6 @@ async function oauthRegisterOrLogin(customer) {
 }
 /**
  * Register a new user with email/name/password.
- * @returns JWT token if successful.
  */
 async function registerCustomer(email, name, password) {
     const emailInUse = await authModel.getCustomerByEmail(email);
@@ -52,7 +50,6 @@ async function registerCustomer(email, name, password) {
  * Customer login with email and password.
  * @param { string } email - customer input email.
  * @param { string } password - customer input password.
- * @returns { object } jwt token if successful.
  */
 async function customerEmailLogin(email, password) {
     const customer = await authModel.getCustomerByEmail(email);

@@ -67,7 +67,6 @@ router.get("/github/callback", async (req, res) => {
     };
     console.log(customer);
     // Register new user or log in existing user.
-    // (Save new user in dabatase, returned token constains )
     const jwtToken = await authService.oauthRegisterOrLogin(customer);
     // Return token.
     res.json({ token: jwtToken });

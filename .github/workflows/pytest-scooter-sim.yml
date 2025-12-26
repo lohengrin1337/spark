@@ -38,11 +38,12 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python dependencies
-        working-directory: src/backend/device/scooter-simulation
         run: |
+          cd src/backend/device/scooter-simulation
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run pytest
-        working-directory: src/backend/device/scooter-simulation
-        run: pytest
+        run: |
+          cd src/backend/device/scooter-simulation
+          pytest

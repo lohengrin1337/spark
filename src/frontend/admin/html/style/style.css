@@ -211,6 +211,11 @@ body {
     color: var(--color-text-primary);
 }
 
+button {
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 1px;
+}
+
 /* _________________________________________________________
 
    HEADER
@@ -963,3 +968,28 @@ admin-header {
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
+
+.login-input,
+.login-button {
+  padding: 0.4rem;
+  margin-bottom: 0.4rem;
+  width: 240px;
+}
+
+.login-button {
+  padding: 0.6rem;
+  font-size: 17px;
+  background-color: var(--lighter-alternative);
+}
+
+.admin-login-form {
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-login-container {
+  display: flex;
+  margin-top: 200px;
+  align-items: center;
+  justify-content: center;
+} 

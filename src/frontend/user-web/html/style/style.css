@@ -545,120 +545,170 @@ user-header{
 
 
 
-  .stylish-popup .leaflet-popup-content-wrapper {
-    background: transparent;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    border-radius: 12px;
-    padding: 0;
-    overflow: hidden;
-  }
+.stylish-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
 
-  .stylish-popup .leaflet-popup-content {
-    margin: 0;
-    width: 160px !important;
-  }
-  
-  #map a[href="rentals.html"] {
-    position: absolute;
-    top: 80px;
-    left: 20px;
-    z-index: 1000;
-    color: #fff;
-    font-size: 16px;
-    text-decoration: none;
-  }
-  
+.stylish-popup .leaflet-popup-content {
+  margin: 0;
+  width: 160px !important;
+}
 
-  #info-box .table-wrapper {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-  }
+#map a[href="rentals.html"] {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  z-index: 1000;
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+}
 
-  .dark-mode #info-box .table-wrapper {
-    background: rgba(30, 30, 30, 0.95);
-  }
 
-  #replay {
-    width: 100%;
-    padding: 14px;
-    margin-top: 10px;
-    border-radius: 5px;
-    background: var(--alt-color);
-    color: white;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-  }
-  
-  #replay:hover {
-    background: var(--background-header);
-  }
+#info-box .table-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
 
-  .stylish-popup .leaflet-popup-content-wrapper {
-    background: transparent;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    border-radius: 12px;
-    padding: 0;
-    overflow: hidden;
-  }
-  
-  .stylish-popup .leaflet-popup-content {
-    margin: 0;
-    width: 160px !important;
-  }
-  
-  .popup-header {
-    background-color: #86fcc1;
-    color: #fff;
-    padding: 12px 16px;
-    border-radius: 12px 12px 0 0;
-    text-align: center;
-    font-weight: bold;
-  }
-  
+.dark-mode #info-box .table-wrapper {
+  background: rgba(30, 30, 30, 0.95);
+}
 
-  .popup-header-end {
-    background-color: #f76565;
-  }
+#replay {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 5px;
+  background: var(--alt-color);
+  color: white;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
 
-  .popup-body {
-    background-color: #fff;
-    padding: 14px 16px;
-    border-radius: 0 0 12px 12px;
-    text-align: center;
-  }
-  
-  .popup-dashboard-box {
-    display: flex;
-    flex-direction: column;
-    padding: 4px;
-  }
-  
-  
-  #info-box {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    z-index: 5000;
-    max-width: 360px;
-  }
-  
+#replay:hover {
+  background: var(--background-header);
+}
 
-  .map-back-link {
-    position: absolute;
-    top: 80px;
-    left: 20px;
-    z-index: 5000;
-    color: #fff;
-    font-size: 16px;
-    text-decoration: none;
-  }
+.stylish-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
 
-  .alt-section {
-    display: flex;
-    justify-content: center;
-    align-items:center;
-    line-height: 1;
-  }
+.stylish-popup .leaflet-popup-content {
+  margin: 0;
+  width: 160px !important;
+}
+
+.popup-header {
+  background-color: #86fcc1;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px 12px 0 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+
+.popup-header-end {
+  background-color: #f76565;
+}
+
+.popup-body {
+  background-color: #fff;
+  padding: 14px 16px;
+  border-radius: 0 0 12px 12px;
+  text-align: center;
+}
+
+.popup-dashboard-box {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+
+#info-box {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 5000;
+  max-width: 360px;
+}
+
+
+.map-back-link {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  z-index: 5000;
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.alt-section {
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  line-height: 1;
+}
+
+.login-input,
+.login-button {
+  padding: 0.4rem;
+  margin-bottom: 0.4rem;
+  width: 240px;
+}
+
+.login-button {
+  padding: 0.6rem;
+  font-size: 16px;
+  background-color: var(--background-header);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.user-login-form {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.user-login-container {
+  display: flex;
+  margin-top: 200px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+} 
+
+.github-oauth-button {
+  position: relative;
+  padding: 0.8rem;
+  margin-bottom: 0.4rem;
+  width: 240px;
+  font-size: 16px;
+  background-color: var(--lighter-alternative);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  align-items: center;
+  justify-content: center;
+}
+
+.github-oauth-icon {
+  position: absolute;
+  left: 10px;
+  width: 28px;
+  bottom: 8px;
+  height: auto;
+}

@@ -699,7 +699,6 @@ user-header{
   width: 240px;
   font-size: 16px;
   background-color: var(--lighter-alternative);
-  background: var(--lighter-alternative);
   color: var(--color-text-secondary);
   font-weight: 600;
   align-items: center;

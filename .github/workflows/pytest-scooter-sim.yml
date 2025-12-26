@@ -29,6 +29,9 @@ jobs:
       PYTHONUNBUFFERED: "1"
 
     steps:
+      - name: Check repo structure
+        run: ls -R src/backend/device/
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -39,11 +42,11 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          cd src/backend/device/scooter-simulation
+          cd spark/src/backend/device/scooter-simulation
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run pytest
         run: |
-          cd src/backend/device/scooter-simulation
+          cd spark/src/backend/device/scooter-simulation
           pytest

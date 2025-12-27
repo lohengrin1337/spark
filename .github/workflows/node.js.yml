@@ -13,22 +13,10 @@ jobs:
   backend-lint-and-test:
 
     runs-on: ubuntu-latest
-    # From example setup by wordpress
-    services:
-      mariadb:
-        image: mariadb:latest
-        ports:
-          - '3306:3306'
-        env:
-          MYSQL_ROOT_PASSWORD: admin
-          MYSQL_USER: user
-          MYSQL_PASSWORD: user
-          MYSQL_DATABASE: spark_test
     strategy:
       matrix:
         node-version: [20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -39,24 +27,21 @@ jobs:
     - name: Install dependencies
       working-directory: src/backend/system
       run: npm install
-    - name: Verify database connection
-      run: |
-        while ! mysqladmin ping -h 127.0.0.1 -P ${{ job.services.mysql.ports[3306] }} --silent; do
-          sleep 1
-        done
-      timeout-minutes: 1
+    - name: start MariaDB
+      run: docker compose up -d mariadb
       # Run ESLint in the system subfolder
     - name: Run ESLint
       working-directory: src/backend/system
       run: npm run lint
       # Will be adding tests for backend here
     - name: Run tests
+      working-directory: src/backend/system
       env:
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
         DB_NAME: spark_test
-        DB_USER: user
-        DB_PASSWORD: user
-      working-directory: src/backend/system
+        DB_USER: root
+        DB_PASSWORD: admin
       run: npm run test
-
+    - name: Stop containers
+      run: docker compose down

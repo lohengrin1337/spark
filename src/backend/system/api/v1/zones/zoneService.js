@@ -9,8 +9,7 @@ const zoneModel = require('./zoneModel');
  * @param { object } filter
  */
 async function getZones(filter) {
-    console.log("service", filter);
-    if (filter == {}) {
+    if (!filter.city && !filter.type) {
         return zoneModel.getAllZones();
     }
     return zoneModel.getFilteredZones(filter);

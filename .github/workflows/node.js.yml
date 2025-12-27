@@ -29,6 +29,13 @@ jobs:
       run: npm install
     - name: start MariaDB
       run: docker compose up -d mariadb
+    - name: Wait for MariaDB to be ready
+      run: |
+        until docker exec spark-mariadb \
+          mariadb -uroot -padmin -e "SELECT 1" spark_db >/dev/null 2>&1; do
+          echo "Waiting for MariaDB..."
+          sleep 2
+        done
       # Run ESLint in the system subfolder
     - name: Run ESLint
       working-directory: src/backend/system
@@ -39,7 +46,7 @@ jobs:
       env:
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
-        DB_NAME: spark_test
+        DB_NAME: spark_db
         DB_USER: root
         DB_PASSWORD: admin
       run: npm run test

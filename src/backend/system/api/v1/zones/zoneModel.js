@@ -12,7 +12,14 @@ const zoneModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const zones = await conn.query("SELECT * FROM spark_zone");
+        const zones = await conn.query(
+            `SELECT 
+            zone_id,
+            city,
+            zone_type,
+            ST_AsText(coordinates) AS coordinates
+            FROM spark_zone
+            ORDER BY city ASC, zone_id ASC`);
         return zones;
     } finally {
         if (conn) conn.release();
@@ -42,8 +49,6 @@ const zoneModel = {
     let conn;
     let query = "SELECT * FROM spark_zone WHERE ";
     const params = [];
-    console.log("model: filter =", filter);
-    console.log(filter.city, filter.type);
     if (filter.city) {
         query += "city = ?";
         params.push(filter.city);

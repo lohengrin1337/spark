@@ -6,7 +6,7 @@ import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } 
  */
 export async function loadRentals() {
     try {
-      const res = await fetch('/api/rentals');
+      const res = await fetch('/api/V1/rentals');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
   
       const rentals = await res.json();

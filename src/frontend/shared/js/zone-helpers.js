@@ -63,7 +63,7 @@ export async function renderAllZones(map) {
     clearAllZones();
   
     try {
-      const res = await fetch('/api/zones');
+      const res = await fetch('/api/v1/zones');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const zones = await res.json();
       console.log(`Loaded ${zones.length} zones`);

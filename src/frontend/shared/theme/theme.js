@@ -13,6 +13,8 @@ export function initTheme() {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     let savedTheme = localStorage.getItem("theme");
     if (!savedTheme) savedTheme = prefersDark ? "dark" : "light";
+
+    updateThemeImages(savedTheme);
   
     html.classList.add(savedTheme + "-mode");
   
@@ -34,6 +36,8 @@ export function initTheme() {
       html.classList.remove(current + "-mode");
       html.classList.add(next + "-mode");
       localStorage.setItem("theme", next);
+
+      updateThemeImages(next);
   
       document.dispatchEvent(new CustomEvent('themeChanged', { 
         detail: { theme: next, tileURL: getTileURL(next) }
@@ -48,4 +52,18 @@ export function initTheme() {
     });
   
     return getTileURL(savedTheme);
+}
+
+/**
+ * Updates all theme-related images on the page
+ * @param {string} theme - light/dark
+ */
+function updateThemeImages(theme) {
+  document
+    .querySelectorAll('img[data-light-src][data-dark-src]')
+    .forEach(img => {
+      img.src = theme === 'dark'
+        ? img.dataset.darkSrc
+        : img.dataset.lightSrc;
+    });
 }

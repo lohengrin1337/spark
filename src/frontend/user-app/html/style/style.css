@@ -208,6 +208,7 @@ header {
     height: 77px;
     width: 100vw;
     text-align: center;
+    z-index: 10000 !important;
     transition: background-color 0.4s ease-in;
 }
 
@@ -237,6 +238,16 @@ _________________________________________________________ */
     animation: spark-crash-bounce 1.2s ease forwards 0.6s;
     top: var(--unit-0-5);
     left: 12rem;
+}
+
+
+.title-app-mobile {
+  position: absolute;
+  height: 50px;
+  width: auto;
+  left: 92%;
+  top: 5%;
+  font-size: 15px;
 }
 
 .invoice-spark,
@@ -274,6 +285,47 @@ _________________________________________________________ */
 @keyframes blink {
     0%, 50%, 100% { opacity: 0; }
 }
+
+
+
+@media (max-width: 720px) {
+  .title {
+    font-size: 3.5rem;
+  }
+  .title-spark,
+  .invoice-spark,
+  .user-spark {
+    max-height: 70px;
+  }
+
+  .title-spark {
+    left: 94%;
+  }
+}
+
+
+
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 3rem;
+  }
+  .title-spark,
+  .invoice-spark,
+  .user-spark {
+    max-height: 50px;
+  }
+
+  .title-spark {
+    left: 98%;
+    height: 60px;
+  }
+}
+
+
+
+
+
 
 /* _________________________________________________________
 
@@ -526,14 +578,14 @@ _________________________________________________________ */
     width: 60px;
 }
 
-
+/* 
 user-header{
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 2000;
-}
+} */
 
 #map {
   position: absolute;
@@ -562,7 +614,6 @@ user-header{
   position: absolute;
   top: 80px;
   left: 20px;
-  z-index: 1000;
   color: #fff;
   font-size: 16px;
   text-decoration: none;

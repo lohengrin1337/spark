@@ -3,7 +3,13 @@
 <head>
   <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
-  <title>Spark - Hem</title>
+  <title>Spark App- Hem</title>
+
+  <script type="module" src="./manifest-app.js"></script>
+  <manifest-app></manifest-app>
+
+  <link rel="icon" href="/shared/img/favicon.ico" sizes="any">
+
 
     <!-- Comment this line in when working on auth: -->
     <!-- <script type="module" src="/shared/auth/user-check.js"></script> -->
@@ -12,19 +18,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
 
-  <script type="module" src="/shared/view-component/user-header.js"></script>
+
+  <script type="module" src="/shared/view-component/user-app-header.js"></script>
 </head>
 <body>
-    <user-header style="z-index:1000000000"></user-header>
+    <user-app-header style="z-index:1000000000"></user-app-header>
 
     
     <div class="intro-text"><h1>Click the invoice-icon in the upper-left.</h1>
         <br>
-        <h1>Alrighty. We're up and running with this tentative Docker-setup, to be fine tuned, or discarded,
-            if a better beginning template can be conceived of.</h1>
+        <h1>App map-heavy index-view goes here.</h1>
         <br>
 
-        <h2><a href="rentals.html">User Rentals</a></h2>
+        <h2><a href="user-app-rentals.html">User Rentals</a></h2>
 
 </body>
 </html>

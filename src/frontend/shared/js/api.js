@@ -4,70 +4,71 @@ import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } 
  * Fetches all rentals from the API and populates the rental table in the DOM.
  * @async
  */
-export async function loadRentals() {
-    try {
-      const res = await fetch('/api/v1/rentals');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  
-      const rentals = await res.json();
-      const tbody = document.getElementById('rental-table-body');
-      tbody.innerHTML = '';
-  
-      if (!rentals.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" style="text-align:center; opacity: 0.6;">
-              Inga uthyrningar ännu...
-            </td>
-          </tr>
-        `;
-        return;
-      }
-  
-      rentals.forEach(rent => {
-        const startDate = new Date(rent.start_time);
-        const endDate   = rent.end_time ? new Date(rent.end_time) : null;
-  
-        let duration = '-';
-        let cost = '-';
-  
-        if (endDate) {
-          const diffMs = endDate - startDate;
-          const minutes = diffMs / 60000;
-  
-          duration = Math.floor(minutes) + ' min';
-  
-        }
-  
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${rent.rental_id}</td>
-          <td>${rent.customer_id}</td>
-          <td>${startDate.toLocaleString()}</td>
-          <td>${endDate ? endDate.toLocaleString() : 'Pågår'}</td>
-          <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
-          <td>${translateZoneToSwedish(rent.end_zone) ?? '-'}</td>
-          <td>${duration}</td>
-          <td>
-            ${endDate
-              ? `<a href="route.html#${rent.rental_id}">Se på karta</a>`
-              : '-'}
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-  
-    } catch (err) {
-      console.error(err);
-      document.getElementById('rental-table-body').innerHTML = `
+export async function loadRentals(source = 'user-web') {
+  try {
+    const res = await fetch('/api/v1/rentals');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const rentals = await res.json();
+    const tbody = document.getElementById('rental-table-body');
+    tbody.innerHTML = '';
+
+    if (!rentals.length) {
+      tbody.innerHTML = `
         <tr>
-          <td colspan="8" style="color:red;">
-            Kunde inte ladda uthyrningar
+          <td colspan="8" style="text-align:center; opacity: 0.6;">
+            Inga uthyrningar ännu...
           </td>
         </tr>
       `;
+      return;
     }
+
+    rentals.forEach(rent => {
+      const startDate = new Date(rent.start_time);
+      const endDate   = rent.end_time ? new Date(rent.end_time) : null;
+
+      let duration = '-';
+      let cost = '-';
+
+      if (endDate) {
+        const diffMs = endDate - startDate;
+        const minutes = diffMs / 60000;
+
+        duration = Math.floor(minutes) + ' min';
+
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${rent.rental_id}</td>
+        <td>${rent.customer_id}</td>
+        <td>${startDate.toLocaleString()}</td>
+        <td>${endDate ? endDate.toLocaleString() : 'Pågår'}</td>
+        <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
+        <td>${translateZoneToSwedish(rent.end_zone) ?? '-'}</td>
+        <td>${duration}</td>
+        <td>
+          ${endDate
+            ? `<a href="${source === 'user-app' ? 'user-app-route.html' : 'route.html'}#${rent.rental_id}">Se på karta</a>`
+            : '-'}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('rental-table-body').innerHTML = `
+      <tr>
+        <td colspan="8" style="color:red;">
+          Kunde inte ladda uthyrningar
+        </td>
+      </tr>
+    `;
+  }
 }
+
 
 /**
  * Fetches a single rental by ID from the API.

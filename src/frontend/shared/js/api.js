@@ -6,7 +6,7 @@ import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } 
  */
 export async function loadRentals() {
     try {
-      const res = await fetch('/api/V1/rentals');
+      const res = await fetch('/api/v1/rentals');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
   
       const rentals = await res.json();
@@ -165,8 +165,14 @@ export async function loadInvoices(mode = 'admin') {
               Betala
             </a>
           `;
+        } else if (mode === 'user-app') {
+          actionsCell = `
+            <a href="user-app-pay.html?id=${inv.invoice_id}" class="pay-button">
+              Betala
+            </a>
+          `;
         }
-      }
+      };
       // If finalized (paid or void) → keep actionsCell as '-'
 
       const tr = document.createElement('tr');

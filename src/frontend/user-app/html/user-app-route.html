@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spark - Ruttvisning</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+  <!-- App-modified route -->
+
+  <title>Spark - Ruttvisning - App</title>
 
   <link rel="stylesheet" href="/shared/style/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
 
-  <script type="module" src="/shared/view-component/user-header.js"></script>
+  <script type="module" src="/shared/view-component/user-app-header.js"></script>
 </head>
 <body>
 
-  <user-header></user-header>
+  <user-app-header></user-app-header>
 
   <div id="map">
-    <a href="rentals.html" style="position: absolute; top: 5px; right: 5px;"><button class="back-button">⇐ Tillbaka</button></a>
+    <a href="user-app-rentals.html" class="back-button">⇐ Tillbaka</a>
   </div>
 
   <div id="info-box" class="table-wrapper">
@@ -37,17 +39,20 @@
   </div>
   
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script type="module">
+
+    /* Slightly modified */
     import { getRentalForRouteShowcase } from '/shared/js/api.js';
     import { updateInfo, initMap, updateTileLayer } from '/shared/js/route-helpers.js';
 
-    const rentalId = location.hash.substring(1);
+    const appRentalId = location.hash.substring(1);
 
-    if (!rentalId) {
+    if (!appRentalId) {
       document.getElementById('info-box').innerHTML =
         '<div class="error-msg">Ingen rutt vald</div>';
     } else {
-      loadTrip(rentalId);
+      loadTrip(appRentalId);
     }
 
     async function loadTrip(id) {

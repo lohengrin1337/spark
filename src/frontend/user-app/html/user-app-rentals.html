@@ -4,18 +4,16 @@
   <meta charset="UTF-8">
   <title>Spark - Uthyrningar</title>
 
-  <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="/shared/style/style.css">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
   <script type="module" src="/shared/js/frontend-helpers.js"></script>
   <script type="module">
     import { loadRentals } from '/shared/js/api.js';
-    loadRentals();
+    loadRentals('user-app');
   </script>
 <script type="module" src="/shared/view-component/user-app-header.js"></script>
 </head>
@@ -23,34 +21,34 @@
 <body>
 
   <user-app-header></user-app-header>
+<div class="non-map-container">
+  <div class="table-wrapper">
+    <table>
+      <h1 class="table-header">Uthyrningar</h1>
+      <h2>(Kommer senare innehålla bara den givna användarens resor, inte alla. Styling ur synk, ska omorganisera elementen lite.)</h2>
 
-<div class="table-wrapper">
-  <table>
-    <h1 class="table-header">Uthyrningar</h1>
-    <h2>(Kommer senare innehålla bara den givna användarens resor, inte alla. Styling ur synk, ska omorganisera elementen lite.)</h2>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Kund-ID</th>
+          <th>Startad</th>
+          <th>Avslutad</th>
+          <th>Startzon</th>
+          <th>Slutzon</th>
+          <th>Varaktighet</th>
+          <th>Rutt</th>
+        </tr>
+      </thead>
 
-    <thead>
-      <tr>
-        <th>Id</th>
-        <th>Startad</th>
-        <th>Avslutad</th>
-        <th>Startzon</th>
-        <th>Slutzon</th>
-        <th>Varaktighet</th>
-        <th>Kostnad (SEK)</th>
-        <th>Rutt</th>
-      </tr>
-    </thead>
-
-    <tbody id="rental-table-body">
-      <tr>
-        <td colspan="8" style="text-align:center; opacity:.6;">
-          Laddar uthyrningar...
-        </td>
-      </tr>
-    </tbody>
-  </table>
+      <tbody id="rental-table-body">
+        <tr>
+          <td colspan="8" style="text-align:center; opacity:.6;">
+            Laddar uthyrningar...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
-
 </body>
 </html>

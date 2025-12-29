@@ -12,8 +12,8 @@ class AdminHeader extends HTMLElement {
         <img class="title-sun" src="img/sun.svg" alt="Toggle theme">
       </button>
 
-      <h1 class="title">
-        spark<span class="title-blink">_</span>
+      <h1 class="title admin-title">
+        spark
         <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter">
       </h1>
 

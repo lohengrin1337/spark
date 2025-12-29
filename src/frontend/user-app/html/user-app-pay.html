@@ -9,10 +9,10 @@
 
   <title>Spark - Betala</title>
 
-  <script type="module" src="/shared/view-component/user-header.js"></script>
+  <script type="module" src="/shared/view-component/user-app-header.js"></script>
 </head>
 <body>
-    <user-header style="z-index:1000000000000000000"></user-header>
+    <user-app-header style="z-index:1000000"></user-app-header>
     <div class="non-map-container">
         <div class="pay-wrapper">
             <a href="#" id="swish-link">
@@ -41,7 +41,7 @@
             const data = await res.json();
 
             if (data.success) {
-                window.location.href = "simulate-payment.html";
+                window.location.href = "user-app-sim-pay.html";
             } else {
                 alert(data.error || "Payment failed");
             }

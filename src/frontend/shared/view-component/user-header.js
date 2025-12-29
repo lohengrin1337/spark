@@ -12,9 +12,9 @@ class UserHeader extends HTMLElement {
         <img class="title-sun" src="/shared/img/sun.svg" alt="Toggle theme">
       </button>
 
-      <h1 class="title">
+      <h1 class="title uw-title">
         spark<span class="title-blink">_</span>
-        <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter">
+        <img class="title-spark uw-spark" src="img/scooter-nobg.svg" alt="Spark Scooter">
       </h1>
 
       <nav>

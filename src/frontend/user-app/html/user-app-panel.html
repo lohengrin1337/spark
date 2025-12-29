@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Fakturor</title>
+  <title>Användare - Mina Sidor</title>
 
   <link rel="stylesheet" href="/shared/style/style.css">
 
@@ -16,39 +16,38 @@
     loadInvoices();
   </script>
 
-  <script type="module" src="/shared/view-component/user-header.js"></script>
+  <script type="module" src="/shared/view-component/user-app-header.js"></script>
 </head>
 
 <body>
-  <user-header style="z-index:1000000000000000000"></user-header>
+  <user-app-header style="z-index:10000000"></user-app-header>
 
   <div class="non-map-container">
-    <div class="table-wrapper">
-      <table>
-        <h1 class="table-header table-header">Fakturor</h1>
+    <div class="user-panel">
+      <label>Namn</label>
+      <input class="user-form" type="text" value="User" readonly>
 
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Kund-Id</th>
-            <th>Uthyrnings-Id</th>
-            <th>Skapad</th>
-            <th>Förfallodatum</th>
-            <th>Status</th>
-            <th>Belopp (SEK)</th>
-            <th>Alternativ</th>
-          </tr>
-        </thead>
-
-        <tbody id="invoice-table-body">
-          <tr>
-            <td colspan="6" style="text-align:center; opacity:.6;">
-              Laddar fakturor...
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <label>Email</label>
+      <input class="user-form" type="text" value="user@user.se" readonly>
+      
+      <label>Lösenord</label>
+      <input class="user-form" type="password" value="P@ssword" readonly>
     </div>
+
+    <div class="user-form-links">
+      <a href="index.html">
+        <img class="map-img" src="/shared/img/map2.svg" alt="Map Svg">
+      </a>
+
+      <a href="user-app-rentals.html">
+        <img class="trip-img" src="/shared/img/trip.svg" alt="Trip Svg">
+      </a>
+
+        <a href="user-app-invoices.html">
+          <img class="invoice-img" src="/shared/img/invoice.svg" alt="Invoice Svg">
+        </a>
+    </div>
+
   </div>
 
 

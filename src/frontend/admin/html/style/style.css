@@ -227,6 +227,7 @@ header {
     width: 100vw;
     text-align: center;
     transition: background-color 0.4s ease-in;
+    font-family: 'DM Sans', sans-serif;
 }
 
 header:hover {
@@ -244,8 +245,13 @@ _________________________________________________________ */
     display: inline-block;
     white-space: nowrap;
     color: var(--color-text-primary);
+    margin-top: 2px;
+    font-family: 'DM Sans', sans-serif;
 }
 
+.title h1 {
+  font-family: 'DM Sans', sans-serif;
+}
 
 .title-spark {
     position: absolute;
@@ -254,8 +260,14 @@ _________________________________________________________ */
     opacity: 0;
     pointer-events: none;
     animation: spark-crash-bounce 1.2s ease forwards 0.6s;
-    top: var(--unit-0-5);
+    top: 2px;
     left: 12rem;
+}
+
+.admin-title {
+  font-size: 75px !important;
+  font-weight: 870 !important;
+  letter-spacing: none !important;
 }
 
 .invoice-spark {
@@ -503,7 +515,7 @@ _________________________________________________________ */
 
   .grid {
     grid-template-columns: 1fr;
-    grid-template-rows: 64px auto 1fr 50px;
+    grid-template-rows: 75px auto 1fr 50px;
     grid-template-areas:
       "header"
       "sidebar"
@@ -816,6 +828,12 @@ _________________________________________________________ */
   color: #222;
 }
 
+
+.leaflet-marker-icon {
+  z-index: 1000000000 !important;
+}
+
+
 /* _________________________________________________________
 
    Status indicators
@@ -985,6 +1003,7 @@ admin-header {
 .admin-login-form {
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 .admin-login-container {

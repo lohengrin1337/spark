@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Fakturor</title>
+  <title>Mina Sidor - Fakturor</title>
 
   <link rel="stylesheet" href="/shared/style/style.css">
 
@@ -16,11 +16,11 @@
     loadInvoices();
   </script>
 
-  <script type="module" src="/shared/view-component/user-header.js"></script>
+  <script type="module" src="/shared/view-component/user-app-header.js"></script>
 </head>
 
 <body>
-  <user-header style="z-index:1000000000000000000"></user-header>
+  <user-app-header style="z-index:1000000000000000000"></user-app-header>
 
   <div class="non-map-container">
     <div class="table-wrapper">
@@ -57,7 +57,7 @@
   import { loadInvoices } from '/shared/js/api.js';
 
   document.addEventListener('DOMContentLoaded', () => {
-    loadInvoices('user');
+    loadInvoices('user-app');
   });
 </script>
 

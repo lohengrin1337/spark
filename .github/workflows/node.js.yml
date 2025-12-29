@@ -13,12 +13,10 @@ jobs:
   backend-lint-and-test:
 
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -29,13 +27,28 @@ jobs:
     - name: Install dependencies
       working-directory: src/backend/system
       run: npm install
-
+    - name: start MariaDB
+      run: docker compose up -d mariadb
+    - name: Wait for MariaDB to be ready
+      run: |
+        until docker exec spark-mariadb \
+          mariadb -uroot -padmin -e "SELECT 1" spark_db >/dev/null 2>&1; do
+          echo "Waiting for MariaDB..."
+          sleep 2
+        done
       # Run ESLint in the system subfolder
     - name: Run ESLint
       working-directory: src/backend/system
       run: npm run lint
       # Will be adding tests for backend here
-    # - name: Run tests
-    #   working-directory: src/backend/system
-    #   run: npm run test
-
+    - name: Run tests
+      working-directory: src/backend/system
+      env:
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_NAME: spark_db
+        DB_USER: root
+        DB_PASSWORD: admin
+      run: npm run test
+    - name: Stop containers
+      run: docker compose down

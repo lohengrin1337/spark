@@ -5,7 +5,7 @@ const pool = require('../../../database/database');
 
 const cityModel = {
   /**
-   * Fetch all citys in database ordered by issued date.
+   * Fetch all citys in database.
    * @returns { Array } Array of city objects.
    * @throws { Error } If the query fails.
    */
@@ -15,15 +15,12 @@ const cityModel = {
         conn = await pool.getConnection();
         const cities = await conn.query("SELECT * FROM city");
         return cities;
-    } catch (err) {
-        console.error("GET /api/cities error:", err);
-        throw err;
     } finally {
         if (conn) conn.release();
     }
   },
   /**
-   * Fetch one city by id.
+   * Fetch one city.
    * @param { string } name city name
    * @returns { object|undefined } city object if found.
    * @throws { Error } if query fails.
@@ -34,9 +31,6 @@ const cityModel = {
         conn = await pool.getConnection();
         const city = await conn.query("SELECT * FROM city WHERE name = ?", [name]);
         return city[0];
-    } catch (err) {
-        console.error('');
-        throw err;
     } finally {
         if (conn) conn.release();
     }

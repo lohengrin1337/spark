@@ -28,5 +28,8 @@
     "eslint": "^9.39.2",
     "jest": "^30.2.0",
     "supertest": "^7.1.4"
+  },
+  "jest": {
+    "setupFilesAfterEnv": ["./tests/jest.setup.js"]
   }
 }

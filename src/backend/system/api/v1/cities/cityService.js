@@ -4,7 +4,7 @@ const cityModel = require('./cityModel.js');
 
 /**
  * Gets all citys from model.
- * @returns Array of citys
+ * @returns Array of cities
  */
 async function getCities() {
     return cityModel.getAllCities();
@@ -13,10 +13,16 @@ async function getCities() {
 /**
  * Gets one city from model.
  * @param { string } name city name
- * @returns city as object (if found)
+ * @returns city as object or 404 not found
  */
 async function getOneCity(name) {
-    return cityModel.getOneCity(name);
+    const city = await cityModel.getOneCity(name);
+    if (!city) {
+        const err = new Error('City not found');
+        err.status = 404;
+        throw err;
+    }
+    return city;
 }
 
 module.exports = { getCities, getOneCity };

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const cityService = require('./cityService');
 
 /**
- * GET cities
+ * GET all cities
  * Response: 200 ok and array of cities objects.
  */
 router.get('/', async (req, res) => {
@@ -10,6 +10,10 @@ router.get('/', async (req, res) => {
     res.status(200).json(cities);
 });
 
+/**
+ * GET one city
+ * Response: 200 ok and city object
+ */
 router.get('/:name', async (req, res) => {
     const cityName = req.params.name;
     const city = await cityService.getOneCity(cityName);

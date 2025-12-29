@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spark - Ruttvisning</title>
+  <!-- App-modified route -->
+
+  <title>Spark - Ruttvisning - App</title>
 
   <link rel="stylesheet" href="/shared/style/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -37,17 +39,20 @@
   </div>
   
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script type="module">
+
+    /* Slightly modified */
     import { getRentalForRouteShowcase } from '/shared/js/api.js';
     import { updateInfo, initMap, updateTileLayer } from '/shared/js/route-helpers.js';
 
-    const rentalId = location.hash.substring(1);
+    const appRentalId = location.hash.substring(1);
 
-    if (!rentalId) {
+    if (!appRentalId) {
       document.getElementById('info-box').innerHTML =
         '<div class="error-msg">Ingen rutt vald</div>';
     } else {
-      loadTrip(rentalId);
+      loadTrip(appRentalId);
     }
 
     async function loadTrip(id) {

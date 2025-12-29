@@ -790,11 +790,11 @@ bottom: 0;
 }
 
 .user-panel {
+  margin: 0 auto;
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin: 0 auto;
   padding: 2rem;
   padding-top: 3.2rem;
   justify-content: center;

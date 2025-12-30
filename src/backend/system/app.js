@@ -14,6 +14,9 @@ app.use(cors({
 }));
 
 app.use("/api/v1", apiV1);
+const oauth = require("./api/v1/auth/oauth");
+
+app.use("/oauth", oauth);
 
 // Catch undefined routes
 app.use((req, res, next) => {

@@ -2,7 +2,6 @@
 // Handles database queries for invoice data.
 
 const pool = require('../../../database/database');
-const { getInvoiceById } = require('./invoiceServices');
 
 const invoiceModel = {
   /**

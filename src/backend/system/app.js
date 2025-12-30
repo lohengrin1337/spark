@@ -23,6 +23,7 @@ app.use((req, res, next) => {
     next(err);
 });
 
+// Error handler (async with 'express-async-errors')
 app.use((err, req, res, next) => {
     if (process.env.NODE_ENV !== 'test') {
         console.error(err);

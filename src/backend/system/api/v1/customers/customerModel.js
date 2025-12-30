@@ -93,7 +93,8 @@ const customerModel = {
 
       return result.affectedRows;
     } catch (err) {
-      throw err;
+        err.message = "Something went wrong";
+        throw err;
     } finally {
       if (conn) conn.release();
     }

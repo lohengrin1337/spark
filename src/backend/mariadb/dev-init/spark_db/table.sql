@@ -5,6 +5,7 @@
 --
 -- DROP TABLES
 --
+DROP TABLE IF EXISTS `third_party`;
 DROP TABLE IF EXISTS `admin_account`;
 DROP TABLE IF EXISTS `fee`;
 DROP TABLE IF EXISTS `spark_zone`;
@@ -20,6 +21,14 @@ DROP TABLE IF EXISTS `bike_status`;
 --
 -- CREATE TABLES
 --
+
+CREATE TABLE `third_party`
+(
+    `third_party_id` VARCHAR(100),
+    `password` CHAR(60),
+
+    PRIMARY KEY (`third_party_id`)
+);
 
 CREATE TABLE `bike_status`
 (

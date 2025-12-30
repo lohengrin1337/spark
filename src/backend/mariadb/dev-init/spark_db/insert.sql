@@ -6,6 +6,7 @@
 -- Delete
 --
 
+DELETE FROM `third_party`;
 DELETE FROM `admin_account`;
 DELETE FROM `fee`;
 DELETE FROM `spark_zone`;
@@ -29,6 +30,19 @@ SHOW VARIABLES LIKE 'local_infile';
 --
 
 -- LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/spark_db/admin_account'
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/third_party.csv'
+INTO TABLE third_party
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+        TERMINATED BY '\n'
+IGNORE 1 LINES
+(`third_party_id`, `password`)
+;
 
 
 LOAD DATA INFILE '/docker-entrypoint-initdb.d/spark_db/data/admin_account.csv'

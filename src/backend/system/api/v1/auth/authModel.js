@@ -67,7 +67,7 @@ const authModel = {
    * Get third party
    * @param { string } thirdPartyId - third party username
    */
-  async getAdmin(thirdPartyId) {
+  async getThirdParty(thirdPartyId) {
     let conn;
     try {
         conn = await pool.getConnection();

@@ -48,7 +48,7 @@ router.post('/admin-login', async (req, res) => {
  * POST third-party-login
  * Third party login
  */
-router.post('/third_party-login', async (req, res) => {
+router.post('/third-party-login', async (req, res) => {
     const thirdParty = req.body.thirdPartyId;
     const password = req.body.password;
     // auth service:

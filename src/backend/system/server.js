@@ -10,15 +10,6 @@ const app = require('./app.js');
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-// const pool = mariadb.createPool({
-//   host: 'mariadb', 
-//   user: 'root',
-//   password: 'admin',
-//   database: 'spark_db',
-//   connectionLimit: 10,
-// });
-
-
 // __________________________________________________________________________
 //
 // Herman's intrusion starts here, will tidy up later ..........

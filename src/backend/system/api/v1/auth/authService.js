@@ -74,9 +74,7 @@ async function customerEmailLogin(email, password) {
  */
 async function adminLogin(adminId, password) {
     const admin = await authModel.getAdmin(adminId);
-    console.log(admin);
-    // const passwordOk = await bcrypt.compare(password, admin.password);
-    const passwordOk = true;
+    const passwordOk = await bcrypt.compare(password, admin.password);
     if (!passwordOk) {
         const err = new Error(
             "The input password does not match, please type better."

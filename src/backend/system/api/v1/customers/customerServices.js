@@ -1,4 +1,5 @@
 // customer services
+const bcrypt = require('bcryptjs');
 
 const customerModel = require('./customerModel.js');
 
@@ -20,6 +21,30 @@ async function getCustomerById(id) {
 }
 
 /**
+ * Update a customer
+ * @param {string} id 
+ * @param {string} name 
+ * @param {string|null} password 
+ */
+async function updateCustomer(id, name, password) {
+    const fields = [];
+    const values = [];
+
+    if (name) {
+        fields.push("name");
+        values.push(name);
+    }
+
+    if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        fields.push("password");
+        values.push(hashedPassword);
+    }
+
+    await customerModel.updateCustomer(id, fields, values);
+}
+
+/**
  * Change/toggle blocked status for a customer
  * @param {number} id 
  * @param {boolean} blocked 
@@ -30,4 +55,4 @@ async function changeCustomerBlocked(id, blocked) {
 }
 
 
-module.exports = { getCustomers, getCustomerById, changeCustomerBlocked };
+module.exports = { getCustomers, getCustomerById, updateCustomer, changeCustomerBlocked };

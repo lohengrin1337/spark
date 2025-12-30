@@ -41,6 +41,26 @@ router.get('/:id',
 });
 
 /**
+ * PUT /:id
+ * Update a customer
+ * Response: 200 ok or 404 not found.
+ * Admin can update all, user just their self
+ */
+router.put('/:id',
+    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
+    //validateInvoice, //validerar requesten
+    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
+    async (req, res) => {
+    const customerId = req.params.id;
+    const { name, password = null } = req.body;
+    await customerServices.updateCustomer(customerId, name, password);
+    res.json({
+        success: true,
+        message: "Customer updated"
+    });
+});
+
+/**
  * PUT route that blocks/unblocks a given customer/user given its current blocked status
  */
 router.put('/block/:id', async (req, res) => {

@@ -16,7 +16,7 @@ const customerModel = {
         const customers = await conn.query("SELECT * FROM customer");
         return customers;
     } catch (err) {
-        console.error("GET /api/customers error:", err);
+        err.message = "Failed to fetch customers";
         throw err;
     } finally {
         if (conn) conn.release();
@@ -35,7 +35,7 @@ const customerModel = {
         const customer = await conn.query("SELECT * FROM customer WHERE customer_id = ?", [id]);
         return customer[0];
     } catch (err) {
-        console.error('');
+        err.message = `Failed to fetch customer with id ${id}`;
         throw err;
     } finally {
         if (conn) conn.release();
@@ -63,22 +63,13 @@ const customerModel = {
 
       values.push(id);
 
-      console.log("sql", sql);
-      console.log("values", values);
-      
-
       const result = await conn.query(sql, values);
 
-      if (!result.affectedRows === 1) {
-        const err = new Error(`Customer with id '${id}' was not found`);
-        err.name = "CustomerNotFoundError";
-        err.status = 400;
-        throw err;
-      }
-
       return result.affectedRows;
+
     } catch (err) {
-      throw err;
+        err.message = "Something went wrong";
+        throw err;
     } finally {
       if (conn) conn.release();
     }
@@ -88,25 +79,24 @@ const customerModel = {
      * Toggle a customer's blocked status.
      * @param {number} id - Customer id.
      * @param {boolean} blocked - Desired blocked state (true = blocked, false = unblocked).
-     * @returns {number} Number of affected rows (1 if updated, 0 if no change).
      * @throws {Error} If query fails.
      */
   async toggleCustomerBlocked(id, blocked) {
     let conn;
     try {
-      conn = await pool.getConnection();
+        conn = await pool.getConnection();
 
-      const result = await conn.query(
+        const result = await conn.query(
         "UPDATE customer SET blocked = ? WHERE customer_id = ?",
         [blocked, id]
-      );
+        );
 
-      return result.affectedRows;
+        return result.affectedRows;
     } catch (err) {
-      console.error("Error in toggleCustomerBlocked:", err);
-      throw err;
+        err.message = "Something went wrong";
+        throw err;
     } finally {
-      if (conn) conn.release();
+        if (conn) conn.release();
     }
   }
 };

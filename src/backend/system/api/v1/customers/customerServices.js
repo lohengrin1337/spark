@@ -41,7 +41,14 @@ async function updateCustomer(id, name, password) {
         values.push(hashedPassword);
     }
 
-    await customerModel.updateCustomer(id, fields, values);
+    const updatedRows = await customerModel.updateCustomer(id, fields, values);
+    if (updatedRows == 0) {
+        const err = new Error(`Customer with id ${id} not found.`);
+        err.status = 404;
+        throw err;
+    }
+
+    return updatedRows;
 }
 
 /**
@@ -51,7 +58,7 @@ async function updateCustomer(id, name, password) {
  * @returns {number} affected rows
  */
 async function changeCustomerBlocked(id, blocked) {
-    return customerModel.toggleCustomerBlocked(id, blocked);
+    return await customerModel.toggleCustomerBlocked(id, blocked);
 }
 
 

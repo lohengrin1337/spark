@@ -22,7 +22,6 @@ const cityModel = {
   /**
    * Fetch one city.
    * @param { string } name city name
-   * @returns { object|undefined } city object if found.
    * @throws { Error } if query fails.
    */
   async getOneCity(name) {

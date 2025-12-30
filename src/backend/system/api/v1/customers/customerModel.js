@@ -41,6 +41,49 @@ const customerModel = {
         if (conn) conn.release();
     }
   },
+
+  /**
+   * Update customer (name and password)
+   * @param {string} id customer id
+   * @param {array} fields column names
+   * @param {array} values values
+   */
+  async updateCustomer(id, fields, values) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+
+      fields = fields.map(f => f + " = ?");
+
+      const sql = `
+        UPDATE customer
+        SET ${fields.join(", ")}
+        WHERE customer_id = ?
+      `;
+
+      values.push(id);
+
+      console.log("sql", sql);
+      console.log("values", values);
+      
+
+      const result = await conn.query(sql, values);
+
+      if (!result.affectedRows === 1) {
+        const err = new Error(`Customer with id '${id}' was not found`);
+        err.name = "CustomerNotFoundError";
+        err.status = 400;
+        throw err;
+      }
+
+      return result.affectedRows;
+    } catch (err) {
+      throw err;
+    } finally {
+      if (conn) conn.release();
+    }
+  },
+
   /**
      * Toggle a customer's blocked status.
      * @param {number} id - Customer id.

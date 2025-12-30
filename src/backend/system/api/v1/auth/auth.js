@@ -35,12 +35,12 @@ router.post('/login', async (req, res) => {
  * Admin login
  */
 router.post('/admin-login', async (req, res) => {
-    const admin = req.body.admin;
+    const admin = req.body.adminId;
     const password = req.body.password;
     // auth service:
     // check login info
     // return jwt if successful
-    const adminToken = await authService.loginAdmin(admin, password);
+    const adminToken = await authService.adminLogin(admin, password);
     return res.status(200).json({ "Token": adminToken});
 });
 

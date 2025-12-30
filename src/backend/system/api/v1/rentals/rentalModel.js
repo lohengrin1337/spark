@@ -38,7 +38,6 @@ const rentalModel = {
   /**
    * Fetch one rental by id.
    * @param { number } id - rental id.
-   * @returns { object|undefined } rental object if found.
    * @throws { Error } if query fails.
    */
   async getOneRental(id) {

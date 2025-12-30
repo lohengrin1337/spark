@@ -79,25 +79,24 @@ const customerModel = {
      * Toggle a customer's blocked status.
      * @param {number} id - Customer id.
      * @param {boolean} blocked - Desired blocked state (true = blocked, false = unblocked).
-     * @returns {number} Number of affected rows (1 if updated, 0 if no change).
      * @throws {Error} If query fails.
      */
   async toggleCustomerBlocked(id, blocked) {
     let conn;
     try {
-      conn = await pool.getConnection();
+        conn = await pool.getConnection();
 
-      const result = await conn.query(
+        const result = await conn.query(
         "UPDATE customer SET blocked = ? WHERE customer_id = ?",
         [blocked, id]
-      );
+        );
 
-      return result.affectedRows;
+        return result.affectedRows;
     } catch (err) {
         err.message = "Something went wrong";
         throw err;
     } finally {
-      if (conn) conn.release();
+        if (conn) conn.release();
     }
   }
 };

@@ -63,6 +63,20 @@ const authModel = {
         if (conn) conn.release();
     }
   },
+  /**
+   * Get third party
+   * @param { string } thirdPartyId - third party username
+   */
+  async getAdmin(thirdPartyId) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const thirdParty = await conn.query("SELECT * FROM third_party WHERE third_party_id = ?", [thirdPartyId]);
+        return thirdParty[0];
+    } finally {
+        if (conn) conn.release();
+    }
+  },
   /** 
    * Insert a customer with email and password.
    * @param { string } email - new customer email.

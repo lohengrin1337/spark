@@ -16,7 +16,7 @@ const customerModel = {
         const customers = await conn.query("SELECT * FROM customer");
         return customers;
     } catch (err) {
-        console.error("GET /api/customers error:", err);
+        err.message = "Failed to fetch customers";
         throw err;
     } finally {
         if (conn) conn.release();
@@ -35,7 +35,7 @@ const customerModel = {
         const customer = await conn.query("SELECT * FROM customer WHERE customer_id = ?", [id]);
         return customer[0];
     } catch (err) {
-        console.error('');
+        err.message = `Failed to fetch customer with id ${id}`
         throw err;
     } finally {
         if (conn) conn.release();
@@ -63,20 +63,10 @@ const customerModel = {
 
       values.push(id);
 
-      console.log("sql", sql);
-      console.log("values", values);
-      
-
       const result = await conn.query(sql, values);
 
-      if (!result.affectedRows === 1) {
-        const err = new Error(`Customer with id '${id}' was not found`);
-        err.name = "CustomerNotFoundError";
-        err.status = 400;
-        throw err;
-      }
-
       return result.affectedRows;
+
     } catch (err) {
       throw err;
     } finally {
@@ -103,7 +93,6 @@ const customerModel = {
 
       return result.affectedRows;
     } catch (err) {
-      console.error("Error in toggleCustomerBlocked:", err);
       throw err;
     } finally {
       if (conn) conn.release();

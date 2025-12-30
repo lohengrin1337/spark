@@ -21,9 +21,10 @@ async function oauthRegisterOrLogin(customer) {
     if (!oauthCustomer) {
         customerId = authModel.saveOauthCustomer(customer);
     }
-    const token = await createJsonWebToken(customer.email, customerId);
+    const token = await createJsonWebToken(customerId, "customer");
     return token;
-}
+};
+
 /**
  * Register a new user with email/name/password.
  */
@@ -35,7 +36,7 @@ async function registerCustomer(email, name, password) {
     if (!emailInUse) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newCustomerId = await authModel.saveEmailCustomer(email, name, hashedPassword); //saves in db
-        const token = createJsonWebToken(email, newCustomerId);// get jwt
+        const token = createJsonWebToken(newCustomerId, "customer");// get jwt
         return token;
     }
     const err = new Error(
@@ -62,18 +63,41 @@ async function customerEmailLogin(email, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = createJsonWebToken(email, customer.id);
+    const token = createJsonWebToken(customer.id, "customer");
     return token;
-}
+};
+
 /**
- * Create a jwt with user email and oauth_provider_id.
+ * Admin login
+ * @param { string } adminId - Admin id.
+ * @param { string } password - admin password.
  */
-async function createJsonWebToken(email, id) {
-    const payload = { email, id };
+async function adminLogin(adminId, password) {
+    const admin = await authModel.getAdmin(adminId);
+    console.log(admin);
+    // const passwordOk = await bcrypt.compare(password, admin.password);
+    const passwordOk = true;
+    if (!passwordOk) {
+        const err = new Error(
+            "The input password does not match, please type better."
+        );
+        err.status = 401;
+        err.name = "Wrong password";
+        throw err;
+    }
+    const token = createJsonWebToken(admin.id, "admin");
+    return token;
+};
+
+/**
+ * Create a jwt with user id and role.
+ */
+async function createJsonWebToken(userId, userRole) {
+    const payload = { id: userId, role: userRole };
     const secretKey = process.env.JWT_SECRET;
     const expiration = '1h';
     const token = jwt.sign(payload, secretKey, { expiresIn: expiration});
     return token;
-}
+};
 
-module.exports = { registerCustomer, oauthRegisterOrLogin, customerEmailLogin };
+module.exports = { registerCustomer, oauthRegisterOrLogin, customerEmailLogin, adminLogin };

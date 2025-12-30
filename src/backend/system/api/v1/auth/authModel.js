@@ -48,6 +48,21 @@ const authModel = {
         if (conn) conn.release();
     }
   },
+  /**
+   * Get admin
+   * @param { string } admin - admin username
+   */
+  async getAdmin(adminId) {
+    console.log(adminId);
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const admin = await conn.query("SELECT * FROM admin_account WHERE admin_id = ?", [adminId]);
+        return admin[0];
+    } finally {
+        if (conn) conn.release();
+    }
+  },
   /** 
    * Insert a customer with email and password.
    * @param { string } email - new customer email.

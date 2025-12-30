@@ -15,7 +15,6 @@ router.get('/all', async (req, res) => {
  * for the current pricing state.
  */
 router.get('/', async (req, res) => {
-    const { date } = req.query;
     const fees = await feeService.getLatest();
     res.status(200).json(fees);
 });

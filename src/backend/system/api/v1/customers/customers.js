@@ -29,15 +29,11 @@ router.get('/:id',
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const customerId = req.params.id;
-    try {
-        const customer = await customerServices.getCustomerById(customerId);
-        if (!customer) {
-            return res.status(404).json({ error: 'Customer not found'});
-        }
-        res.status(200).json(customer);
-    } catch (err) {
-        res.status(500).json({ error: `Failed to fetch - ${customerId}`});
-    }  
+    const customer = await customerServices.getCustomerById(customerId);
+    if (!customer) {
+        return res.status(404).json({ error: 'Customer not found'});
+    }
+    res.status(200).json(customer);
 });
 
 /**

@@ -58,7 +58,7 @@ async function updateCustomer(id, name, password) {
  * @returns {number} affected rows
  */
 async function changeCustomerBlocked(id, blocked) {
-    return customerModel.toggleCustomerBlocked(id, blocked);
+    return await customerModel.toggleCustomerBlocked(id, blocked);
 }
 
 

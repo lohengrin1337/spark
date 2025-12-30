@@ -35,7 +35,7 @@ const customerModel = {
         const customer = await conn.query("SELECT * FROM customer WHERE customer_id = ?", [id]);
         return customer[0];
     } catch (err) {
-        err.message = `Failed to fetch customer with id ${id}`
+        err.message = `Failed to fetch customer with id ${id}`;
         throw err;
     } finally {
         if (conn) conn.release();

@@ -1,11 +1,12 @@
 const router = require('express').Router();
 const cityService = require('./cityService');
+const auth = require('./../../../middleware/jwtauth')
 
 /**
  * GET all cities
  * Response: 200 ok and array of cities objects.
  */
-router.get('/', async (req, res) => {
+router.get('/', auth.authToken, async (req, res) => {
     const cities = await cityService.getCities();
     res.status(200).json(cities);
 });
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
  * GET one city
  * Response: 200 ok and city object
  */
-router.get('/:name', async (req, res) => {
+router.get('/:name', auth.authToken , async (req, res) => {
     const cityName = req.params.name;
     const city = await cityService.getOneCity(cityName);
     res.status(200).json(city);

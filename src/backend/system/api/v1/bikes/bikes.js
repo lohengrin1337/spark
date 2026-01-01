@@ -34,29 +34,6 @@ router.get('/:id',
 });
 
 /**
- * Soft delete a bike by id
- */
-router.put('/delete/:id', async (req, res) => {
-    const bikeId = parseInt(req.params.id, 10);
-
-    if (!bikeId) {
-        return res.status(400).json({ error: "Invalid bike id" });
-    }
-
-    try {
-        const result = await bikeService.removeBikeById(bikeId);
-
-        if (result === 0) {
-            return res.status(404).json({ error: "Bike not found" });
-        }
-
-        res.status(200).json({ success: true, message: "Bike marked as deleted (soft deletion)" });
-    } catch (err) {
-        console.error("Error deleting bike:", err);
-        res.status(500).json({ error: "Failed to delete bike" });
-    }
-});
-/**
  * PUT bikes/:id
  * Updates bike status
  */

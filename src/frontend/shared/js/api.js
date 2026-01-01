@@ -287,8 +287,10 @@ export async function loadBikes() {
         if (!confirm(`Ta sparkcykel ${bikeId} ur drift?`)) return;
     
         try {
-          const res = await fetch(`/api/v1/bikes/delete/${bikeId}`, {
-            method: 'PUT'
+          const bike = { "status": "deleted"};
+          const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+            method: 'PUT',
+            body: JSON.stringify(bike)
           });
     
           if (!res.ok) throw new Error(await res.text());

@@ -95,8 +95,25 @@ const bikeModel = {
         } finally {
             if (conn) conn.release();
         }
-    }
+    },
+    /**
+     * Updates the status for one bike
+     * @param { number } id - bike_id
+     * @param { string } newStatus - new bike_status
+     */
+    async updateBikeStatus(id, newStatus) {
+        let conn;
+        try {
+            conn = await pool.getConnection();
 
+            const result = await conn.query(
+                "UPDATE bike SET status = ? WHERE bike_id = ?", [newStatus, id]
+            );
+            return result.affectedRows;
+        } finally {
+            if (conn) conn.release();
+        }
+    },
 };
 
 module.exports = bikeModel;

@@ -6,17 +6,15 @@ const bikeService = require('./bikeService');
 
 /**
  * If no query params it gets all non-deleted bikes in database.
- * If query params it may filter on city, status or city+status.
+ * Bikes may be filtered on any combination of city, status, zone_type
+ * by adding query params.
+ * (example: /bikes?city=malmö&zone_type=parking)
  * Response: 200 ok and array of bike objects.
  */
 router.get('/',
     async (req, res) => {
-        const { city, status } = req.query;
-        if (!status) {
-            const bikes = await bikeService.getAllBikes(city);
-            return res.status(200).json(bikes);
-        }
-        const bikes = await bikeService.getBikesByStatus(city, status);
+        const filters = req.query;
+        const bikes = await bikeService.getBikes(filters);
         res.status(200).json(bikes);
 });
 

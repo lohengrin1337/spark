@@ -15,6 +15,15 @@ async function getAllBikes(city) {
     return bikeModel.getBikesByCity(city);
 }
 
+/**
+ * Returns requested bikes.
+ * @param { object } filters - what to filter the query on
+ * If no filters it returns all bikes.
+ */
+async function getBikes(filters) {
+    return bikeModel.getBikes(filters);
+}
+
 async function getBikesByStatus(city, status) {
     if (!city) {
         return bikeModel.getBikesByStatus(status);
@@ -54,4 +63,4 @@ async function updateBikeStatus(id, status) {
     return bikeModel.updateBikeStatus(id, status);
 }
 
-module.exports = { getAllBikes, getBikeById, getBikesByStatus, removeBikeById, updateBikeStatus };
+module.exports = { getBikes, getAllBikes, getBikeById, getBikesByStatus, removeBikeById, updateBikeStatus };

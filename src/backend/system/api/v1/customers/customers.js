@@ -5,9 +5,10 @@ const router = require('express').Router();
 const customerServices = require('./customerServices');
 
 /**
- * GET invoices
+ * GET customers
+ * Gets all customers from database.
+ * Requires role: admin in token.
  * Response: 200 ok and array of customer objects.
- * Kanske bara admin som ska ha access?
  */
 router.get('/',
     //authenticate, // koll valid token

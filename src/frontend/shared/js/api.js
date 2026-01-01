@@ -284,6 +284,7 @@ export async function loadBikes() {
           <button class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</button><br>
           <button class="service-bike" data-id=${bk.bike_id}>Skicka på service</button>
         </td>
+        <td>Kanske en länk här till kartan med cykeln markerad? Idk.</td>
       `;
     
       tbody.appendChild(tr);

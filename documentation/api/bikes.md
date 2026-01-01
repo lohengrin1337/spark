@@ -14,6 +14,7 @@ coordinates<br>
 Fetch all bikes:
 >GET /bikes
 
+required role - admin
 ```javascript
 const token = localStorage.getItem('token');
 
@@ -88,6 +89,7 @@ Result:
 ```
 Fetch all bikes belonging to a city:
 
+Required role = admin
 >GET /bikes?city=\<city>
 ```javascript
 const token = localStorage.getItem('token');
@@ -127,6 +129,8 @@ Result:
 ```
 Fetch all bikes from a city filtered on status:
 
+Third parties and customers may filter on status available, all other filters require an admin token.
+
 >GET /bikes?city=\<city>&status=\<status>
 ```javascript
 const token = localStorage.getItem('token');
@@ -165,6 +169,8 @@ Result:
 ```
 Update bike status:
 >PUT /bikes/:id
+
+Requires an admin token (om kund ska kunna flagga problem med cykel kanske det ska lösas på annat sätt?)
 
 Required parameters:
 >bike_id<br>

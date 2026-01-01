@@ -15,6 +15,8 @@ oauth_provider_id<br>
 Fetch all customers:
 >GET /customers
 
+Requires admin token.
+
 ```javascript
 const token = localStorage.getItem('token');
 
@@ -62,6 +64,8 @@ Result:
 Fetch one customer by id:
 >GET /customers/:id
 
+Requires admin token or customer token where id matches route param :id.
+
 ```javascript
 const token = localStorage.getItem('token');
 
@@ -89,6 +93,8 @@ Result:
 
 Update customer data:
 >PUT /customers/:id
+
+Requires admin token or customer token where id matches route param :id.
 
 Required parameters:
 >customer_id<br>

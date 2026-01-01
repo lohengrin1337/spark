@@ -5,7 +5,8 @@ const router = require('express').Router();
 const bikeService = require('./bikeService');
 
 /**
- * GET bikes
+ * If no query params it gets all non-deleted bikes in database.
+ * If query params it may filter on city, status or city+status.
  * Response: 200 ok and array of bike objects.
  */
 router.get('/',
@@ -20,8 +21,9 @@ router.get('/',
 });
 
 /**
- * GET /:city
- * Response: 200 ok and bike objects or 404 not found.
+ * GET /:id
+ * Get bike with id = req.param.id.
+ * Response: 200 ok and bike object or 404 not found.
  */
 router.get('/:id',
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
@@ -56,6 +58,18 @@ router.put('/delete/:id', async (req, res) => {
         res.status(500).json({ error: "Failed to delete bike" });
     }
 });
-
+/**
+ * PUT bikes/:id
+ * Updates bike status
+ */
+router.put('/:id', async (req, res) => {
+    const bikeId = req.params.id;
+    const { status } = req.body;
+    await bikeService.updateBikeStatus(bikeId, status);
+    res.json({
+        success: true,
+        message: "Status updated"
+    });
+});
 
 module.exports = router;

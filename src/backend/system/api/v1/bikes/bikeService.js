@@ -3,7 +3,8 @@
 const bikeModel = require('./bikeModel.js');
 
 /**
- * Gets all bikes from model.
+ * If no city parameter it gets all bikes,
+ * otherwise it gets all bikes belonging to the city.
  * @param { string } city
  * @returns Array of bikes
  */
@@ -44,6 +45,13 @@ async function getBikeById(id) {
 async function removeBikeById(id) {
     return bikeModel.softDeleteBikeById(id);
 }
+/**
+ * Update bike status
+ * @param { number } id - bike id
+ * @param { string } status - bike status to apply
+ */
+async function updateBikeStatus(id, status) {
+    return bikeModel.updateBikeStatus(id, status);
+}
 
-
-module.exports = { getAllBikes, getBikeById, getBikesByStatus, removeBikeById };
+module.exports = { getAllBikes, getBikeById, getBikesByStatus, removeBikeById, updateBikeStatus };

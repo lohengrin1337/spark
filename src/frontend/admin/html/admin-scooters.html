@@ -39,6 +39,29 @@
 
   <section class="content">
     <div class="table-wrapper-admin">
+        <div class="filter options">
+            <select id="city-filter">
+                <option value="">Alla</option>
+                <option value="malmö">Malmö</option>
+                <option value="karlskrona">Karlskrona</option>
+                <option value="umeå">Umeå</option>
+            </select>
+            <select id="status-filter">
+                <option value="">Alla</option>
+                <option value="active">Aktiv</option>
+                <option value="available">Ledig</option>
+                <option value="charging">Laddar</option>
+                <option value="deleted">Ur bruk</option>
+                <option value="low battery">Behöver laddas</option>
+                <option value="needs service">Behöver service</option>
+                <option value="service">På service</option>
+            </select>
+            <select id="zone_type-filter">
+                <option value="">Alla</option>
+                <option value="parking">Parkering</option>
+                <option value="charging">Laddstation</option>
+            </select>
+        </div>
       <table>
         <h1 class="table-header table-header-admin">Sparkcyklar</h1>
 
@@ -49,6 +72,7 @@
             <th>Status</th>
 <!--             <th>Position</th> -->
             <th>Alternativ</th>
+            <th>Hitta cykel på karta</th>
           </tr>
         </thead>
 

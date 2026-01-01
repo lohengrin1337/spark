@@ -64,3 +64,6 @@ Result:
   "oauth_provider_id": "null\r"
 }
 ```
+
+Update customer data:
+>PUT /customers/:id

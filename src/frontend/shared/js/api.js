@@ -319,7 +319,7 @@ export async function loadBikes() {
           if (!res.ok) throw new Error(await res.text());
     
           const data = await res.json();
-          alert('Sparkcykel togs ur drift');
+          alert(data.message, 'Sparkcykel togs ur drift');
           loadBikes();
         } catch (err) {
           alert('Kunde inte ta ur drift: ' + err.message);
@@ -344,6 +344,7 @@ export async function loadBikes() {
           if (!res.ok) throw new Error(await res.text());
     
           const data = await res.json();
+          alert(data.message, "Markerad för service");
           loadBikes();
         } catch (err) {
           alert('Något gick fel: ' + err.message);

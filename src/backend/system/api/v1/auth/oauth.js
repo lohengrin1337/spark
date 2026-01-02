@@ -6,11 +6,9 @@ const authService = require('./authService');
  * and redirects to github.com
  */
 router.get("/github", (req, res) => {
-    console.log("/github ENDPOINT");
-
     const source = req.query.source || "";
 
-    const callbackUrl = `http://localhost:3000/oauth/github/callback?source=${source}`;
+    const callbackUrl = `http://localhost:3000/api/v1/oauth/github/callback?source=${source}`;
     const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${callbackUrl}&scope=read:user user:email`;
     res.redirect(redirectUrl);
 });
@@ -21,12 +19,8 @@ router.get("/github", (req, res) => {
  * which is used to fetch user data
  */
 router.get("/github/callback", async (req, res) => {
-    // Code from github
+    // Code from github and source frontend app
     const { code, source } = req.query;
-
-    console.log("code:", code);
-    console.log("source:", source);
-    
 
     // Exchange code for token
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
@@ -71,7 +65,6 @@ router.get("/github/callback", async (req, res) => {
         oauth_provider: "github",
         oauth_provider_id: user.id,
     };
-    console.log(customer);
 
     // Register new user or log in existing user.
     const jwtToken = await authService.oauthRegisterOrLogin(customer);

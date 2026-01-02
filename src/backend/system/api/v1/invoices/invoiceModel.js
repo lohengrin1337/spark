@@ -13,7 +13,15 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const invoices = await conn.query("SELECT * FROM invoice ORDER BY invoice_id DESC");
+        const invoices = await conn.query(`
+            SELECT i.*,
+            c.customer_id
+            FROM invoice AS i
+            JOIN rental AS r
+            ON i.rental_id = r.rental_id
+            JOIN customer AS c
+            ON c.customer_id = r.customer_id
+            ORDER BY i.invoice_id DESC`);
         return invoices;
     } catch (err) {
         console.error("GET /api/invoices error:", err);

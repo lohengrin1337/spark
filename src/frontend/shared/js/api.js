@@ -179,7 +179,7 @@ export async function loadInvoices(mode = 'admin') {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${inv.invoice_id}</td>
-        <td>*Här*(Via schemat/join)</td>
+        <td>${inv.customer_id}</td>
         <td>
           <a href="admin-rentals.html#${inv.rental_id}">
             ${inv.rental_id}

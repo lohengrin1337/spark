@@ -179,7 +179,7 @@ export async function loadInvoices(mode = 'admin') {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${inv.invoice_id}</td>
-        <td>*Här*(Via schemat/join)</td>
+        <td>${inv.customer_id}</td>
         <td>
           <a href="admin-rentals.html#${inv.rental_id}">
             ${inv.rental_id}
@@ -246,8 +246,16 @@ export async function loadInvoices(mode = 'admin') {
  * @async
  */
 export async function loadBikes() {
+    const city = document.getElementById("city-filter")?.value;
+    const status = document.getElementById("status-filter")?.value;
+    const zone_type = document.getElementById("zone_type-filter")?.value;
+    const params = new URLSearchParams();
+
+    if (city) params.append('city', city);
+    if (status) params.append('status', status);
+    if (zone_type) params.append('zone_type', zone_type);
   try {
-    const res = await fetch('/api/v1/bikes');
+    const res = await fetch(`/api/v1/bikes?${params.toString()}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const bikes = await res.json();
@@ -272,28 +280,45 @@ export async function loadBikes() {
         <td>${bk.city}</td>
         <td>${bk.status}</td>
         <td>
-          <a href="#" class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</a>
+<!--          <a href="#" class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</a> -->
+          <button class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</button><br>
+          <button class="service-bike" data-id=${bk.bike_id}>Skicka på service</button>
         </td>
+        <td>Kanske en länk här till kartan med cykeln markerad? Idk.</td>
       `;
     
       tbody.appendChild(tr);
     });
-    
-    tbody.querySelectorAll('.delete-bike').forEach(link => {
-      link.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const bikeId = link.dataset.id;
+    ['city-filter', 'status-filter', 'zone_type-filter'].forEach(id => {
+        document.getElementById(id).addEventListener('change', loadBikes);
+    });
+
+    tbody.querySelectorAll('.delete-bike').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const bikeId = button.dataset.id;
+    //     })
+    // })
+    // tbody.querySelectorAll('.delete-bike').forEach(link => {
+    //   link.addEventListener('click', async (e) => {
+    //     e.preventDefault();
+    //     const bikeId = link.dataset.id;
     
         if (!confirm(`Ta sparkcykel ${bikeId} ur drift?`)) return;
     
         try {
-          const res = await fetch(`/api/v1/bikes/delete/${bikeId}`, {
-            method: 'PUT'
+          const bike = { status: "deleted" };
+          const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bike)
           });
     
           if (!res.ok) throw new Error(await res.text());
     
-          const data = await res.json();
+          await res.json();
           alert('Sparkcykel togs ur drift');
           loadBikes();
         } catch (err) {
@@ -301,7 +326,31 @@ export async function loadBikes() {
         }
       });
     });
-
+    tbody.querySelectorAll('.service-bike').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const bikeId = button.dataset.id;
+    
+        try {
+          const bike = { status: "needs service" };
+          const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bike)
+          });
+    
+          if (!res.ok) throw new Error(await res.text());
+    
+          const data = await res.json();
+          alert(data.message + "Markerad för service");
+          loadBikes();
+        } catch (err) {
+          alert('Något gick fel: ' + err.message);
+        }
+      });
+    });
   } catch (err) {
     console.error(err);
     document.getElementById('invoice-table-body').innerHTML = `

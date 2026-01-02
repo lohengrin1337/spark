@@ -4,11 +4,11 @@ const app = require('../app');
 process.env.NODE_ENV = "test";
 
 describe('bikes endpoint', () => {
-
-    it('GET /bikes', async () => {
+    it('should return all (non deleted) bikes in database', async () => {
         const res = await request(app).get('/api/v1/bikes');
         expect(res.statusCode).toEqual(200);
         expect(Array.isArray(res.body)).toBeTruthy();
+        expect(res.body.length).toBeTruthy();
     });
 });
 
@@ -25,6 +25,15 @@ describe('GET /bikes, filter on bike_id', () => {
         const res = await request(app).get('/api/v1/bikes/5');
         expect(res.statusCode).toEqual(200);
         expect(res.body.bike_id).toEqual(5);
+    });
+});
+
+describe('PUT /bikes endpoint', () => {
+    it('should set bike with bike_id 5 to status deleted', async () => {
+        const res = await request(app)
+        .put('/api/v1/bikes/5').send({ "bike_status": "deleted" });
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.success).toEqual(true);
     });
 });
 

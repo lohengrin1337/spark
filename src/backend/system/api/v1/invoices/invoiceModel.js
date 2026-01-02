@@ -6,6 +6,7 @@ const pool = require('../../../database/database');
 const invoiceModel = {
   /**
    * Fetch all invoices in database ordered by issued date.
+   * Returns all invoice data plus customer_id from rental.
    * @returns { Array } Array of invoice objects.
    * @throws { Error } If the query fails.
    */
@@ -13,7 +14,15 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const invoices = await conn.query("SELECT * FROM invoice ORDER BY invoice_id DESC");
+        const invoices = await conn.query(`
+            SELECT i.*,
+            c.customer_id
+            FROM invoice AS i
+            JOIN rental AS r
+            ON i.rental_id = r.rental_id
+            JOIN customer AS c
+            ON c.customer_id = r.customer_id
+            ORDER BY i.invoice_id DESC`);
         return invoices;
     } catch (err) {
         console.error("GET /api/invoices error:", err);
@@ -33,7 +42,15 @@ const invoiceModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const invoices = await conn.query("SELECT * FROM invoice WHERE invoice_id = ?", [id]);
+        const invoices = await conn.query(`
+            SELECT i.*,
+            r.customer_id
+            FROM invoice AS i
+            JOIN rental AS r
+            ON i.rental_id = r.rental_id
+            WHERE invoice_id = ?
+            `,
+            [id]);
         return invoices[0];
     } catch (err) {
         console.error('');
@@ -53,9 +70,13 @@ const invoiceModel = {
         try {
             conn = await pool.getConnection();
             const invoices = await conn.query(
-                `SELECT i.* FROM invoice AS i
+                `SELECT i.*,
+                r.customer_id
+                FROM invoice AS i
                 JOIN rental AS r ON i.rental_id = r.rental_id
-                WHERE r.customer_id = ?`, [customerId]);
+                WHERE r.customer_id = ?
+                `,
+                [customerId]);
             return invoices;
         } finally {
             if (conn) conn.release();

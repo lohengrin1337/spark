@@ -6,9 +6,10 @@ const customerServices = require('./customerServices');
 const auth = require('./../../../middleware/jwtauth')
 
 /**
- * GET invoices
+ * GET customers
+ * Gets all customers from database.
+ * Requires role: admin in token.
  * Response: 200 ok and array of customer objects.
- * Kanske bara admin som ska ha access?
  */
 router.get('/', auth.authToken, auth.authAdmin, 
     //authenticate, // koll valid token

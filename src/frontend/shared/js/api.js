@@ -117,12 +117,21 @@ export async function getRentalForRouteShowcase(id) {
 
 /**
  * Fetches all invoices from the API and populates the invoice table in the DOM.
+ * If called with a customer token it fetches the invoices belonging to that customer.
  * @async
  * @param {string} [mode='admin'] - 'admin' shows void option, 'user' shows pay option
  */
 export async function loadInvoices(mode = 'admin') {
   try {
-    const res = await fetch('/api/v1/invoices');
+        const token = localStorage.getItem('token');
+        console.log("token", token);
+        const res = await fetch('/api/v1/invoices', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+        });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const invoices = await res.json();

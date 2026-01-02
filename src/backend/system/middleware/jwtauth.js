@@ -18,9 +18,7 @@ function authToken(req, res, next) {
 // middleware that checks if role is admin/user or other
 function authAdminOrUser(req, res, next) {
     const role = req.user.role;
-
-    if (req.user.role !== "admin" && req.user.role !== "user") {return res.sendStatus(403);}
-
+    if (req.user.role !== "admin" && req.user.role !== "customer") {return res.sendStatus(403);}
     next();
 }
 

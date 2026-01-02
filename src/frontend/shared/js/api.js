@@ -6,7 +6,14 @@ import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } 
  */
 export async function loadRentals(source = 'user-web') {
   try {
-    const res = await fetch('/api/v1/rentals');
+      const token = localStorage.getItem("token");
+    const url = source == "user-web" ? "/api/v1/rentals/customer" : "/api/v1/rentals";
+    const res = await fetch(url, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': "application/json"
+            }
+        });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const rentals = await res.json();
@@ -82,7 +89,13 @@ export async function loadRentals(source = 'user-web') {
  */
 export async function getRentalForRouteShowcase(id) {
   try {
-    const res = await fetch(`/api/v1/rentals/${id}`);
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/v1/rentals/${id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': "application/json"
+            }
+        });
 
     if (!res.ok) {
       if (res.status === 404) {
@@ -504,4 +517,28 @@ export async function newFees(fee) {
     console.error('newFee error:', err);
     throw err;
   }
+}
+export async function loadCustomer() {
+    const token = localStorage.getItem("token");
+    const res = await fetch('/api/v1/customers/search', {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json' },
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const customer = await res.json();
+    console.log(customer.name);
+    return customer;
+}
+export async function updateCustomer(customer) {
+    const token = localStorage.getItem("token");
+    const res = await fetch('/api/v1/customers', {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json' },
+        body: JSON.stringify(customer)
+    });
+
+    return;
 }

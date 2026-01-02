@@ -1,13 +1,15 @@
 const router = require('express').Router();
 
 const zoneService = require('./zoneService');
+const auth = require('./../../../middleware/jwtauth');
+
 
 /**
  * GET zones
  * Returns all zones or zones matching query
  * Response: 200 ok and array of zone objects.
  */
-router.get('/',
+router.get('/', auth.authToken,
     async (req, res) => {
         const filter = req.query;
         const zones = await zoneService.getZones(filter);
@@ -18,7 +20,7 @@ router.get('/',
  * GET zone by id
  * Response: 200 ok and zone object.
  */
-router.get('/:id',
+router.get('/:id', auth.authToken, 
     async (req, res) => {
         const id =Number(req.params.id);
         const zone = await zoneService.getZoneById(id);

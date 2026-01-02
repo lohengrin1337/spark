@@ -1,9 +1,6 @@
 # python cache
 **/__pycache__/
 
-# database
-**/data/
-
 ## OFFICIAL NODE GITIGNORE ##
 
 # Logs

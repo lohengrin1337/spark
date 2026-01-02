@@ -44,4 +44,21 @@ router.post('/admin-login', async (req, res) => {
     return res.status(200).json({ "Token": adminToken});
 });
 
+/**
+ * POST third-party-login
+ * Third party login
+ */
+router.post('/third-party-login', async (req, res) => {
+    const thirdParty = req.body.thirdPartyId;
+    const password = req.body.password;
+    // auth service:
+    // check login info
+    // return jwt if successful
+    const thirdPartyToken = await authService.thirdPartyLogin(thirdParty, password);
+    return res.status(200).json({ "Token": thirdPartyToken});
+});
+
+
+
+
 module.exports = router;

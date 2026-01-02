@@ -3,6 +3,7 @@ const router = require('express').Router();
 // const authenticate = require('../middleware/authenticate.js');
 // const authorize = require('../middleware/authorize.js');
 const customerServices = require('./customerServices');
+const auth = require('./../../../middleware/jwtauth')
 
 /**
  * GET customers
@@ -10,7 +11,7 @@ const customerServices = require('./customerServices');
  * Requires role: admin in token.
  * Response: 200 ok and array of customer objects.
  */
-router.get('/',
+router.get('/', auth.authToken, auth.authAdmin, 
     //authenticate, // koll valid token
     //validate, // koll valid request
     //authorize, // k
@@ -24,10 +25,9 @@ router.get('/',
  * Response: 200 ok and invoice object or 404 not found.
  * Admin har tillgång till alla, user bara till sin egen
  */
-router.get('/:id',
+router.get('/:id', auth.authToken, auth.authAdminOrUser, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const customerId = req.params.id;
     const customer = await customerServices.getCustomerById(customerId);
@@ -43,7 +43,7 @@ router.get('/:id',
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
-router.put('/:id',
+router.put('/:id', auth.authToken, auth.authAdmin, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
@@ -60,7 +60,7 @@ router.put('/:id',
 /**
  * PUT route that blocks/unblocks a given customer/user given its current blocked status
  */
-router.put('/block/:id', async (req, res) => {
+router.put('/block/:id', auth.authToken, auth.authAdmin, async (req, res) => {
     const customerId = parseInt(req.params.id, 10);
     const { blocked } = req.body;
 

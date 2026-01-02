@@ -2,11 +2,14 @@ const router = require('express').Router();
 
 const rentalService = require('./rentalService');
 
+const auth = require('./../../../middleware/jwtauth');
+
+
 /**
  * GET rentals
  * Response: 200 ok and array of rental objects.
  */
-router.get('/',
+router.get('/', auth.authToken, auth.authAdmin, 
     async (req, res) => {
     const rentals = await rentalService.getRentals();
     res.status(200).json(rentals);
@@ -16,7 +19,7 @@ router.get('/',
  * GET /:id
  * Response: 200 ok and rental object or 404 not found.
  */
-router.get('/:id',
+router.get('/:id', auth.authToken, auth.authAdminOrUser, 
     async (req, res) => {
     const rentalId = req.params.id;
     try {
@@ -33,7 +36,7 @@ router.get('/:id',
 /**
  * Creates a new, initial, incomplete rental entry in the db.
  */
-router.post('/', async (req, res) => {
+router.post('/', auth.authToken, auth.authAdminOrUser, async (req, res) => {
     const { customer_id, bike_id, start_point, start_zone } = req.body;
 
     if (!customer_id || !bike_id || !start_point || !start_zone || typeof start_point !== 'object') {
@@ -54,7 +57,7 @@ router.post('/', async (req, res) => {
  * using the model. Returns the generated invoice created with the help of the
  * billing orchestration.
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth.authToken, auth.authAdminOrUser, async (req, res) => {
     const { id } = req.params;
     const { end_point, end_zone, route } = req.body;
 

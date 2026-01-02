@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - Uthyrningar</title>
-
+  <script type="module" src="/shared/auth/admin-check.js"></script>
   <link rel="stylesheet" href="style/style.css">
 
   <title>[Admin] Rentals</title>
@@ -13,10 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet">
 
   <script type="module" src="/shared/js/frontend-helpers.js"></script>
-  <script type="module">
-    import { loadRentals } from '/shared/js/api.js';
-    loadRentals();
-  </script>
+
   <script type="module" src="/shared/view-component/admin-header.js"></script>
 </head>
 
@@ -69,7 +66,7 @@
   import { loadRentals } from '/shared/js/api.js';
 
   document.addEventListener('DOMContentLoaded', () => {
-    loadRentals();
+    loadRentals("admin-web");
   });
   
 </script>

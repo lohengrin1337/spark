@@ -528,7 +528,6 @@ export async function loadCustomer() {
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const customer = await res.json();
-    console.log(customer.name);
     return customer;
 }
 export async function updateCustomer(customer) {

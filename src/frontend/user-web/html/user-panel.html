@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Fakturor</title>
+  <title>Kund - kontoinformation</title>
 
   <link rel="stylesheet" href="/shared/style/style.css">
 
@@ -11,10 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
 
   <script type="module" src="/shared/js/frontend-helpers.js"></script>
-  <script type="module">
-    import { loadInvoices } from '/shared/js/api.js';
-    loadInvoices();
-  </script>
 
   <script type="module" src="/shared/view-component/user-header.js"></script>
 </head>
@@ -24,14 +20,18 @@
 
   <div class="non-map-container">
     <div class="user-panel">
-      <label>Namn</label>
-      <input class="user-form" type="text" value="User" readonly>
-
-      <label>Email</label>
-      <input class="user-form" type="text" value="user@user.se" readonly>
-      
-      <label>Lösenord</label>
-      <input class="user-form" type="password" value="P@ssword" readonly>
+        <h1>Uppdatera information</h1>
+    <form class="user-panel" id="customer-update">
+        <label>Namn</label>
+        <input id="user-name" class="user-form" type="text" placeholder="User">
+  
+        <label>Email</label>
+        <input id="user-email" class="user-form" type="text" placeholder="user@user.se">
+        
+        <label>Lösenord</label>
+        <input id="password" class="user-form" type="password" placeholder="P@ssword">
+        <button type="submit" class="button">Spara</button>
+    </form>
     </div>
 
     <div class="user-form-links">
@@ -49,10 +49,37 @@
 
 
 <script type="module">
-  import { loadInvoices } from '/shared/js/api.js';
+import { updateCustomer, loadCustomer } from '/shared/js/api.js';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadInvoices('user');
+document.addEventListener('DOMContentLoaded', async () => {
+    const form = document.getElementById("customer-update");
+    const button = document.getElementById('submit');
+    const username = document.getElementById("user-name");
+    const email = document.getElementById("user-email");
+    const password = document.getElementById("password");
+
+    const customer = await loadCustomer();
+
+    if (customer.blocked == true) {
+        alert("Kontakta kundtjänst, ditt konto är blockerat.");
+    };
+    username.value = customer.name;
+    email.value = customer.email;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const customerData = {
+            name: username.value,
+            email: email.value
+        };
+
+        if (password.value) {
+            customerData.password = password.value;
+        }
+
+        await updateCustomer(customerData);
+    });
   });
 </script>
 

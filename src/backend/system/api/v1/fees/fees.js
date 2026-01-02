@@ -16,7 +16,7 @@ router.get('/all', auth.authToken, auth.authAdminOrUser, async (req, res) => {
  * The default index GET-route. Returns the latest and current fee that is the basis
  * for the current pricing state.
  */
-router.get('/', auth.authToken, async (req, res) => {
+router.get('/', async (req, res) => {
     const fees = await feeService.getLatest();
     res.status(200).json(fees);
 });

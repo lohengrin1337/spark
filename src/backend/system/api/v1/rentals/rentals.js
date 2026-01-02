@@ -16,6 +16,16 @@ router.get('/', auth.authToken, auth.authAdmin,
 });
 
 /**
+ * GET rentals filtered on customer
+ */
+router.get('/customer', auth.authToken, auth.authAdminOrUser,
+    async (req, res) => {
+        const customer = req.query.customer;
+        const rentals = await rentalService.getRentalsByCustomer(customer, req.user);
+        res.status(200).json(rentals);
+});
+
+/**
  * GET /:id
  * Response: 200 ok and rental object or 404 not found.
  */
@@ -23,7 +33,7 @@ router.get('/:id', auth.authToken, auth.authAdminOrUser,
     async (req, res) => {
     const rentalId = req.params.id;
     try {
-        const rental = await rentalService.getRentalById(rentalId);
+        const rental = await rentalService.getRentalById(rentalId, req.user);
         if (!rental) {
             return res.status(404).json({ error: 'Rental not found'});
         }

@@ -6,7 +6,6 @@ const pool = require('../../../database/database');
 const rentalModel = {
   /**
    * Fetch all rentals in database ordered by issued date.
-   * @returns { Array } Array of rental objects.
    * @throws { Error } If the query fails.
    */
   async getAllRentals() {
@@ -53,14 +52,26 @@ const rentalModel = {
         if (conn) conn.release();
     }
   },
-
+  /**
+   * Fetch all rentals filtered on customer id.
+   */
+  async getRentalsByCustomer(id) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const rentals = await conn.query(`SELECT * FROM rental WHERE customer_id = ?`, [id]);
+        return rentals;
+    } finally {
+        if (conn) conn.release();
+    }
+  },
   /**
    * Create a new rental.
    * @param {number} customer_id
    * @param {number} bike_id
    * @param {object} start_point - GeoJSON point object.
    * @param {number} start_zone
-   * @returns {number} Inserted rental_id.
+   * Returns inserted rental_id.
    * @throws {Error} If query fails.
    */
   async createRental(customer_id, bike_id, start_point, start_zone) {

@@ -19,6 +19,20 @@ router.get('/', auth.authToken, auth.authAdmin,
 });
 
 /**
+ * Get customer data for one logged in customer.
+ * Update later to work for admin to search for customers?
+ */
+router.get('/search', auth.authToken, auth.authAdminOrUser,
+    async (req, res) => {
+        const customer = req.query.customer;//customers/search?customer=<tex id>
+        const customerData = await customerServices.getCustomerById(customer, req.user);
+    if (!customerData) {
+        return res.status(404).json({ error: 'Customer not found'});
+    }
+    res.status(200).json(customerData);
+    }
+)
+/**
  * GET /:id
  * Response: 200 ok and invoice object or 404 not found.
  * Admin har tillgång till alla, user bara till sin egen
@@ -40,10 +54,10 @@ router.get('/:id', auth.authToken, auth.authAdminOrUser,
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
-router.put('/:id', auth.authToken, auth.authAdminOrUser, 
+router.put('/', auth.authToken, auth.authAdminOrUser, 
     //validateInvoice, //validerar requesten
     async (req, res) => {
-    const customerId = req.params.id;
+    const customerId = req.query.customer_id;
     const { name, password = null } = req.body;
     await customerServices.updateCustomer(customerId, name, password, req.user);
     res.json({

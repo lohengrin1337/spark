@@ -8,7 +8,7 @@ const customerModel = require('./customerModel.js');
  * @returns Array of customers
  */
 async function getCustomers() {
-    return customerModel.getAllCustomers();
+    return await customerModel.getAllCustomers();
 }
 
 /**
@@ -19,7 +19,7 @@ async function getCustomers() {
  */
 async function getCustomerById(id, user) {
     if (user.role != "admin"){
-        return customerModel.getOneCustomer(user.id);
+        return await customerModel.getOneCustomer(user.id);
     }
     return customerModel.getOneCustomer(id);
 }
@@ -32,10 +32,8 @@ async function getCustomerById(id, user) {
  * @param { object } user - user id and role from token
  */
 async function updateCustomer(id, name, password, user) {
-    if (user.role !== "admin" && user.id !== id) {
-        const err = new Error("You are only permitted to update your own info.");
-        err.status = 403;
-        throw err;
+    if (user.role !== "admin") {
+        id = user.id;
     }
     const fields = [];
     const values = [];

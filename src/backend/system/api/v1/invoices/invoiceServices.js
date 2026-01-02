@@ -6,8 +6,11 @@ const invoiceModel = require('./invoiceModel');
  * Gets all invoices from model.
  * @returns Array of invoices
  */
-async function getInvoices() {
-    return invoiceModel.getAllInvoices();
+async function getInvoices(user) {
+    if (user.role == "admin") {
+        return invoiceModel.getAllInvoices();
+    }
+    return invoiceModel.getInvoicesByCustomer(user.id);
 }
 
 /**

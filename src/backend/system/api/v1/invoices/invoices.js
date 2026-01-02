@@ -7,13 +7,11 @@ const invoiceServices = require('./invoiceServices');
  * GET invoices
  * Response: 200 ok and array of invoice objects.
  */
-router.get('/', auth.authToken, auth.authAdmin, 
-    //authenticate, // koll valid token
+router.get('/', auth.authToken, auth.authAdminOrUser, 
     //validate, // koll valid request
-    //authorize, // k
     async (req, res) => {
-    const invoices = await invoiceServices.getInvoices();
-    res.status(200).json(invoices);
+        const invoices = await invoiceServices.getInvoices(req.user);
+        res.status(200).json(invoices);
 });
 
 /**

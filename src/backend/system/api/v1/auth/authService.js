@@ -53,7 +53,9 @@ async function registerCustomer(email, name, password) {
  * @param { string } password - customer input password.
  */
 async function customerEmailLogin(email, password) {
+    console.log(password);
     const customer = await authModel.getCustomerByEmail(email);
+    console.log(customer);
     const passwordOk = await bcrypt.compare(password, customer.password);
     if (!passwordOk) {
         const err = new Error(

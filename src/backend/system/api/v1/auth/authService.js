@@ -65,7 +65,7 @@ async function customerEmailLogin(email, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = createJsonWebToken(customer.id, "customer");
+    const token = createJsonWebToken(customer.customer_id, "customer");
     return token;
 };
 
@@ -85,7 +85,7 @@ async function adminLogin(adminId, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = createJsonWebToken(admin.id, "admin");
+    const token = createJsonWebToken(admin.admin_id, "admin");
     return token;
 };
 

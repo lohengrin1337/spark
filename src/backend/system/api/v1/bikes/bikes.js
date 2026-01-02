@@ -26,7 +26,6 @@ router.get('/',
 router.get('/:id', 
     auth.authToken, 
     auth.authAdminOrUser, 
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     async (req, res) => {
     const id = req.params.id;
@@ -38,7 +37,10 @@ router.get('/:id',
  * PUT bikes/:id
  * Updates bike status
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id',
+    auth.authToken,
+    auth.authAdmin,
+    async (req, res) => {
     const bikeId = req.params.id;
     const { status } = req.body;
     await bikeService.updateBikeStatus(bikeId, status);

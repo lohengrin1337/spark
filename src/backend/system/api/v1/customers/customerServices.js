@@ -14,9 +14,13 @@ async function getCustomers() {
 /**
  * Gets one customer from model.
  * @param { number } id customer id
+ * @param { object } user - user id and role from token
  * @returns customer as object (if found)
  */
-async function getCustomerById(id) {
+async function getCustomerById(id, user) {
+    if (user.role != "admin"){
+        return customerModel.getOneCustomer(user.id);
+    }
     return customerModel.getOneCustomer(id);
 }
 
@@ -24,9 +28,15 @@ async function getCustomerById(id) {
  * Update a customer
  * @param {string} id 
  * @param {string} name 
- * @param {string|null} password 
+ * @param {string|null} password
+ * @param { object } user - user id and role from token
  */
-async function updateCustomer(id, name, password) {
+async function updateCustomer(id, name, password, user) {
+    if (user.role !== "admin" && user.id !== id) {
+        const err = new Error("You are only permitted to update your own info.");
+        err.status = 403;
+        throw err;
+    }
     const fields = [];
     const values = [];
 

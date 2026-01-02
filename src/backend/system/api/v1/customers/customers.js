@@ -12,9 +12,7 @@ const auth = require('./../../../middleware/jwtauth')
  * Response: 200 ok and array of customer objects.
  */
 router.get('/', auth.authToken, auth.authAdmin, 
-    //authenticate, // koll valid token
     //validate, // koll valid request
-    //authorize, // k
     async (req, res) => {
     const customers = await customerServices.getCustomers();
     res.status(200).json(customers);
@@ -26,11 +24,10 @@ router.get('/', auth.authToken, auth.authAdmin,
  * Admin har tillgång till alla, user bara till sin egen
  */
 router.get('/:id', auth.authToken, auth.authAdminOrUser, 
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     async (req, res) => {
     const customerId = req.params.id;
-    const customer = await customerServices.getCustomerById(customerId);
+    const customer = await customerServices.getCustomerById(customerId, req.user);
     if (!customer) {
         return res.status(404).json({ error: 'Customer not found'});
     }
@@ -43,14 +40,12 @@ router.get('/:id', auth.authToken, auth.authAdminOrUser,
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
-router.put('/:id', auth.authToken, auth.authAdmin, 
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
+router.put('/:id', auth.authToken, auth.authAdminOrUser, 
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const customerId = req.params.id;
     const { name, password = null } = req.body;
-    await customerServices.updateCustomer(customerId, name, password);
+    await customerServices.updateCustomer(customerId, name, password, req.user);
     res.json({
         success: true,
         message: "Customer updated"

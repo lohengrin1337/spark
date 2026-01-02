@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const cityService = require('./cityService');
-const auth = require('./../../../middleware/jwtauth')
+const auth = require('./../../../middleware/jwtauth');
 
 /**
  * GET all cities

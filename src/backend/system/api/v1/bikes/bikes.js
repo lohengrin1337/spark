@@ -1,6 +1,6 @@
 const router = require('express').Router();
 // const validate = require('../middleware/validate.js');
-const auth = require('./../../../middleware/jwtauth')
+const auth = require('./../../../middleware/jwtauth');
 const bikeService = require('./bikeService');
 
 /**

@@ -8,7 +8,9 @@ const authService = require('./authService');
 router.get("/github", (req, res) => {
     console.log("/github ENDPOINT");
 
-    const callbackUrl = "http://localhost:3000/oauth/github/callback";
+    const source = req.query.source || "";
+
+    const callbackUrl = `http://localhost:3000/oauth/github/callback?source=${source}`;
     const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${callbackUrl}&scope=read:user user:email`;
     res.redirect(redirectUrl);
 });
@@ -20,7 +22,11 @@ router.get("/github", (req, res) => {
  */
 router.get("/github/callback", async (req, res) => {
     // Code from github
-    const code = req.query.code;
+    const { code, source } = req.query;
+
+    console.log("code:", code);
+    console.log("source:", source);
+    
 
     // Exchange code for token
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
@@ -66,10 +72,13 @@ router.get("/github/callback", async (req, res) => {
         oauth_provider_id: user.id,
     };
     console.log(customer);
+
     // Register new user or log in existing user.
     const jwtToken = await authService.oauthRegisterOrLogin(customer);
-    // Return token.
-    res.json({ token: jwtToken });
+
+    // Return token to frontend.`
+    const frontendPort = source === "user-web" ? "8081" : "8082"
+    res.redirect(`http://localhost:${frontendPort}?token=${jwtToken}`);
 });
 
 module.exports = router;

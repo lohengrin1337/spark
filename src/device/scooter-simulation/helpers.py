@@ -5,6 +5,11 @@ Holds the helper functions used in the container.
 """
 import time
 import requests
+import os
+
+# JWT_TOKEN = os.getenv("JWT_TOKEN")
+JWT_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InNpbS1jb250YWluZXIiLCJyb2xlIjoiZGV2aWNlIiwiaWF0IjoxNzY3NDYzODU2fQ.PwtaNl-Ov6enG-NThVjvduLbMWEoMCzy7kL47fO2Ric"
+HEADERS = {"Authorization": f"Bearer {JWT_TOKEN}", "Content-Type": "application/json"}
 
 def wait_for_backend_response(timeout=30, interval=2):
     """
@@ -13,7 +18,7 @@ def wait_for_backend_response(timeout=30, interval=2):
     start_time = time.time()
     while True:
         try:
-            resp = requests.get("http://system:3000/api/v1/customers", timeout=1)
+            resp = requests.get("http://system:3000/api/v1/customers", timeout=1, headers=HEADERS)
             if resp.status_code == 200:
                 print("Backend ready!", flush=True)
                 return

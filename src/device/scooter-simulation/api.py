@@ -5,12 +5,17 @@ Holds the api-functions used in the container.
 """
 import requests
 import json
+import os
+
+# JWT_TOKEN = os.getenv("JWT_TOKEN")
+JWT_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InNpbS1jb250YWluZXIiLCJyb2xlIjoiZGV2aWNlIiwiaWF0IjoxNzY3NDYzODU2fQ.PwtaNl-Ov6enG-NThVjvduLbMWEoMCzy7kL47fO2Ric"
+HEADERS = {"Authorization": f"Bearer {JWT_TOKEN}", "Content-Type": "application/json"}
 
 def fetch_users():
     """ Fetch all users from the backend API, and if unsuccessful, fallback on generic JohnDoe-list as a backup. """
     url = "http://system:3000/api/v1/customers" # noqa: S112
     try:
-        response = requests.get(url, timeout=5)
+        response = requests.get(url, timeout=5, headers=HEADERS)
         response.raise_for_status()
         customers = response.json()
         return [ 
@@ -34,7 +39,7 @@ def fetch_rentals():
     """ Fetch all rentals from the backend API. """
     url = f"{RENTAL_API}"
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=10, headers=HEADERS)
         response.raise_for_status()
         return response.json()
     except Exception as e:
@@ -56,7 +61,7 @@ def create_rental(customer_id, bike_id, start_point, start_zone):
 
     try:
         print(f"[API] Creating rental -> POST {url} | payload: {json.dumps(payload)}")
-        response = requests.post(url, json=payload, timeout=10)
+        response = requests.post(url, json=payload, timeout=10, headers=HEADERS)
         print(f"[API] Response {response.status_code}: {response.text}")
 
         if response.status_code == 201:
@@ -94,7 +99,7 @@ def complete_rental(rental_id, end_point, end_zone, route):
     try:
         print(f"[API] Completing rental -> PUT {url}")
         print(f"[API] Payload size: {len(route)} points")
-        response = requests.put(url, json=payload, timeout=15)
+        response = requests.put(url, json=payload, timeout=15, headers=HEADERS)
         print(f"[API] Response {response.status_code}: {response.text}")
 
         if response.status_code in (200, 204):

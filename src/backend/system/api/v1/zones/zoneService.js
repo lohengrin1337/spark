@@ -3,17 +3,27 @@
 const zoneModel = require('./zoneModel');
 
 /**
- * Gets all zones from model if no filter
- * or filter on city and/or zone type.
+ * Gets matching zones from model
+ * Filters are optional
  * @returns Array of zones
- * @param { object } filter
+ * @param { object } filter { city, type }
  */
 async function getZones(filter) {
-    if (!filter.city && !filter.type) {
-        return zoneModel.getAllZones();
-    }
-    return zoneModel.getFilteredZones(filter);
+    return zoneModel.getZones(filter);
 };
+
+// /**
+//  * Gets all zones from model if no filter
+//  * or filter on city and/or zone type.
+//  * @returns Array of zones
+//  * @param { object } filter
+//  */
+// async function getZones(filter) {
+//     if (!filter.city && !filter.type) {
+//         return zoneModel.getAllZones();
+//     }
+//     return zoneModel.getFilteredZones(filter);
+// };
 
 
 /**

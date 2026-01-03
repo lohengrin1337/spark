@@ -3,7 +3,7 @@ const router = require('express').Router();
 // const authenticate = require('../middleware/authenticate.js');
 // const authorize = require('../middleware/authorize.js');
 const customerServices = require('./customerServices');
-const auth = require('./../../../middleware/jwtauth')
+const auth = require('./../../../middleware/jwtauth');
 
 /**
  * GET customers

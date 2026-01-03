@@ -9,6 +9,7 @@ import os
 
 JWT_TOKEN = os.getenv("JWT_TOKEN")
 HEADERS = {"Authorization": f"Bearer {JWT_TOKEN}", "Content-Type": "application/json"}
+print(JWT_TOKEN)
 
 def fetch_users():
     """ Fetch all users from the backend API, and if unsuccessful, fallback on generic JohnDoe-list as a backup. """

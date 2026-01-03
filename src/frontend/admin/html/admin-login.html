@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
+  <script type="module" src="/shared/view-component/admin-header.js"></script>
 
   <link rel="icon" href="favicon.ico">
 </head>
@@ -26,7 +27,7 @@
 
       <h1>Admin Login</h1>
       <br>
-      <input type="text" id="admin" required class="login-input" placeholder="admin username (id)"></input>
+      <input type="text" id="admin" required class="login-input" placeholder="admin"></input>
       <br>
       <input type="password" id="password" class="login-input" autocomplete="current-password"></input>
       <br>
@@ -38,10 +39,10 @@
   </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('login-form');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const adminId = document.getElementById('admin').value;
         const password = document.getElementById('password').value;
 
@@ -54,13 +55,11 @@
         if (res.ok) {
             const data = await res.json();
             localStorage.setItem("token", data.token);
-            console.log(data.token);
-            console.log(localStorage);
-            window.location.href = "/index.html";
-        } else {
-            alert("Ett problem uppstod");
+            window.location.replace('/index.html');
+
         }
     });
+});
 </script>
 
 </body>

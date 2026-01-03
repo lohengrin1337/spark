@@ -235,8 +235,12 @@ export async function loadInvoices(mode = 'admin') {
 
           try {
             const res = await fetch(`/api/v1/invoices/void/${invoiceId}`, {
-              method: 'PUT'
-            });
+              method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+        });
 
             if (!res.ok) {
               const errData = await res.json();

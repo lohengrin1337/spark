@@ -11,7 +11,7 @@ const auth = require('./../../../middleware/jwtauth');
  * Requires role: admin in token.
  * Response: 200 ok and array of customer objects.
  */
-router.get('/', auth.authToken, auth.authAdmin, 
+router.get('/', auth.authToken, auth.authAdminOrDevice,
     //validate, // koll valid request
     async (req, res) => {
     const customers = await customerServices.getCustomers();

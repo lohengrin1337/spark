@@ -163,6 +163,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - JWT_TOKEN=${JWT_TOKEN}
     volumes:
       - ./src/device/scooter-simulation:/app:cached
     command: >

@@ -7,8 +7,7 @@ import time
 import requests
 import os
 
-# JWT_TOKEN = os.getenv("JWT_TOKEN")
-JWT_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InNpbS1jb250YWluZXIiLCJyb2xlIjoiZGV2aWNlIiwiaWF0IjoxNzY3NDYzODU2fQ.PwtaNl-Ov6enG-NThVjvduLbMWEoMCzy7kL47fO2Ric"
+JWT_TOKEN = os.getenv("JWT_TOKEN")
 HEADERS = {"Authorization": f"Bearer {JWT_TOKEN}", "Content-Type": "application/json"}
 
 def wait_for_backend_response(timeout=30, interval=2):

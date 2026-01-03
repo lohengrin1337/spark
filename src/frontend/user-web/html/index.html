@@ -27,12 +27,16 @@
         <h2><a href="rentals.html">User Rentals</a></h2>
         <button id="logout" type="submit">logout</button>
 <script>
-    const logoutButton = document.getElementById('logout');
-    logoutButton.addEventListener('click', async (e) => {
-        e.preventDefault();
-        localStorage.removeItem("token");
-        alert("Bye");
-    })
+    const token = localStorage.getItem("token");
+    if (token) {
+        const logoutButton = document.getElementById("logout");
+        logoutButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            alert("logging out");
+            console.log(localStorage);
+        })
+    }
 </script>
 </body>
 </html>

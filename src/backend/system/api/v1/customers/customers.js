@@ -4,6 +4,7 @@ const router = require('express').Router();
 // const authorize = require('../middleware/authorize.js');
 const customerServices = require('./customerServices');
 const auth = require('./../../../middleware/jwtauth');
+const rateLimit = require('./../../../middleware/ratelimit');
 
 /**
  * GET customers
@@ -11,7 +12,7 @@ const auth = require('./../../../middleware/jwtauth');
  * Requires role: admin in token.
  * Response: 200 ok and array of customer objects.
  */
-router.get('/', auth.authToken, auth.authAdmin, 
+router.get('/', auth.authToken, rateLimit.limiter, auth.authAdmin, 
     //authenticate, // koll valid token
     //validate, // koll valid request
     //authorize, // k
@@ -25,7 +26,7 @@ router.get('/', auth.authToken, auth.authAdmin,
  * Response: 200 ok and invoice object or 404 not found.
  * Admin har tillgång till alla, user bara till sin egen
  */
-router.get('/:id', auth.authToken, auth.authAdminOrUser, 
+router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     async (req, res) => {
@@ -43,7 +44,7 @@ router.get('/:id', auth.authToken, auth.authAdminOrUser,
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
-router.put('/:id', auth.authToken, auth.authAdmin, 
+router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdmin, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
@@ -60,7 +61,7 @@ router.put('/:id', auth.authToken, auth.authAdmin,
 /**
  * PUT route that blocks/unblocks a given customer/user given its current blocked status
  */
-router.put('/block/:id', auth.authToken, auth.authAdmin, async (req, res) => {
+router.put('/block/:id', auth.authToken, rateLimit.limiter, auth.authAdmin, async (req, res) => {
     const customerId = parseInt(req.params.id, 10);
     const { blocked } = req.body;
 

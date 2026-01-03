@@ -3,13 +3,14 @@ const router = require('express').Router();
 const rentalService = require('./rentalService');
 
 const auth = require('./../../../middleware/jwtauth');
+const rateLimit = require('./../../../middleware/ratelimit');
 
 
 /**
  * GET rentals
  * Response: 200 ok and array of rental objects.
  */
-router.get('/', auth.authToken, auth.authAdmin, 
+router.get('/', auth.authToken, rateLimit.limiter, auth.authAdmin, 
     async (req, res) => {
     const rentals = await rentalService.getRentals();
     res.status(200).json(rentals);
@@ -19,7 +20,7 @@ router.get('/', auth.authToken, auth.authAdmin,
  * GET /:id
  * Response: 200 ok and rental object or 404 not found.
  */
-router.get('/:id', auth.authToken, auth.authAdminOrUser, 
+router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     async (req, res) => {
     const rentalId = req.params.id;
     try {
@@ -36,7 +37,7 @@ router.get('/:id', auth.authToken, auth.authAdminOrUser,
 /**
  * Creates a new, initial, incomplete rental entry in the db.
  */
-router.post('/', auth.authToken, auth.authAdminOrUser, async (req, res) => {
+router.post('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, async (req, res) => {
     const { customer_id, bike_id, start_point, start_zone } = req.body;
 
     if (!customer_id || !bike_id || !start_point || !start_zone || typeof start_point !== 'object') {

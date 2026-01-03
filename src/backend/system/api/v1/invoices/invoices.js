@@ -2,12 +2,13 @@ const router = require('express').Router();
 // const validate = require('../middleware/validate.js');
 const auth = require('./../../../middleware/jwtauth');
 const invoiceServices = require('./invoiceServices');
+const rateLimit = require('./../../../middleware/ratelimit');
 
 /**
  * GET invoices
  * Response: 200 ok and array of invoice objects.
  */
-router.get('/', auth.authToken, auth.authAdmin, 
+router.get('/', auth.authToken, rateLimit.limiter, auth.authAdmin, 
     //authenticate, // koll valid token
     //validate, // koll valid request
     //authorize, // k
@@ -20,7 +21,7 @@ router.get('/', auth.authToken, auth.authAdmin,
  * Gets all invoices belonging to a customer.
  * Response: 200 ok and invoice array or 404 not found.
  */
-router.get('/customer/:customer_id', auth.authToken, auth.authAdminOrUser, 
+router.get('/customer/:customer_id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
@@ -42,7 +43,7 @@ router.get('/customer/:customer_id', auth.authToken, auth.authAdminOrUser,
  * GET /:id
  * Response: 200 ok and invoice object or 404 not found.
  */
-router.get('/:id', auth.authToken, auth.authAdminOrUser, 
+router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
@@ -59,7 +60,7 @@ router.get('/:id', auth.authToken, auth.authAdminOrUser,
  * PUT /:id
  * Mark payment by setting invoice status to paid.
  */
-router.put('/pay/:id', auth.authToken, auth.authAdminOrUser, async (req, res) => {
+router.put('/pay/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, async (req, res) => {
     const invoiceId = parseInt(req.params.id, 10);
     if (isNaN(invoiceId)) return res.status(400).json({ error: "Invalid ID" });
 
@@ -74,7 +75,7 @@ router.put('/pay/:id', auth.authToken, auth.authAdminOrUser, async (req, res) =>
  * PUT /void/:id
  * Void an invoice by setting its status to 'void'.
  */
-router.put('/void/:id', auth.authToken, auth.authAdmin, async (req, res) => {
+router.put('/void/:id', auth.authToken, rateLimit.limiter, auth.authAdmin, async (req, res) => {
     const invoiceId = parseInt(req.params.id, 10);
     if (isNaN(invoiceId)) {
         return res.status(400).json({ error: "Invalid ID" });

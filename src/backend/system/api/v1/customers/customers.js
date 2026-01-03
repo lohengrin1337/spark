@@ -3,7 +3,7 @@ const router = require('express').Router();
 // const authenticate = require('../middleware/authenticate.js');
 // const authorize = require('../middleware/authorize.js');
 const customerServices = require('./customerServices');
-const auth = require('./../../../middleware/jwtauth')
+const auth = require('./../../../middleware/jwtauth');
 
 /**
  * GET customers
@@ -31,7 +31,7 @@ router.get('/search', auth.authToken, auth.authAdminOrUser,
     }
     res.status(200).json(customerData);
     }
-)
+);
 /**
  * GET /:id
  * Response: 200 ok and invoice object or 404 not found.

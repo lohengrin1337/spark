@@ -12,19 +12,6 @@ async function getZones(filter) {
     return zoneModel.getZones(filter);
 };
 
-// /**
-//  * Gets all zones from model if no filter
-//  * or filter on city and/or zone type.
-//  * @returns Array of zones
-//  * @param { object } filter
-//  */
-// async function getZones(filter) {
-//     if (!filter.city && !filter.type) {
-//         return zoneModel.getAllZones();
-//     }
-//     return zoneModel.getFilteredZones(filter);
-// };
-
 
 /**
  * Get one zone by zone_id

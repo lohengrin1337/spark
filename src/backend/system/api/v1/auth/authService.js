@@ -83,7 +83,7 @@ async function adminLogin(adminId, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = createJsonWebToken(admin.id, "admin");
+    const token = createJsonWebToken(adminId, "admin");
     return token;
 };
 
@@ -103,7 +103,7 @@ async function thirdPartyLogin(thirdPartyId, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = createJsonWebToken(thirdParty.id, "third party");
+    const token = createJsonWebToken(thirdPartyId, "third party");
     return token;
 };
 

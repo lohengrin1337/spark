@@ -1,6 +1,6 @@
 email,name,password,blocked,oauth_provider,oauth_provider_id
-lisa@lisa.se,Lisa,null,0,null,null
-emma@emma.se,Emma,null,0,null,null
-herman@herman.se,Herman,null,0,null,null
-olof@olof.se,Olof,null,0,null,null
-marvin@marvin.se,Marvin,null,1,null,null
+lisa@lisa.se,Lisa,$2a$12$iEn9FPrVgOfye4nuVe37G.uKPqPV8muswOSeUit4TXS4Z0sD.hMNe,0,null,null
+emma@emma.se,Emma,$2a$12$M4aPqzXZ7OUhnbas0Ev9GeSYrv6VUMN11OSGlvfanAMFCDqN0/Q82,0,null,null
+herman@herman.se,Herman,$2a$12$yCrHb0VMMQhJbEP1vV5NouhL0ibTQLmeSaGGm7Is4kOL1yEN6FkAS,0,null,null
+olof@olof.se,Olof,$2a$12$JGen1YG06OfLS7SKjmT4X.KX1a1S0GZQVs/FUsh16IYxUaqhSGJo2,0,null,null
+marvin@marvin.se,Marvin,$2a$12$QWOo.05I5y9ZO5ZQwVgbJeACKih.q9WMayeu2JWWLtT9FgCpupZ5O,1,null,null

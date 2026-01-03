@@ -30,6 +30,7 @@
     "supertest": "^7.1.4"
   },
   "jest": {
+    "setupFiles": ["./tests/jest.env.js"],
     "setupFilesAfterEnv": ["./tests/jest.setup.js"]
   }
 }

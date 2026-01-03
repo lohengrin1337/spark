@@ -29,7 +29,7 @@ describe('PUT /bikes endpoint', () => {
 describe('PUT /customers', () => {
     it('should update customer name', async () => {
         const res = await request(app)
-        .put('/api/v1/customers/4').send({ "name": "Slagathor"});
+        .put('/api/v1/customers?customer_id=4').send({ "name": "Slagathor"});
         expect(res.statusCode).toEqual(200);
         expect(res.body.success).toEqual(true);
     });

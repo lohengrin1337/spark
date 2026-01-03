@@ -1,7 +1,6 @@
 const router = require('express').Router();
 // const validate = require('../middleware/validate.js');
-// const authenticate = require('../middleware/authenticate.js');
-// const authorize = require('../middleware/authorize.js');
+const auth = require('./../../../middleware/jwtauth');
 const bikeService = require('./bikeService');
 
 /**
@@ -12,6 +11,7 @@ const bikeService = require('./bikeService');
  * Response: 200 ok and array of bike objects.
  */
 router.get('/',
+    auth.authToken, 
     async (req, res) => {
         const filters = req.query;
         const bikes = await bikeService.getBikes(filters);
@@ -23,10 +23,10 @@ router.get('/',
  * Get bike with id = req.param.id.
  * Response: 200 ok and bike object or 404 not found.
  */
-router.get('/:id',
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
+router.get('/:id', 
+    auth.authToken, 
+    auth.authAdminOrUser, 
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const id = req.params.id;
     const bike = await bikeService.getBikeById(id);
@@ -37,7 +37,10 @@ router.get('/:id',
  * PUT bikes/:id
  * Updates bike status
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id',
+    auth.authToken,
+    auth.authAdmin,
+    async (req, res) => {
     const bikeId = req.params.id;
     const { status } = req.body;
     await bikeService.updateBikeStatus(bikeId, status);

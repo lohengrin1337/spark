@@ -3,6 +3,7 @@ const router = require('express').Router();
 // const authenticate = require('../middleware/authenticate.js');
 // const authorize = require('../middleware/authorize.js');
 const customerServices = require('./customerServices');
+const auth = require('./../../../middleware/jwtauth');
 
 /**
  * GET customers
@@ -10,27 +11,37 @@ const customerServices = require('./customerServices');
  * Requires role: admin in token.
  * Response: 200 ok and array of customer objects.
  */
-router.get('/',
-    //authenticate, // koll valid token
+router.get('/', auth.authToken, auth.authAdmin, 
     //validate, // koll valid request
-    //authorize, // k
     async (req, res) => {
     const customers = await customerServices.getCustomers();
     res.status(200).json(customers);
 });
 
 /**
+ * Get customer data for one logged in customer.
+ * Update later to work for admin to search for customers?
+ */
+router.get('/search', auth.authToken, auth.authAdminOrUser,
+    async (req, res) => {
+        const customer = req.query.customer;//customers/search?customer=<tex id>
+        const customerData = await customerServices.getCustomerById(customer, req.user);
+    if (!customerData) {
+        return res.status(404).json({ error: 'Customer not found'});
+    }
+    res.status(200).json(customerData);
+    }
+);
+/**
  * GET /:id
  * Response: 200 ok and invoice object or 404 not found.
  * Admin har tillgång till alla, user bara till sin egen
  */
-router.get('/:id',
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
+router.get('/:id', auth.authToken, auth.authAdminOrUser, 
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const customerId = req.params.id;
-    const customer = await customerServices.getCustomerById(customerId);
+    const customer = await customerServices.getCustomerById(customerId, req.user);
     if (!customer) {
         return res.status(404).json({ error: 'Customer not found'});
     }
@@ -43,14 +54,12 @@ router.get('/:id',
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
-router.put('/:id',
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
+router.put('/', auth.authToken, auth.authAdminOrUser, 
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
-    const customerId = req.params.id;
+    const customerId = req.query.customer_id;
     const { name, password = null } = req.body;
-    await customerServices.updateCustomer(customerId, name, password);
+    await customerServices.updateCustomer(customerId, name, password, req.user);
     res.json({
         success: true,
         message: "Customer updated"
@@ -60,7 +69,7 @@ router.put('/:id',
 /**
  * PUT route that blocks/unblocks a given customer/user given its current blocked status
  */
-router.put('/block/:id', async (req, res) => {
+router.put('/block/:id', auth.authToken, auth.authAdmin, async (req, res) => {
     const customerId = parseInt(req.params.id, 10);
     const { blocked } = req.body;
 

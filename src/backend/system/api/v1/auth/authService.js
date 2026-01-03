@@ -53,7 +53,9 @@ async function registerCustomer(email, name, password) {
  * @param { string } password - customer input password.
  */
 async function customerEmailLogin(email, password) {
+    console.log(password);
     const customer = await authModel.getCustomerByEmail(email);
+    console.log(customer);
     const passwordOk = await bcrypt.compare(password, customer.password);
     if (!passwordOk) {
         const err = new Error(
@@ -63,7 +65,7 @@ async function customerEmailLogin(email, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = createJsonWebToken(customer.id, "customer");
+    const token = createJsonWebToken(customer.customer_id, "customer");
     return token;
 };
 
@@ -83,9 +85,30 @@ async function adminLogin(adminId, password) {
         err.name = "Wrong password";
         throw err;
     }
-    const token = createJsonWebToken(admin.id, "admin");
+    const token = createJsonWebToken(admin.admin_id, "admin");
     return token;
 };
+
+/**
+ * Third party login
+ * @param { string } thirdPartyId - Third party id.
+ * @param { string } password - Third party password.
+ */
+async function thirdPartyLogin(thirdPartyId, password) {
+    const thirdParty = await authModel.getThirdParty(thirdPartyId);
+    const passwordOk = await bcrypt.compare(password, thirdParty.password);
+    if (!passwordOk) {
+        const err = new Error(
+            "The input password does not match, please type better."
+        );
+        err.status = 401;
+        err.name = "Wrong password";
+        throw err;
+    }
+    const token = createJsonWebToken(thirdParty.id, "third party");
+    return token;
+};
+
 
 /**
  * Create a jwt with user id and role.
@@ -98,4 +121,4 @@ async function createJsonWebToken(userId, userRole) {
     return token;
 };
 
-module.exports = { registerCustomer, oauthRegisterOrLogin, customerEmailLogin, adminLogin };
+module.exports = { registerCustomer, oauthRegisterOrLogin, customerEmailLogin, adminLogin, thirdPartyLogin };

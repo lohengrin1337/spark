@@ -138,7 +138,6 @@ export async function getRentalForRouteShowcase(id) {
 export async function loadInvoices(mode = 'admin') {
   try {
         const token = localStorage.getItem('token');
-        console.log("token", token);
         const res = await fetch('/api/v1/invoices', {
         method: 'GET',
         headers: {

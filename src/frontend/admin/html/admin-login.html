@@ -32,8 +32,8 @@
       <input type="password" id="password" class="login-input" autocomplete="current-password"></input>
       <br>
       <button type="submit" class="login-button">Login</button>
-
     </form>
+    <button id="logout" type="submit">temp logout</button>
    
 
   </div>
@@ -59,6 +59,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         }
     });
+    const token = localStorage.getItem("token");
+    if (token) {
+        const logoutButton = document.getElementById("logout");
+        logoutButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            alert("logging out");
+            console.log(localStorage);
+        })
+    }
 });
 </script>
 

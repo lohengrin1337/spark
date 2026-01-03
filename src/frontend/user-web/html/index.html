@@ -25,6 +25,14 @@
         <br>
 
         <h2><a href="rentals.html">User Rentals</a></h2>
-
+        <button id="logout" type="submit">logout</button>
+<script>
+    const logoutButton = document.getElementById('logout');
+    logoutButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        alert("Bye");
+    })
+</script>
 </body>
 </html>

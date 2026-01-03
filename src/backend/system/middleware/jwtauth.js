@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 // middleware that checks the jwt
 function authToken(req, res, next) {
     if (process.env.NODE_ENV === 'test') {
-        // skip auth during tests
+        req.user = { id: "admin", role: "admin"};
         return next();
     }
     const authHeader = req.headers['authorization'];
@@ -22,7 +22,7 @@ function authToken(req, res, next) {
 // middleware that checks if role is admin/user or other
 function authAdminOrUser(req, res, next) {
     if (process.env.NODE_ENV === 'test') {
-    // skip auth during tests
+        req.user = { id: "admin", role: "admin"};
     return next();
   }
     const role = req.user.role;
@@ -33,7 +33,7 @@ function authAdminOrUser(req, res, next) {
 // middleware that checks if role is admin
 function authAdmin(req, res, next) {
     if (process.env.NODE_ENV === 'test') {
-        // skip auth during tests
+        req.user = { id: "admin", role: "admin"};
         return next();
     }
     const role = req.user.role;

@@ -12,10 +12,13 @@ const zoneModel = {
             z.city,
             z.zone_type,
             ST_AsText(z.coordinates) AS coordinates,
-            JSON_ARRAYAGG(DISTINCT b.bike_id) AS bikes
+            JSON_ARRAYAGG(DISTINCT b.bike_id) AS bikes,
+            zt.speed_limit
         FROM spark_zone AS z
         LEFT JOIN bike AS b
         ON ST_Contains(z.coordinates, b.coordinates)
+        JOIN zone_type AS zt
+        ON z.zone_type = zt.zone_type
     `,
 
 

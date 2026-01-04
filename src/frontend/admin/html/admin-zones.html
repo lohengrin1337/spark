@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style/style.css">
+    <meta charset="UTF-8">
+    <title>Admin - Zones</title>
+    <script type="module" src="/shared/auth/admin-check.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
+    <script type="module" src="/shared/view-component/admin-header.js"></script>
+</head>
+<body>
+    <main class="admin-grid grid">
+
+        <admin-header style="z-index:1000000000000000000"></admin-header>
+        
+        <aside class="sidebar sidebar-vertical">
+        <a href="index.html">Karta</a>
+        <a href="admin-rentals.html">Uthyrningar</a>
+        <a href="admin-scooters.html">Sparkcyklar</a>
+        <a href="admin-customers.html">Användare</a>
+        <a href="admin-invoices.html">Fakturor</a>
+        <a href="admin-fees.html">Prissättning</a>
+        <a href="admin-zones.html">Zoner</a>
+        </aside>
+
+        <section class="content">
+        <div class="table-wrapper-admin">
+            <div class="filter-options">
+                <label for="city-filter">Stad:</label>
+                <select id="city-filter">
+                    <option value="">Alla</option>
+                    <option value="malmö">Malmö</option>
+                    <option value="karlskrona">Karlskrona</option>
+                    <option value="umeå">Umeå</option>
+                </select>
+                <label for="zone_type-filter">Zontyp</label>
+                <select id="zone_type-filter">
+                    <option value="">Alla</option>
+                    <option value="charging">Laddstation</option>
+                    <option value="parking">Parkering</option>
+                    <option value="city">Stad</option>
+                    <option value="slow">Buffertzon</option>
+                </select>
+                <label for="zone_id">Sök zon-id</label>
+                <input id="zone_id" type="number">
+                <input id="search" type="submit">
+            <table>
+            <h1 class="table-header table-header-admin">Zoner</h1>
+            <thead>
+                <tr>
+                <th>Zon-Id</th>
+                <th>Stad</th>
+                <th>Zontyp</th>
+                <th>Antal cyklar</th>
+                <th>Km/h</th>
+                <th>Kartlänk?</th>
+                </tr>
+            </thead>
+            <tbody id="zone-table-body">
+                <tr>
+                <td colspan="4" style="text-align:center; opacity:.6;">
+                    Laddar zoner...
+                </td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+        </section>
+    </main>
+
+<script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+        loadZones();
+        loadOneZone();
+        //setInterval(loadZones, 10000);
+    });
+    async function loadZones() {
+        const city = document.getElementById("city-filter")?.value;
+        const zone_type = document.getElementById("zone_type-filter")?.value;
+        const params = new URLSearchParams();
+
+        if (city) params.append("city", city);
+        if (zone_type) params.append('type', zone_type);
+
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/v1/zones?${params.toString()}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json' }
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const zones = await res.json();
+        const tbody = document.getElementById('zone-table-body');
+        tbody.innerHTML = '';
+
+        zones.forEach(zo => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${zo.zone_id}</td>
+            <td>${zo.city}</td>
+            <td>${zo.zone_type}</td>
+            <td>${zo.bikes.length}</td>
+            <td>${zo.speed_limit}</td>
+            <td>Kanske en länk här till zonen i rätt karta?<br>Eller vilka cyklar?</td>
+        `;
+        tbody.appendChild(tr);
+        });
+        ['city-filter', 'zone_type-filter'].forEach(id => {
+        document.getElementById(id).addEventListener('change', loadZones);
+        });
+    }
+    async function loadOneZone() {
+        const button = document.getElementById('search');
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log("clicked");
+            const zone_id = document.getElementById("zone_id")?.value;
+            const token = localStorage.getItem("token");
+            const res = await fetch(`/api/v1/zones/${zone_id}`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json' }
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const zone = await res.json();
+        console.log(zone);
+        const tbody = document.getElementById('zone-table-body');
+        tbody.innerHTML = '';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${zone.zone_id}</td>
+            <td>${zone.city}</td>
+            <td>${zone.zone_type}</td>
+            <td>${zone.bikes.length}</td>
+            <td>${zone.speed_limit}</td>
+            <td>${zone.bikes}</td>
+        `;
+        tbody.appendChild(tr);
+        })
+    }
+
+    //export async function updateCustomer(customer) {
+    //const token = localStorage.getItem("token");
+    //const res = await fetch('/api/v1/customers', {
+        //method: 'PUT',
+        //headers: { 'Authorization': `Bearer ${token}`,
+                    //'Content-type': 'application/json' },
+        //body: JSON.stringify(customer)
+    //});
+</script>
+</body>
+</html>

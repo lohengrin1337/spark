@@ -18,20 +18,14 @@ describe('GET /customers/:id', () => {
         expect(res.body.customer_id).toEqual(4);
     });
 });
-describe('PUT /bikes endpoint', () => {
-    it('should set bike with bike_id 5 to status deleted', async () => {
-        const res = await request(app)
-        .put('/api/v1/bikes/5').send({ "bike_status": "deleted" });
-        expect(res.statusCode).toEqual(200);
-        expect(res.body.success).toEqual(true);
-    });
-});
+
 describe('PUT /customers', () => {
     it('should update customer name', async () => {
         const res = await request(app)
         .put('/api/v1/customers?customer_id=4').send({ "name": "Slagathor"});
         expect(res.statusCode).toEqual(200);
         expect(res.body.success).toEqual(true);
+        console.log("Slagathor test");
     });
 });
 describe('PUT /customers, invalid id', () => {

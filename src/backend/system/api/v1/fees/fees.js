@@ -46,7 +46,7 @@ router.post('/', auth.authToken, rateLimit.limiter, auth.authAdmin, async (req, 
   
     try {
       const newFee = await feeService.createFee({ start, minute, discount, penalty });
-      res.status(201).json(newFee);
+      res.status(201).json({ success: true, message: `New fees added`} );
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to create new fee row" });

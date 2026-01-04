@@ -26,6 +26,8 @@ services:
       DB_PASSWORD: admin
       DB_NAME: spark_db
       JWT_SECRET: ${JWT_SECRET}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
     ports:
       - "3000:3000" # DEV
     volumes:

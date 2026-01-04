@@ -57,7 +57,7 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
-router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
+router.put('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     async (req, res) => {

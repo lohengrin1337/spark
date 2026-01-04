@@ -6,7 +6,15 @@ import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } 
  */
 export async function loadRentals(source = 'user-web') {
   try {
-    const res = await fetch('/api/v1/rentals');
+      const token = localStorage.getItem("token");
+    const url = source == "user-web" ? "/api/v1/rentals/customer" : "/api/v1/rentals";
+    console.log(url);
+    const res = await fetch(url, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': "application/json"
+            }
+        });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const rentals = await res.json();
@@ -82,7 +90,13 @@ export async function loadRentals(source = 'user-web') {
  */
 export async function getRentalForRouteShowcase(id) {
   try {
-    const res = await fetch(`/api/v1/rentals/${id}`);
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/v1/rentals/${id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': "application/json"
+            }
+        });
 
     if (!res.ok) {
       if (res.status === 404) {
@@ -117,12 +131,20 @@ export async function getRentalForRouteShowcase(id) {
 
 /**
  * Fetches all invoices from the API and populates the invoice table in the DOM.
+ * If called with a customer token it fetches the invoices belonging to that customer.
  * @async
  * @param {string} [mode='admin'] - 'admin' shows void option, 'user' shows pay option
  */
 export async function loadInvoices(mode = 'admin') {
   try {
-    const res = await fetch('/api/v1/invoices');
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/v1/invoices', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+        });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const invoices = await res.json();
@@ -212,8 +234,12 @@ export async function loadInvoices(mode = 'admin') {
 
           try {
             const res = await fetch(`/api/v1/invoices/void/${invoiceId}`, {
-              method: 'PUT'
-            });
+              method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+        });
 
             if (!res.ok) {
               const errData = await res.json();
@@ -255,7 +281,14 @@ export async function loadBikes() {
     if (status) params.append('status', status);
     if (zone_type) params.append('zone_type', zone_type);
   try {
-    const res = await fetch(`/api/v1/bikes?${params.toString()}`);
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/v1/bikes?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-type": "application/json"
+        }
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const bikes = await res.json();
@@ -307,14 +340,16 @@ export async function loadBikes() {
         if (!confirm(`Ta sparkcykel ${bikeId} ur drift?`)) return;
     
         try {
-          const bike = { status: "deleted" };
-          const res = await fetch(`/api/v1/bikes/${bikeId}`, {
-            method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bike)
-          });
+            const token = localStorage.getItem("token");
+            const bike = { status: "deleted" };
+            const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                    },
+                body: JSON.stringify(bike)
+            });
     
           if (!res.ok) throw new Error(await res.text());
     
@@ -332,19 +367,21 @@ export async function loadBikes() {
             const bikeId = button.dataset.id;
     
         try {
-          const bike = { status: "needs service" };
-          const res = await fetch(`/api/v1/bikes/${bikeId}`, {
-            method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bike)
+            const token = localStorage.getItem("token");
+            const bike = { status: "needs service" };
+            const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                    },
+                body: JSON.stringify(bike)
           });
     
           if (!res.ok) throw new Error(await res.text());
     
           const data = await res.json();
-          alert(data.message + "Markerad för service");
+          alert(data.message + " Markerad för service");
           loadBikes();
         } catch (err) {
           alert('Något gick fel: ' + err.message);
@@ -369,7 +406,14 @@ export async function loadBikes() {
  */
 export async function loadCustomers() {
   try {
-    const res = await fetch('/api/v1/customers');
+    const token = localStorage.getItem("token");
+    const res = await fetch('/api/v1/customers', {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const customers = await res.json();
@@ -425,7 +469,9 @@ export async function loadCustomers() {
         try {
           const res = await fetch(`/api/v1/customers/block/${customerId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json' },
             body: JSON.stringify({ blocked: shouldBeBlocked })
           });
 
@@ -456,7 +502,13 @@ export async function loadCustomers() {
  * Load all fees
  */
 export async function loadFees() {
-  const res = await fetch('/api/v1/fees/all');
+  const token = localStorage.getItem("token");
+  const res = await fetch('/api/v1/fees/all', {
+    method: "GET",
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json' },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
 }
@@ -465,7 +517,13 @@ export async function loadFees() {
  * Load current fee
  */
 export async function loadCurrentFee() {
-  const res = await fetch('/api/v1/fees');
+  const token = localStorage.getItem("token");
+  const res = await fetch('/api/v1/fees', {
+    method: "GET",
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json' },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
 }
@@ -479,9 +537,12 @@ export async function loadCurrentFee() {
  */
 export async function newFees(fee) {
   try {
+    const token = localStorage.getItem("token");
     const res = await fetch('/api/v1/fees', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json' },
       body: JSON.stringify(fee)
     });
 
@@ -495,4 +556,27 @@ export async function newFees(fee) {
     console.error('newFee error:', err);
     throw err;
   }
+}
+export async function loadCustomer() {
+    const token = localStorage.getItem("token");
+    const res = await fetch('/api/v1/customers/search', {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json' },
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const customer = await res.json();
+    return customer;
+}
+export async function updateCustomer(customer) {
+    const token = localStorage.getItem("token");
+    const res = await fetch('/api/v1/customers', {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json' },
+        body: JSON.stringify(customer)
+    });
+
+    return;
 }

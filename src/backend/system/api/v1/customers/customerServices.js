@@ -8,15 +8,19 @@ const customerModel = require('./customerModel.js');
  * @returns Array of customers
  */
 async function getCustomers() {
-    return customerModel.getAllCustomers();
+    return await customerModel.getAllCustomers();
 }
 
 /**
  * Gets one customer from model.
  * @param { number } id customer id
+ * @param { object } user - user id and role from token
  * @returns customer as object (if found)
  */
-async function getCustomerById(id) {
+async function getCustomerById(id, user) {
+    if (user.role != "admin"){
+        return await customerModel.getOneCustomer(user.id);
+    }
     return customerModel.getOneCustomer(id);
 }
 
@@ -24,9 +28,13 @@ async function getCustomerById(id) {
  * Update a customer
  * @param {string} id 
  * @param {string} name 
- * @param {string|null} password 
+ * @param {string|null} password
+ * @param { object } user - user id and role from token
  */
-async function updateCustomer(id, name, password) {
+async function updateCustomer(id, name, password, user) {
+    if (user.role !== "admin") {
+        id = user.id;
+    }
     const fields = [];
     const values = [];
 

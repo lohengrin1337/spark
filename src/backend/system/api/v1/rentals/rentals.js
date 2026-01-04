@@ -10,10 +10,20 @@ const rateLimit = require('./../../../middleware/ratelimit');
  * GET rentals
  * Response: 200 ok and array of rental objects.
  */
-router.get('/', auth.authToken, rateLimit.limiter, auth.authAdmin, 
+router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrDevice, 
     async (req, res) => {
     const rentals = await rentalService.getRentals();
     res.status(200).json(rentals);
+});
+
+/**
+ * GET rentals filtered on customer
+ */
+router.get('/customer', auth.authToken, auth.authAdminOrUser,
+    async (req, res) => {
+        const customer = req.query.customer;
+        const rentals = await rentalService.getRentalsByCustomer(customer, req.user);
+        res.status(200).json(rentals);
 });
 
 /**
@@ -24,7 +34,7 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
     async (req, res) => {
     const rentalId = req.params.id;
     try {
-        const rental = await rentalService.getRentalById(rentalId);
+        const rental = await rentalService.getRentalById(rentalId, req.user);
         if (!rental) {
             return res.status(404).json({ error: 'Rental not found'});
         }
@@ -37,7 +47,7 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
 /**
  * Creates a new, initial, incomplete rental entry in the db.
  */
-router.post('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, async (req, res) => {
+router.post('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUserOrDevice, async (req, res) => {
     const { customer_id, bike_id, start_point, start_zone } = req.body;
 
     if (!customer_id || !bike_id || !start_point || !start_zone || typeof start_point !== 'object') {
@@ -58,7 +68,7 @@ router.post('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, async 
  * using the model. Returns the generated invoice created with the help of the
  * billing orchestration.
  */
-router.put('/:id', auth.authToken, auth.authAdminOrUser, async (req, res) => {
+router.put('/:id', auth.authToken, auth.authAdminOrUserOrDevice, async (req, res) => {
     const { id } = req.params;
     const { end_point, end_zone, route } = req.body;
 

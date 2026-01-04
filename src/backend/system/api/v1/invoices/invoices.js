@@ -8,13 +8,11 @@ const rateLimit = require('./../../../middleware/ratelimit');
  * GET invoices
  * Response: 200 ok and array of invoice objects.
  */
-router.get('/', auth.authToken, rateLimit.limiter, auth.authAdmin, 
-    //authenticate, // koll valid token
+router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     //validate, // koll valid request
-    //authorize, // k
     async (req, res) => {
-    const invoices = await invoiceServices.getInvoices();
-    res.status(200).json(invoices);
+        const invoices = await invoiceServices.getInvoices(req.user);
+        res.status(200).json(invoices);
 });
 
 /**
@@ -27,7 +25,6 @@ router.get('/customer/:customer_id', auth.authToken, rateLimit.limiter, auth.aut
     //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
     const customerId = Number.parseInt(req.params.customer_id, 10);
-    console.log("customer id", customerId);
     try {
         const invoices = await invoiceServices.getInvoicesByCustomer(customerId);
         if (!invoices) {

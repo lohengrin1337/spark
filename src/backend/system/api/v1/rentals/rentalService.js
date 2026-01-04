@@ -9,7 +9,17 @@ const { createInvoiceForRental } = require('../billing/rentalBillingService');
  * @returns Array of rentals
  */
 async function getRentals() {
-    return rentalModel.getAllRentals();
+    return await rentalModel.getAllRentals();
+}
+
+/**
+ * Gets rentals filtered on customer id
+ */
+async function getRentalsByCustomer(customerId, user) {
+    if (user.role !== "admin") {
+        return rentalModel.getRentalsByCustomer(user.id);
+    }
+    return await rentalModel.getRentalsByCustomer(customerId);
 }
 
 /**
@@ -17,8 +27,14 @@ async function getRentals() {
  * @param { number } id rental id
  * @returns rental as object (if found)
  */
-async function getRentalById(id) {
-    return rentalModel.getOneRental(id);
+async function getRentalById(id, user) {
+    const rental = await rentalModel.getOneRental(id);
+    if (user.role !== "admin" && user.id !== rental.customer_id) {
+        const err = new Error("Nope");
+        err.status = 403;
+        throw err;
+    }
+    return rental;
 }
 
 
@@ -31,7 +47,7 @@ async function getRentalById(id) {
  * @returns {number} New rental_id.
  */
 async function createRental(customer_id, bike_id, start_point, start_zone) {
-    return rentalModel.createRental(customer_id, bike_id, start_point, start_zone);
+    return await rentalModel.createRental(customer_id, bike_id, start_point, start_zone);
   }
   
 /**
@@ -54,4 +70,4 @@ async function completeRental(id, end_point, end_zone, route) {
     return await createInvoiceForRental(id);
   }
   
-  module.exports = { getRentals, getRentalById, createRental, completeRental };
+  module.exports = { getRentals, getRentalById, createRental, completeRental, getRentalsByCustomer };

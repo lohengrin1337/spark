@@ -13,7 +13,7 @@ router.post('/register', async (req, res) => {
     const newUser = await authService.registerCustomer(email, name, password);
     // also login user automatically?
     // redirect to login route?
-    return res.status(201).json({ "Token": newUser});
+    return res.status(201).json({ "token": newUser});
 });
 
 /**
@@ -23,11 +23,12 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    console.log(email, password);
     // auth service:
     // check login info
     // return jwt if successful
     const userToken = await authService.customerEmailLogin(email, password);
-    return res.status(200).json({ "Token": userToken});
+    return res.status(200).json({ "token": userToken});
 });
 
 /**
@@ -41,7 +42,7 @@ router.post('/admin-login', async (req, res) => {
     // check login info
     // return jwt if successful
     const adminToken = await authService.adminLogin(admin, password);
-    return res.status(200).json({ "Token": adminToken});
+    return res.status(200).json({ "token": adminToken});
 });
 
 /**
@@ -55,7 +56,7 @@ router.post('/third-party-login', async (req, res) => {
     // check login info
     // return jwt if successful
     const thirdPartyToken = await authService.thirdPartyLogin(thirdParty, password);
-    return res.status(200).json({ "Token": thirdPartyToken});
+    return res.status(200).json({ "token": thirdPartyToken});
 });
 
 

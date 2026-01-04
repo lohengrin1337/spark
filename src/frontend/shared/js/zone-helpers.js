@@ -63,7 +63,15 @@ export async function renderAllZones(map) {
     clearAllZones();
   
     try {
-      const res = await fetch('/api/v1/zones');
+        console.log(localStorage);
+        const token = localStorage.getItem("token");
+        console.log(token);
+        const res = await fetch('/api/v1/zones', {
+            method: "GET",
+            headers: { 
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json" }
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const zones = await res.json();
       console.log(`Loaded ${zones.length} zones`);
@@ -82,21 +90,21 @@ export async function renderAllZones(map) {
           case 'slow':
             if (parsed.type !== 'polygon') return;
             layer = L.polygon(parsed.points, ZONE_STYLES.slow)
-              .bindPopup(`<strong>${zone.city} - Ytterzon (Slow zone)</strong><br>ID: ${zone.zone_id}`);
+              .bindPopup(`<strong>${zone.city} - Ytterzon (Slow zone)</strong><br>ID: ${zone.zone_id}<br>Antal cyklar: ${zone.bikes.length}`);
             slowLayers.push(layer);
             break;
   
           case 'city':
             if (parsed.type !== 'polygon') return;
             layer = L.polygon(parsed.points, ZONE_STYLES.city)
-              .bindPopup(`<strong>${zone.city} - Stadszon (City zone)</strong><br>ID: ${zone.zone_id}`);
+              .bindPopup(`<strong>${zone.city} - Stadszon (City zone)</strong><br>ID: ${zone.zone_id}<br>Antal cyklar: ${zone.bikes.length}`);
             cityLayers.push(layer);
             break;
   
           case 'charging':
             if (parsed.type !== 'polygon') return;
             layer = L.polygon(parsed.points, ZONE_STYLES.charging)
-              .bindPopup(`<strong>${zone.city} - Laddzon</strong><br>ID: ${zone.zone_id}`);
+              .bindPopup(`<strong>${zone.city} - Laddzon</strong><br>ID: ${zone.zone_id}<br>Antal cyklar: ${zone.bikes.length}`);
             topLayers.push(layer);
             break;
   
@@ -113,7 +121,7 @@ export async function renderAllZones(map) {
             layer = L.circle(center, {
               radius: PARKING_RADIUS,
               ...ZONE_STYLES.parking
-            }).bindPopup(`<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: ${zone.zone_id}`);
+            }).bindPopup(`<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: ${zone.zone_id}<br>Antal cyklar: ${zone.bikes.length}`);
             topLayers.push(layer);
             break;
   

@@ -12,15 +12,28 @@ const rateLimit = require('./../../../middleware/ratelimit');
  * Requires role: admin in token.
  * Response: 200 ok and array of customer objects.
  */
-router.get('/', auth.authToken, rateLimit.limiter, auth.authAdmin, 
+router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrDevice, 
     //authenticate, // koll valid token
     //validate, // koll valid request
-    //authorize, // k
     async (req, res) => {
     const customers = await customerServices.getCustomers();
     res.status(200).json(customers);
 });
 
+/**
+ * Get customer data for one logged in customer.
+ * Update later to work for admin to search for customers?
+ */
+router.get('/search', auth.authToken, auth.authAdminOrUser,
+    async (req, res) => {
+        const customer = req.query.customer;//customers/search?customer=<tex id>
+        const customerData = await customerServices.getCustomerById(customer, req.user);
+    if (!customerData) {
+        return res.status(404).json({ error: 'Customer not found'});
+    }
+    res.status(200).json(customerData);
+    }
+);
 /**
  * GET /:id
  * Response: 200 ok and invoice object or 404 not found.
@@ -31,7 +44,7 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
     //validateInvoice, //validerar requesten
     async (req, res) => {
     const customerId = req.params.id;
-    const customer = await customerServices.getCustomerById(customerId);
+    const customer = await customerServices.getCustomerById(customerId, req.user);
     if (!customer) {
         return res.status(404).json({ error: 'Customer not found'});
     }
@@ -44,14 +57,13 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
-router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdmin, 
+router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
-    const customerId = req.params.id;
+    const customerId = req.query.customer_id;
     const { name, password = null } = req.body;
-    await customerServices.updateCustomer(customerId, name, password);
+    await customerServices.updateCustomer(customerId, name, password, req.user);
     res.json({
         success: true,
         message: "Customer updated"

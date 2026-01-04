@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spark - Live Map</title>
+  <title>Spark - Admin login</title>
 
   <link rel="stylesheet" href="style/style.css">
 
@@ -23,20 +23,54 @@
 
     <div class="admin-login-container">
       
-    <form class="admin-login-form">
+    <form id="login-form" class="admin-login-form">
 
       <h1>Admin Login</h1>
       <br>
-      <input type="text" required class="login-input" placeholder="type='text' possible too"></input>
+      <input type="text" id="admin" required class="login-input" placeholder="admin"></input>
       <br>
-      <input type="password" class="login-input" autocomplete="current-password"></input>
+      <input type="password" id="password" class="login-input" autocomplete="current-password"></input>
       <br>
       <button type="submit" class="login-button">Login</button>
-
     </form>
+    <button id="logout" type="submit">temp logout</button>
    
 
-  </div class="admin-login-container">
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const form = document.getElementById('login-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const adminId = document.getElementById('admin').value;
+        const password = document.getElementById('password').value;
+
+        const res = await fetch("/api/v1/auth/admin-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ adminId, password })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem("token", data.token);
+            window.location.replace('/index.html');
+
+        }
+    });
+    const token = localStorage.getItem("token");
+    if (token) {
+        const logoutButton = document.getElementById("logout");
+        logoutButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            alert("logging out");
+            console.log(localStorage);
+        })
+    }
+});
+</script>
 
 </body>
 </html>

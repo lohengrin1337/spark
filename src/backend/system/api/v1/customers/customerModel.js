@@ -6,7 +6,6 @@ const pool = require('../../../database/database');
 const customerModel = {
   /**
    * Fetch all customers in database ordered by issued date.
-   * @returns { Array } Array of customer objects.
    * @throws { Error } If the query fails.
    */
   async getAllCustomers() {
@@ -25,7 +24,6 @@ const customerModel = {
   /**
    * Fetch one customer by id.
    * @param { number } id - customer id.
-   * @returns { object|undefined } customer object if found.
    * @throws { Error } if query fails.
    */
   async getOneCustomer(id) {

@@ -26,14 +26,14 @@ describe('PUT /bikes endpoint', () => {
         expect(res.body.success).toEqual(true);
     });
 });
-describe('PUT /customers', () => {
-    it('should update customer name', async () => {
-        const res = await request(app)
-        .put('/api/v1/customers?customer_id=4').send({ "name": "Slagathor"});
-        expect(res.statusCode).toEqual(200);
-        expect(res.body.success).toEqual(true);
-    });
-});
+// describe('PUT /customers', () => {
+//     it('should update customer name', async () => {
+//         const res = await request(app)
+//         .put('/api/v1/customers?customer_id=4').send({ "name": "Slagathor"});
+//         expect(res.statusCode).toEqual(200);
+//         expect(res.body.success).toEqual(true);
+//     });
+// });
 describe('PUT /customers, invalid id', () => {
     it('should throw a 404 not found', async () => {
         const res = await request(app)

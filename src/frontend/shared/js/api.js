@@ -551,7 +551,8 @@ export async function newFees(fee) {
       throw new Error(errData.error || 'Failed to create new fee-row');
     }
 
-    return;
+    const msg = await res.json();
+    return msg;
   } catch (err) {
     console.error('newFee error:', err);
     throw err;
@@ -578,5 +579,6 @@ export async function updateCustomer(customer) {
         body: JSON.stringify(customer)
     });
 
-    return;
+    const msg = await res.json();
+    return msg;
 }

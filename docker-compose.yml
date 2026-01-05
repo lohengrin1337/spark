@@ -106,6 +106,9 @@ services:
           target: /etc/caddy/Caddyfile
         - action: rebuild
           path: ./src/frontend/admin/Dockerfile
+        - action: sync
+          path: ./src/frontend/shared
+          target: /shared
     networks: [spark]
 
   user-web-frontend:
@@ -128,6 +131,9 @@ services:
         - action: sync
           path: ./src/frontend/user-web/Caddyfile
           target: /etc/caddy/Caddyfile
+        - action: sync
+          path: ./src/frontend/shared
+          target: /shared
     networks: [spark]
 
   user-app-frontend:
@@ -150,6 +156,9 @@ services:
         - action: sync
           path: ./src/frontend/user-app/Caddyfile
           target: /etc/caddy/Caddyfile
+        - action: sync
+          path: ./src/frontend/shared
+          target: /shared
     networks: [spark]
 
   # ______________________________________________________________________

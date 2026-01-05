@@ -36,8 +36,13 @@
                 return;
             }
 
-            const res = await fetch(`http://localhost:3000/api/v1/invoices/pay/${invoiceId}`, {
-                method: 'PUT'
+            const token = localStorage.getItem("token");
+            const res = await fetch(`/api/v1/invoices/pay/${invoiceId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
             const data = await res.json();
 

@@ -42,7 +42,7 @@ async function payInvoice(id) {
 /**
  * Marks an invoice as void.
  * @param { number } id - Invoice id
- * @returns { boolean } true if update was successful (one row affected)
+ * Returns true if update was successful (one row affected)
  */
 async function voidInvoice(id) {
     const affectedRows = await invoiceModel.updateInvoice("void", id);

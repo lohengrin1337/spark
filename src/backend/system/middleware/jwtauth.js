@@ -17,7 +17,6 @@ function authToken(req, res, next) {
             id: user.id,
             role: user.role
         };
-        console.log("from auth ", req.user);
         next();
     });
 }
@@ -28,7 +27,6 @@ function authAdminOrUser(req, res, next) {
         req.user = { id: "admin", role: "admin"};
     return next();
   }
-  console.log(req.user, "WHAT IS GOING ON");
     const role = req.user.role;
     if (role !== "admin" && req.user.role !== "customer") {return res.sendStatus(403);}
     next();
@@ -51,9 +49,6 @@ function authAdmin(req, res, next) {
 function authAdminOrDevice(req, res, next) {
     const role = req.user.role;
 
-    if (role == "device") {
-        console.log("yES THIS IS DEVICE");
-    }
     if (role !== "device" && role !== "admin") {return res.sendStatus(403);}
 
     next();
@@ -62,7 +57,6 @@ function authAdminOrDevice(req, res, next) {
 function authAdminOrUserOrDevice(req, res, next) {
     const role = req.user.role;
 
-    console.log(req.user.role, "- device?");
     if (role !== "device" && role !== "admin" && role !== "customer") {return res.sendStatus(403);}
 
     next();

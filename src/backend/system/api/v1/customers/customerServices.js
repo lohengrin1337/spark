@@ -63,7 +63,6 @@ async function updateCustomer(id, name, password, user) {
  * Change/toggle blocked status for a customer
  * @param {number} id 
  * @param {boolean} blocked 
- * @returns {number} affected rows
  */
 async function changeCustomerBlocked(id, blocked) {
     return await customerModel.toggleCustomerBlocked(id, blocked);

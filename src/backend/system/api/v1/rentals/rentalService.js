@@ -44,7 +44,7 @@ async function getRentalById(id, user) {
  * @param {number} bike_id
  * @param {object} start_point
  * @param {number} start_zone
- * @returns {number} New rental_id.
+ * @returns {promise} New rental_id.
  */
 async function createRental(customer_id, bike_id, start_point, start_zone) {
     return await rentalModel.createRental(customer_id, bike_id, start_point, start_zone);
@@ -57,7 +57,7 @@ async function createRental(customer_id, bike_id, start_point, start_zone) {
  * @param {object} end_point
  * @param {number} end_zone
  * @param {Array} route
- * @returns {object} The generated invoice.
+ * @returns {promise} The generated invoice.
  * @throws {Error} If rental not found or already completed.
  */
 async function completeRental(id, end_point, end_zone, route) {

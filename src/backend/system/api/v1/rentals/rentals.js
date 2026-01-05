@@ -33,15 +33,13 @@ router.get('/customer', auth.authToken, auth.authAdminOrUser,
 router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     async (req, res) => {
     const rentalId = req.params.id;
-    try {
-        const rental = await rentalService.getRentalById(rentalId, req.user);
-        if (!rental) {
-            return res.status(404).json({ error: 'Rental not found'});
-        }
-        res.status(200).json(rental);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch.'});
-    }  
+    const rental = await rentalService.getRentalById(rentalId, req.user);
+    if (!rental) {
+        const err = new Error(`Rental with id ${rentalId} not found.`);
+        err.status = 404;
+        throw err;
+    }
+    res.status(200).json(rental); 
 });
 
 /**

@@ -20,20 +20,16 @@ router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
  * Response: 200 ok and invoice array or 404 not found.
  */
 router.get('/customer/:customer_id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
-    const customerId = Number.parseInt(req.params.customer_id, 10);
-    try {
+        const customerId = Number.parseInt(req.params.customer_id, 10);
         const invoices = await invoiceServices.getInvoicesByCustomer(customerId);
         if (!invoices) {
-            return res.status(404).json({ error: 'Invoices not found'});
+            const err = new Error(`No invoices found for customer with id ${customerId}`);
+            err.status = 404;
+            throw err;
         }
         res.status(200).json(invoices);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch.'});
-    }  
 });
 
 /**
@@ -41,11 +37,9 @@ router.get('/customer/:customer_id', auth.authToken, rateLimit.limiter, auth.aut
  * Response: 200 ok and invoice object or 404 not found.
  */
 router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
-    //authorizeInvoiceAccess, // kollar om fakturan får hämtas (jämför user id)
     async (req, res) => {
-    const invoiceId = parseInt(req.params.id, 10);
+    const invoiceId = Number.parseInt(req.params.id, 10);
     const invoice = await invoiceServices.getInvoiceById(invoiceId);
     if (!invoice) {
         return res.status(404).json({ error: 'Invoice not found'});
@@ -58,8 +52,8 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
  * Mark payment by setting invoice status to paid.
  */
 router.put('/pay/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, async (req, res) => {
-    const invoiceId = parseInt(req.params.id, 10);
-    if (isNaN(invoiceId)) return res.status(400).json({ error: "Invalid ID" });
+    const invoiceId = Number.parseInt(req.params.id, 10);
+    if (Number.isNaN(invoiceId)) return res.status(400).json({ error: "Invalid ID" });
 
     const success = await invoiceServices.payInvoice(invoiceId);
     if (!success) {
@@ -73,8 +67,8 @@ router.put('/pay/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
  * Void an invoice by setting its status to 'void'.
  */
 router.put('/void/:id', auth.authToken, rateLimit.limiter, auth.authAdmin, async (req, res) => {
-    const invoiceId = parseInt(req.params.id, 10);
-    if (isNaN(invoiceId)) {
+    const invoiceId = Number.parseInt(req.params.id, 10);
+    if (Number.isNaN(invoiceId)) {
         return res.status(400).json({ error: "Invalid ID" });
     }
 

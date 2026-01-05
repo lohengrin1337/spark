@@ -96,9 +96,9 @@ const rentalModel = {
    * Complete an ongoing rental.
    * @param {number} id - Rental ID.
    * @param {object} end_point - GeoJSON point object.
-   * @param {number} end_zone
+   * @param {number} end_zone - zone_id
    * @param {Array} route - Array of coordinates.
-   * @returns {number} Number of affected rows (1 if successful).
+   * @returns { Promise } Number of affected rows (1 if successful).
    * @throws {Error} If query fails.
    */
   async completeRental(id, end_point, end_zone, route) {

@@ -45,29 +45,4 @@ app.use((err, req, res, next) => {
     });
 });
 
-// app.post('/api/pay/:id', async (req, res) => {
-//   const id = parseInt(req.params.id, 10);
-//   if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
-
-//   let conn;
-//   try {
-//     conn = await pool.getConnection();
-//     const result = await conn.query(
-//       "UPDATE invoices SET paid = TRUE WHERE id = ? AND paid = FALSE",
-//       [id]
-//     );
-
-//     if (result.affectedRows === 0) {
-//       return res.status(404).json({ error: "Invoice not found or already paid" });
-//     }
-
-//     res.json({ success: true, message: "Payment recorded!" });
-//   } catch (err) {
-//     console.error("POST /api/pay error:", err);
-//     res.status(500).json({ error: "Payment failed" });
-//   } finally {
-//     if (conn) conn.release();
-//   }
-// });
-
 module.exports = app;

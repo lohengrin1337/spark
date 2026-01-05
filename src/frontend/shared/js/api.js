@@ -502,7 +502,13 @@ export async function loadCustomers() {
  * Load all fees
  */
 export async function loadFees() {
-  const res = await fetch('/api/v1/fees/all');
+  const token = localStorage.getItem("token");
+  const res = await fetch('/api/v1/fees/all', {
+    method: "GET",
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json' },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
 }
@@ -511,9 +517,12 @@ export async function loadFees() {
  * Load current fee
  */
 export async function loadCurrentFee() {
+  const token = localStorage.getItem("token");
   const res = await fetch('/api/v1/fees', {
     method: "GET",
-    headers: { "Content-Type": "application/json" }
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json' },
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
@@ -542,7 +551,8 @@ export async function newFees(fee) {
       throw new Error(errData.error || 'Failed to create new fee-row');
     }
 
-    return;
+    const msg = await res.json();
+    return msg;
   } catch (err) {
     console.error('newFee error:', err);
     throw err;
@@ -569,5 +579,6 @@ export async function updateCustomer(customer) {
         body: JSON.stringify(customer)
     });
 
-    return;
+    const msg = await res.json();
+    return msg;
 }

@@ -26,6 +26,8 @@ services:
       DB_PASSWORD: admin
       DB_NAME: spark_db
       JWT_SECRET: ${JWT_SECRET}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
     ports:
       - "3000:3000" # DEV
     volumes:
@@ -104,6 +106,9 @@ services:
           target: /etc/caddy/Caddyfile
         - action: rebuild
           path: ./src/frontend/admin/Dockerfile
+        - action: sync
+          path: ./src/frontend/shared
+          target: /shared
     networks: [spark]
 
   user-web-frontend:
@@ -126,6 +131,9 @@ services:
         - action: sync
           path: ./src/frontend/user-web/Caddyfile
           target: /etc/caddy/Caddyfile
+        - action: sync
+          path: ./src/frontend/shared
+          target: /shared
     networks: [spark]
 
   user-app-frontend:
@@ -148,6 +156,9 @@ services:
         - action: sync
           path: ./src/frontend/user-app/Caddyfile
           target: /etc/caddy/Caddyfile
+        - action: sync
+          path: ./src/frontend/shared
+          target: /shared
     networks: [spark]
 
   # ______________________________________________________________________
@@ -163,6 +174,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - JWT_TOKEN=${JWT_TOKEN}
     volumes:
       - ./src/device/scooter-simulation:/app:cached
     command: >

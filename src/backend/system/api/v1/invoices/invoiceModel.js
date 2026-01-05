@@ -87,7 +87,7 @@ const invoiceModel = {
      * Updates the status of an existing invoice.
      * @param { string } status - The new status value (e.g. 'paid', 'void')
      * @param { number } id     - Invoice id
-     * @returns { number } Number of affected rows (normally 1 on success)
+     * Returns number of affected rows (normally 1 on success)
      * @throws { Error } If query fails
      */
     async updateInvoice(status, id) {

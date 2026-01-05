@@ -3,13 +3,14 @@ const router = require('express').Router();
 const rentalService = require('./rentalService');
 
 const auth = require('./../../../middleware/jwtauth');
+const rateLimit = require('./../../../middleware/ratelimit');
 
 
 /**
  * GET rentals
  * Response: 200 ok and array of rental objects.
  */
-router.get('/', auth.authToken, auth.authAdmin, 
+router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrDevice, 
     async (req, res) => {
     const rentals = await rentalService.getRentals();
     res.status(200).json(rentals);
@@ -29,24 +30,22 @@ router.get('/customer', auth.authToken, auth.authAdminOrUser,
  * GET /:id
  * Response: 200 ok and rental object or 404 not found.
  */
-router.get('/:id', auth.authToken, auth.authAdminOrUser, 
+router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     async (req, res) => {
     const rentalId = req.params.id;
-    try {
-        const rental = await rentalService.getRentalById(rentalId, req.user);
-        if (!rental) {
-            return res.status(404).json({ error: 'Rental not found'});
-        }
-        res.status(200).json(rental);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch.'});
-    }  
+    const rental = await rentalService.getRentalById(rentalId, req.user);
+    if (!rental) {
+        const err = new Error(`Rental with id ${rentalId} not found.`);
+        err.status = 404;
+        throw err;
+    }
+    res.status(200).json(rental); 
 });
 
 /**
  * Creates a new, initial, incomplete rental entry in the db.
  */
-router.post('/', auth.authToken, auth.authAdminOrUser, async (req, res) => {
+router.post('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUserOrDevice, async (req, res) => {
     const { customer_id, bike_id, start_point, start_zone } = req.body;
 
     if (!customer_id || !bike_id || !start_point || !start_zone || typeof start_point !== 'object') {
@@ -67,7 +66,7 @@ router.post('/', auth.authToken, auth.authAdminOrUser, async (req, res) => {
  * using the model. Returns the generated invoice created with the help of the
  * billing orchestration.
  */
-router.put('/:id', auth.authToken, auth.authAdminOrUser, async (req, res) => {
+router.put('/:id', auth.authToken, auth.authAdminOrUserOrDevice, async (req, res) => {
     const { id } = req.params;
     const { end_point, end_zone, route } = req.body;
 

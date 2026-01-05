@@ -1,6 +1,7 @@
 const router = require('express').Router();
 // const validate = require('../middleware/validate.js');
 const auth = require('./../../../middleware/jwtauth');
+const rateLimit = require('./../../../middleware/ratelimit');
 const bikeService = require('./bikeService');
 
 /**
@@ -12,6 +13,7 @@ const bikeService = require('./bikeService');
  */
 router.get('/',
     auth.authToken, 
+    rateLimit.limiter,
     async (req, res) => {
         const filters = req.query;
         const bikes = await bikeService.getBikes(filters);
@@ -25,6 +27,7 @@ router.get('/',
  */
 router.get('/:id', 
     auth.authToken, 
+    rateLimit.limiter,
     auth.authAdminOrUser, 
     //validateInvoice, //validerar requesten
     async (req, res) => {
@@ -37,10 +40,7 @@ router.get('/:id',
  * PUT bikes/:id
  * Updates bike status
  */
-router.put('/:id',
-    auth.authToken,
-    auth.authAdmin,
-    async (req, res) => {
+router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUserOrDevice, async (req, res) => {
     const bikeId = req.params.id;
     const { status } = req.body;
     await bikeService.updateBikeStatus(bikeId, status);

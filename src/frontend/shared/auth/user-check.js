@@ -4,7 +4,7 @@
 let token = localStorage.getItem('token');
 
 if (!token) {
-  // Check for token in url query 
+  // Check for token in url query, which is the case when logged in with github
   const searchParams = new URLSearchParams(window.location.search);
   token = searchParams.get("token");
   
@@ -12,7 +12,7 @@ if (!token) {
     window.location.replace('/user-login.html');
   } else { 
     localStorage.setItem('token', token);
-    window.history.replaceState({}, "", window.location.pathname);
+    window.history.replaceState({}, "", window.location.pathname);  // clear token fron url
   }
 } else {
   try {
@@ -21,12 +21,8 @@ if (!token) {
     const { role, exp } = payload;
     const now = Math.floor(Date.now() / 1000);
     
-    console.log("ROLE", role);
-    console.log("EXP", exp);
-    console.log("NOW", now);
-    
     // Check role & expire date
-    if (role !== "customer" || now > exp) {
+    if (role !== "customer" || now >= exp) {
       localStorage.removeItem('token');
       window.location.replace('/user-login.html');
     }

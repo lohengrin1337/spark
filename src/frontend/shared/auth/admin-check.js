@@ -2,7 +2,6 @@
 // Also check if token has the right role and is not expired
 
 const token = localStorage.getItem("token");
-console.log(token);
 
 if (!token) {
     window.location.replace('/admin-login.html');
@@ -13,17 +12,13 @@ if (!token) {
         const { role, exp } = payload;
         const now = Math.floor(Date.now() / 1000);
     
-        console.log("ROLE", role);
-        console.log("EXP", exp);
-        console.log("NOW", now);
-    
         // Check role & expire date
-        if (role !== "customer" || now > exp) {
+        if (role !== "admin" || now >= exp) {
             localStorage.removeItem('token');
-            window.location.replace('/user-login.html');
+            window.location.replace('/admin-login.html');
         }
-        } catch (err) {
+    } catch (err) {
         localStorage.removeItem('token');
-        window.location.replace('/user-login.html');
+        window.location.replace('/admin-login.html');
     }
 }

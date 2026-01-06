@@ -970,3 +970,12 @@ _________________________________________________________ */
 .start-rental-button:active {
   transform: scale(0.98);
 }
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding-top: 100px;
+    position: fixed;
+    background: var(--pay-bg);
+}

@@ -1,5 +1,5 @@
 import { initTheme } from '/shared/theme/theme.js';
-
+import { loadCustomer } from '/shared/js/api.js';
 /**
  * Custom element for the user interface header with theme toggle and user link.
  */
@@ -13,24 +13,33 @@ class UserHeader extends HTMLElement {
       </button>
 
       <h1 class="title uw-title">
+        <a href="index.html" class="title-sun" style="color: black; text-decoration: none;">
         spark<span class="title-blink">_</span>
         <img class="title-spark uw-spark" src="img/scooter-nobg.svg" alt="Spark Scooter">
       </h1>
 
       <nav>
-        <div class="navlink-box">
-          <a href="user-panel.html">
-            <img class="user-spark" src="/shared/img/user.svg" alt="User Panel">
-          </a>
+        <div class="user-spark">
+        <div><img style="height: 42px" src="/shared/img/user.svg" alt="User Panel"></div>
+        <div><p id="logged-in-as"></p></div>
         </div>
       </nav>
     `;
     this.appendChild(header);
   }
-
-  connectedCallback() {
+  async connectedCallback() {
     initTheme("#theme-toggle");
-  }
+
+    const loggedIn = this.querySelector('#logged-in-as');
+    try {
+        const customer = await loadCustomer();
+        if (customer) {
+            loggedIn.textContent = customer.name ? `Välkommen, ${customer.name}` : `Välkommen, anonyma kund`;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
 }
 
 customElements.define('user-header', UserHeader);

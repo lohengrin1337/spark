@@ -41,8 +41,21 @@ router.get('/:id',
  * Updates bike status
  */
 router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUserOrDevice, async (req, res) => {
-    const bikeId = req.params.id;
+    const bikeId = parseInt(req.params.id, 10);
     const { status } = req.body;
+
+    if(isNaN(bikeId)) {
+        const err = new Error("Invalid bike id");
+        err.name = "InvalidIdError"
+        err.status = 400;
+    }
+
+    if (!status) {
+        const err = new Error("Bike status is required");
+        err.name = "InvalidBodyError"
+        err.status = 400;
+    }
+
     await bikeService.updateBikeStatus(bikeId, status);
     res.json({
         success: true,

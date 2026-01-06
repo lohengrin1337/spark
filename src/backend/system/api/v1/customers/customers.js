@@ -61,8 +61,21 @@ router.put('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
     //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
     //validateInvoice, //validerar requesten
     async (req, res) => {
-    const customerId = req.query.customer_id;
+    const customerId = parseInt(req.query.customer_id, 10);
     const { name, password = null } = req.body;
+
+    if(isNaN(customerId)) {
+        const err = new Error("Invalid or missing customer id");
+        err.name = "InvalidIdError"
+        err.status = 400;
+    }
+
+    if (!name) {
+        const err = new Error("Name is required");
+        err.name = "InvalidFormError"
+        err.status = 400;
+    }
+
     await customerServices.updateCustomer(customerId, name, password, req.user);
     res.json({
         success: true,

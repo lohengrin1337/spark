@@ -28,18 +28,18 @@ class UserHeader extends HTMLElement {
     this.appendChild(header);
   }
   async connectedCallback() {
-    initTheme("#theme-toggle");
-
-    const loggedIn = this.querySelector('#logged-in-as');
-    try {
-        const customer = await loadCustomer();
-        if (customer) {
-            loggedIn.textContent = customer.name ? `Välkommen, ${customer.name}` : `Välkommen, anonyma kund`;
+      
+      const loggedIn = this.querySelector('#logged-in-as');
+      try {
+          const customer = await loadCustomer();
+          if (customer) {
+              loggedIn.textContent = customer.name ? `Välkommen, ${customer.name}` : `Välkommen, anonyma kund`;
+            }
+        } catch (e) {
+            console.error(e);
         }
-    } catch (e) {
-        console.error(e);
+        initTheme("#theme-toggle");
     }
-}
 }
 
 customElements.define('user-header', UserHeader);

@@ -29,6 +29,8 @@ export function initTheme() {
         : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     }
   
+    if (toggle.dataset.bound === "true") return;
+    toggle.dataset.bound = "true";
     toggle.addEventListener("click", () => {
       const current = html.classList.contains("dark-mode") ? "dark" : "light";
       const next = current === "dark" ? "light" : "dark";

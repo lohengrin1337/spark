@@ -11,10 +11,13 @@
     <script type="module" src="/shared/auth/user-check.js"></script>
 
   <script type="module" src="/shared/view-component/user-header.js"></script>
+<script type="module" src="/shared/view-component/user-sidebar.js"></script>
+
 </head>
 <body>
     <user-header style="z-index:1000000000000000000"></user-header>
     <div class="non-map-container">
+        <user-sidebar></user-sidebar>
         <div class="pay-wrapper">
             <a href="#" id="swish-link">
                 <button class="pay-option"><img class="swish-payment" src="img/swish.svg" alt="Swish Payment SVG"></button>
@@ -36,8 +39,13 @@
                 return;
             }
 
-            const res = await fetch(`http://localhost:3000/api/v1/invoices/pay/${invoiceId}`, {
-                method: 'PUT'
+            const token = localStorage.getItem("token");
+            const res = await fetch(`/api/v1/invoices/pay/${invoiceId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
             const data = await res.json();
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kund - Fakturor</title>
+  <title>Spark - Fakturor</title>
     <script type="module" src="/shared/auth/user-check.js"></script>
 
   <link rel="stylesheet" href="/shared/style/style.css">
@@ -18,15 +18,18 @@
   </script>
 
   <script type="module" src="/shared/view-component/user-header.js"></script>
+  <script type="module" src="/shared/view-component/user-sidebar.js"></script>
 </head>
 
 <body>
   <user-header style="z-index:1000000000000000000"></user-header>
 
   <div class="non-map-container">
+    <user-sidebar></user-sidebar>
+
     <div class="table-wrapper">
       <table>
-        <h1 class="table-header table-header">Fakturor</h1>
+        <h1 class="table-header table-header">Mina fakturor</h1>
 
         <thead>
           <tr>
@@ -52,6 +55,7 @@
     </div>
   </div>
 
+  </div>
 
 
 <script type="module">

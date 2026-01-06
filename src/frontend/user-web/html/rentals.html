@@ -17,6 +17,7 @@
     loadRentals();
   </script>
 <script type="module" src="/shared/view-component/user-header.js"></script>
+<script type="module" src="/shared/view-component/user-sidebar.js"></script>
 </head>
 
 <body>
@@ -24,10 +25,10 @@
 <user-header style="z-index:1000000000"></user-header>
 
 <div class="non-map-container">
+<user-sidebar></user-sidebar>
   <div class="table-wrapper">
     <table>
-      <h1 class="table-header">Resehistorik</h1>
-      <h2>(Kommer senare innehålla bara den givna användarens resor, inte alla. Styling ur synk, ska omorganisera elementen lite.)</h2>
+      <h1 class="table-header">Min resehistorik</h1>
 
       <thead>
         <th>Id</th>
@@ -51,6 +52,8 @@
     </table>
   </div>
 </div>
+
+  </div>
 
 </body>
 </html>

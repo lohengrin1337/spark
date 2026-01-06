@@ -244,7 +244,6 @@ _________________________________________________________ */
     position: absolute;
     top: var(--unit-0-5);
     left: var(--unit-2);
-    height: 70px;
     width: auto;
     opacity: 0;
     pointer-events: none;
@@ -711,4 +710,8 @@ user-header{
   width: 28px;
   bottom: 8px;
   height: auto;
+}
+
+.link-pointer {
+    cursor: pointer;
 }

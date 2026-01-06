@@ -13,26 +13,15 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
 
   <script type="module" src="/shared/view-component/user-header.js"></script>
+  <script type="module" src="/shared/view-component/user-sidebar.js"></script>
 </head>
 <body>
     <user-header style="z-index:1000000000"></user-header>
-
-    
-    <div class="intro-text"><h1>Click the invoice-icon in the upper-left.</h1>
-        <br>
-        <h1>Alrighty. We're up and running with this tentative Docker-setup, to be fine tuned, or discarded,
-            if a better beginning template can be conceived of.</h1>
+    <div class="non-map-container">
+      <user-sidebar></user-sidebar>
+    <div class="intro-text">
+        <h1>Välkommen till spark!</h1>
         <br>
 
-        <h2><a href="rentals.html">User Rentals</a></h2>
-        <button id="logout" type="submit">logout</button>
-<script>
-    const logoutButton = document.getElementById('logout');
-    logoutButton.addEventListener('click', async (e) => {
-        e.preventDefault();
-        localStorage.removeItem("token");
-        alert("Bye");
-    })
-</script>
 </body>
 </html>

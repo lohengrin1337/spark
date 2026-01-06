@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spark - logga in</title>
+  <title>Spark - Skapa konto</title>
 
   <link rel="stylesheet" href="/shared/style/style.css">
 
@@ -23,15 +23,17 @@
 
     <div class="user-login-container">
       
-    <form class="user-login-form" id="login-form">
+    <form class="user-login-form" id="register-form">
 
-      <h1>Logga in</h1>
+      <h1>Skapa konto</h1>
       <br>
-      <input type="email" id="email" required class="login-input" placeholder="Enter email"></input>
+      <input type="email" id="email" required class="login-input" placeholder="Epost"></input>
       <br>
-      <input type="password" id="password" class="login-input" autocomplete="current-password" placeholder="Enter password"></input>
+      <input type="text" id="name" class="login-input" placeholder="Namn">
       <br>
-      <button type="submit" class="login-button">Logga in</button>
+      <input type="password" id="password" class="login-input" autocomplete="current-password" placeholder="Lösenord"></input>
+      <br>
+      <button type="submit" class="login-button">Spara</button>
       
     </form>
     <br>
@@ -47,25 +49,28 @@
         Logga in med GitHub
       </button>
     </a>
-        <p>Bli kund hos oss?</p>
-        <h2><a href="/user-register.html" style="color: black">Skapa konto</a></h2>
+    <p>Redan kund hos oss?</p>
+    <a href="/user-login.html" style="color: black"><h2>Logga in</h2></a>
+
 
   </div>
 <script>
-    const form = document.getElementById('login-form');
+    const form = document.getElementById('register-form');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = document.getElementById('email').value;
+        const name = document.getElementById('name').value;
         const password = document.getElementById('password').value;
 
-        const res = await fetch("http://localhost:3000/api/v1/auth/login", {
+        const res = await fetch("http://localhost:3000/api/v1/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, name, password })
         });
 
         const data = await res.json();
+
         if (res.ok) {
             localStorage.setItem("token", data.token);
             console.log(data.token);

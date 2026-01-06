@@ -12,11 +12,13 @@
       <script type="module" src="/shared/auth/user-check.js"></script>
 
   <script type="module" src="/shared/view-component/user-header.js"></script>
+  <script type="module" src="/shared/view-component/user-sidebar.js"></script>
 </head>
 <body>
     <user-header style="z-index:1000000000000000000"></user-header>
 
     <div class="non-map-container">
+        <user-sidebar></user-sidebar>
         <div class="pay-wrapper">
             <div class="pay-success-container">
                 <div class="gif-crop">
@@ -25,6 +27,8 @@
             </div>
         </div>
     </div>
+
+  </div>
 
     <script>
             

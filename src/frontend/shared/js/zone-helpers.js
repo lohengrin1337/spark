@@ -63,9 +63,7 @@ export async function renderAllZones(map) {
     clearAllZones();
   
     try {
-        console.log(localStorage);
         const token = localStorage.getItem("token");
-        console.log(token);
         const res = await fetch('/api/v1/zones', {
             method: "GET",
             headers: { 

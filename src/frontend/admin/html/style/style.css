@@ -1012,3 +1012,7 @@ admin-header {
   align-items: center;
   justify-content: center;
 } 
+
+.red-alert {
+    background-color: red;
+}

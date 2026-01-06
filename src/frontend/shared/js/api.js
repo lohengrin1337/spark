@@ -8,7 +8,6 @@ export async function loadRentals(source = 'user-web') {
   try {
       const token = localStorage.getItem("token");
     const url = source == "user-web" ? "/api/v1/rentals/customer" : "/api/v1/rentals";
-    console.log(url);
     const res = await fetch(url, {
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -317,7 +316,7 @@ export async function loadBikes() {
           <button class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</button><br>
           <button class="service-bike" data-id=${bk.bike_id}>Skicka på service</button>
         </td>
-        <td>Kanske en länk här till kartan med cykeln markerad? Idk.</td>
+        <td><a href="/admin-zone-view?zone_id=${bk.zone_id}">${bk.zone_id}</td>
       `;
     
       tbody.appendChild(tr);
@@ -330,13 +329,7 @@ export async function loadBikes() {
         button.addEventListener('click', async (e) => {
             e.preventDefault();
             const bikeId = button.dataset.id;
-    //     })
-    // })
-    // tbody.querySelectorAll('.delete-bike').forEach(link => {
-    //   link.addEventListener('click', async (e) => {
-    //     e.preventDefault();
-    //     const bikeId = link.dataset.id;
-    
+
         if (!confirm(`Ta sparkcykel ${bikeId} ur drift?`)) return;
     
         try {

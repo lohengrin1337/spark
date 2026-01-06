@@ -91,7 +91,7 @@ Result:
   "customer_id": 4,
   "email": "olof@olof.se",
   "name": "Olof",
-  "password": "null",
+  "password": <hashed password>,
   "blocked": 0,
   "oauth_provider": "null",
   "oauth_provider_id": "null\r"

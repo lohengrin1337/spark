@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spark - Live Map</title>
+  <title>Spark - logga in</title>
 
   <link rel="stylesheet" href="/shared/style/style.css">
 
@@ -25,13 +25,13 @@
       
     <form class="user-login-form" id="login-form">
 
-      <h1>User Login</h1>
+      <h1>Logga in</h1>
       <br>
       <input type="email" id="email" required class="login-input" placeholder="Enter email"></input>
       <br>
       <input type="password" id="password" class="login-input" autocomplete="current-password" placeholder="Enter password"></input>
       <br>
-      <button type="submit" class="login-button">Login</button>
+      <button type="submit" class="login-button">Logga in</button>
       
     </form>
     <br>
@@ -44,10 +44,11 @@
         data-dark-src="/shared/img/github-oauth-dark.svg"
         alt="GitHub OAuth Icon"
         />
-        Login with GitHub
+        Logga in med GitHub
       </button>
     </a>
-   
+        <p>Bli kund hos oss?</p>
+        <h2><a href="/user-register.html" style="color: black">Skapa konto</a></h2>
 
   </div>
 <script>
@@ -64,14 +65,15 @@
             body: JSON.stringify({ email, password })
         });
 
+        const data = await res.json();
         if (res.ok) {
-            const data = await res.json();
             localStorage.setItem("token", data.token);
             console.log(data.token);
             console.log(localStorage);
-            window.location.href = "/user-panel.html";
+            window.location.href = "/index.html";
         } else {
-            alert("Ett problem uppstod");
+            const message = data.errors[0].detail;
+            alert(message);
         }
     });
 

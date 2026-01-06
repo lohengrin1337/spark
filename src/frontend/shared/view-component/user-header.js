@@ -1,5 +1,5 @@
-import { initTheme } from '/shared/theme/theme.js';
-import { loadCustomer } from '/shared/js/api.js';
+import { initTheme } from '../theme/theme.js';
+import { loadCustomer } from '../js/api.js';
 /**
  * Custom element for the user interface header with theme toggle and user link.
  */

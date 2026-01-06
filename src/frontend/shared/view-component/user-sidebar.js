@@ -1,7 +1,5 @@
-import { initTheme } from '/shared/theme/theme.js';
-
 /**
- * Custom element for the user interface header with theme toggle and user link.
+ * Custom element for navigation and logout.
  */
 class UserSidebar extends HTMLElement {
   constructor() {
@@ -24,7 +22,6 @@ class UserSidebar extends HTMLElement {
   }
 
   connectedCallback() {
-    initTheme("#theme-toggle");
     const token = localStorage.getItem("token");
     const logoutButton = this.querySelector('#logout');
 

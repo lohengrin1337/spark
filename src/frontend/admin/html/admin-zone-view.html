@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style/style.css">
+    <meta charset="UTF-8">
+    <title>Admin - Zone view</title>
+    <script type="module" src="/shared/auth/admin-check.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
+    <script type="module" src="/shared/view-component/admin-header.js"></script>
+</head>
+<body>
+    <main class="admin-grid grid">
+
+        <admin-header style="z-index:1000000000000000000"></admin-header>
+        
+        <aside class="sidebar sidebar-vertical">
+        <a href="index.html">Karta</a>
+        <a href="admin-rentals.html">Uthyrningar</a>
+        <a href="admin-scooters.html">Sparkcyklar</a>
+        <a href="admin-customers.html">Användare</a>
+        <a href="admin-invoices.html">Fakturor</a>
+        <a href="admin-fees.html">Prissättning</a>
+        <a href="admin-zones.html">Zoner</a>
+        </aside>
+
+        <section class="content">
+        <div class="table-wrapper-admin">
+            <table>
+            <h1 class="table-header table-header-admin">Zoner</h1>
+            <thead>
+                <tr>
+                <th>Zon-Id</th>
+                <th>Stad</th>
+                <th>Zontyp</th>
+                <th>Antal cyklar</th>
+                <th>Cyklar</th>
+                <th>Hastighetsbegränsning</th>
+                </tr>
+            </thead>
+            <tbody id="zone-table-body">
+                <tr>
+                <td colspan="4" style="text-align:center; opacity:.6;">
+                    Laddar zoner...
+                </td>
+                </tr>
+            </tbody>
+            </table>
+            <div class="table-wrapper-admin">
+                <table>
+                    <thead>
+                        <th colspan="3">Cyklar i zonen:</th>
+                    </thead>
+                    <tbody id="bikes-in-zone">
+                    <tr>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </section>
+    </main>
+
+<script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+        loadZone();
+        loadBikes();
+    });
+    async function loadZone() {
+        const params = new URLSearchParams(window.location.search);
+        const zoneId = params.get('zone_id');
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`/api/v1/zones/${zoneId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json' }
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const zones = await res.json();
+        const tbody = document.getElementById('zone-table-body');
+        tbody.innerHTML = '';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${zones.zone_id}</td>
+            <td>${zones.city}</td>
+            <td>${zones.zone_type}</td>
+            <td>${zones.bikes.length}</td>
+            <td>${zones.bikes}</td>
+            <td>${zones.speed_limit}</td>
+        `;
+        tbody.appendChild(tr);
+
+    }
+    async function loadBikes() {
+        const token = localStorage.getItem("token");
+        const params = new URLSearchParams(window.location.search);
+        const zoneId = params.get('zone_id');
+        const res = await fetch(`/api/v1/bikes?zone_id=${zoneId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json' }
+        });
+        const bikes = await res.json();
+        const inZone = document.getElementById('bikes-in-zone');
+        inZone.innerHTML = '';
+
+        if (!bikes.length) {
+            inZone.innerHTML = `
+                <tr>
+                    <td>Hittar inga cyklar i zonen</td>
+                </tr>
+            `;
+            return;
+        }
+
+        bikes.forEach(b => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${b.bike_id}</td>
+            <td class="bike-status">${b.status}</td>
+            <td>${b.city}</td>`;
+            inZone.appendChild(tr);
+        });
+        const bikeStatus = document.querySelectorAll(".bike-status");
+        bikeStatus.forEach(bs => {
+            if (bs.textContent.trim() == "needs service") {
+                bs.classList.add("red-alert");
+            }
+        })
+    }
+</script>
+</body>
+</html>

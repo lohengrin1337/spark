@@ -4,7 +4,6 @@
 const pool = require('../../../database/database');
 
 const bikeModel = {
-
     /**
      * Fetches bikes from database.
      * Builds a query string based on which filters are sent in.
@@ -12,18 +11,28 @@ const bikeModel = {
      * @param { object } filters - optional query parameters
      */
     async getBikes(filters = {}) {
-        let query = `SELECT b.* FROM bike AS b`;
+        let query = `
+        SELECT
+        b.bike_id,
+        b.city,
+        b.status,
+        b.coordinates,
+        z.zone_id
+        FROM bike AS b
+        JOIN spark_zone AS z
+        ON ST_Contains(z.coordinates, b.coordinates)`;
 
         const where = [];
         const params = [];
 
         if (filters.zone_type) {
-            query += `
-            JOIN spark_zone AS z
-            ON ST_Contains(z.coordinates, b.coordinates)
-            `;
             where.push(`z.zone_type = ?`);
             params.push(filters.zone_type);
+        }
+
+        if (filters.zone_id) {
+            where.push(`z.zone_id = ?`);
+            params.push(filters.zone_id);
         }
 
         if (filters.city) {
@@ -45,10 +54,12 @@ const bikeModel = {
             query += ` WHERE ` + where.join(' AND ');
         }
 
+        query += `GROUP BY b.bike_id`;
         let conn;
         try {
             conn = await pool.getConnection();
             const bikes = await conn.query(query, params);
+            console.log(query, params);
             return bikes;
         } finally {
             if (conn) conn.release();
@@ -56,13 +67,29 @@ const bikeModel = {
     },
     /**
      * Fetch bike by id.
+     * Returns all bike data, zone id and most specific zone type.
      * @param { number } id - bike id
      */
     async getBikeById(id) {
         let conn;
         try {
             conn = await pool.getConnection();
-            const bike = await conn.query("SELECT * FROM bike WHERE bike_id = ?", [id]);
+            const bike = await conn.query(`
+                SELECT
+                b.bike_id,
+                b.city,
+                b.status,
+                b.coordinates,
+                z.zone_id,
+                z.zone_type
+                FROM bike AS b
+                JOIN spark_zone AS z
+                ON ST_Contains(z.coordinates, b.coordinates)
+                WHERE
+                b.bike_id = ?
+                ORDER BY
+                ST_Area(z.coordinates) ASC LIMIT 1`, [id]);
+
             return bike[0];
         } finally {
             if (conn) conn.release();

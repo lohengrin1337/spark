@@ -31,7 +31,7 @@ describe('GET /bikes, filter on bike_id', () => {
 describe('PUT /bikes endpoint', () => {
     it('should set bike with bike_id 5 to status deleted', async () => {
         const res = await request(app)
-        .put('/api/v1/bikes/5').send({ "bike_status": "deleted" });
+        .put('/api/v1/bikes/5').send({ "status": "deleted" });
         expect(res.statusCode).toEqual(200);
         expect(res.body.success).toEqual(true);
     });

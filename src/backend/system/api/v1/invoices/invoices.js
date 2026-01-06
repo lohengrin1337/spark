@@ -9,7 +9,6 @@ const rateLimit = require('./../../../middleware/ratelimit');
  * Response: 200 ok and array of invoice objects.
  */
 router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    //validate, // koll valid request
     async (req, res) => {
         const invoices = await invoiceServices.getInvoices(req.user);
         res.status(200).json(invoices);
@@ -20,7 +19,6 @@ router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
  * Response: 200 ok and invoice array or 404 not found.
  */
 router.get('/customer/:customer_id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    //validateInvoice, //validerar requesten
     async (req, res) => {
         const customerId = Number.parseInt(req.params.customer_id, 10);
         const invoices = await invoiceServices.getInvoicesByCustomer(customerId);
@@ -37,7 +35,6 @@ router.get('/customer/:customer_id', auth.authToken, rateLimit.limiter, auth.aut
  * Response: 200 ok and invoice object or 404 not found.
  */
 router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    //validateInvoice, //validerar requesten
     async (req, res) => {
     const invoiceId = Number.parseInt(req.params.id, 10);
     const invoice = await invoiceServices.getInvoiceById(invoiceId);

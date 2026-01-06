@@ -48,12 +48,15 @@ router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUserOrDevi
         const err = new Error("Invalid bike id");
         err.name = "InvalidIdError";
         err.status = 400;
+        throw err;
     }
 
-    if (!status) {
+    if (!status || status === "undefined") {
         const err = new Error("Bike status is required");
         err.name = "InvalidBodyError";
         err.status = 400;
+        throw err;
+
     }
 
     await bikeService.updateBikeStatus(bikeId, status);

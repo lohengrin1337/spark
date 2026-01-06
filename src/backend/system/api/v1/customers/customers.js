@@ -68,12 +68,14 @@ router.put('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
         const err = new Error("Invalid or missing customer id");
         err.name = "InvalidIdError";
         err.status = 400;
+        throw err;
     }
 
     if (!name) {
         const err = new Error("Name is required");
         err.name = "InvalidFormError";
         err.status = 400;
+        throw err;
     }
 
     await customerServices.updateCustomer(customerId, name, password, req.user);

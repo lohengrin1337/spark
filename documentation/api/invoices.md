@@ -12,11 +12,13 @@ customer_id<br>
 Fetch all invoices:
 
 Requires admin token.
+
 >GET /invoices
+
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/invoices', {
+const response = await fetch('http://localhost:3000/api/v1/invoices', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -27,7 +29,8 @@ const result = await response.json();
 ```
 
 Result:
-```
+
+```json
 [
     {
         "invoice_id": 37,
@@ -64,10 +67,11 @@ Fetch all invoices belonging to a customer:
 Requires admin token or customer token with matching id.
 
 >GET /invoices/customer/:customer_id
+
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/invoices/customer/3', {
+const response = await fetch('http://localhost:3000/api/v1/invoices/customer/3', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -76,18 +80,11 @@ const response = await fetch('/api/v1/invoices/customer/3', {
 });
 const result = await response.json();
 ```
+
 Result:
-```
+
+```json
 [
-    {
-        "invoice_id": 2,
-        "rental_id": 2,
-        "status": "unpaid",
-        "amount": 0,
-        "creation_date": null,
-        "due_date": "2026-01-01T00:00:00.000Z",
-        "customer_id": 3
-    },
     {
         "invoice_id": 7,
         "rental_id": 8,
@@ -99,15 +96,17 @@ Result:
     }
 ]
 ```
+
 Fetch one invoice:
 
 Requires admin token or customer token with matching customer id.
 
 >GET /invoices/:id
+
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/invoices/12', {
+const response = await fetch('http://localhost:3000/api/v1/invoices/12', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -116,8 +115,10 @@ const response = await fetch('/api/v1/invoices/12', {
 });
 const result = await response.json();
 ```
+
 Result:
-```
+
+```json
 {
     "invoice_id": 12,
     "rental_id": 12,
@@ -128,14 +129,65 @@ Result:
     "customer_id": 4
 }
 ```
-Update one or more prices:
->PUT /fees
-Required parameters:
->fee_id
-JWT token
 
->Optional parameters:
-start
-minute
-discount
-penalty
+Pay an invoice:
+
+requires admin token or customer token with matching customer id(?)
+
+>PUT /invoices/pay/:id
+
+Required parameters:
+
+>invoice_id
+
+```javascript
+const token = localStorage.getItem('token');
+const response = await fetch(`http://localhost:3000/api/v1/invoices/pay/12`, {
+    method: 'PUT',
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+});
+const result = await response.json();
+```
+
+Result:
+
+```json
+{
+    "success": true,
+    "message": "Payment recorded"
+}
+```
+
+Void an invoice:
+
+requires admin token or customer token with matching customer id(?)
+
+>PUT /invoices/pay/:id
+
+Required parameters:
+
+>invoice_id
+
+```javascript
+const token = localStorage.getItem('token');
+const response = await fetch(`http://localhost:3000/api/v1/invoices/void/12`, {
+    method: 'PUT',
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+});
+const result = await response.json();
+```
+
+Result:
+
+```json
+{
+    "success": true,
+    "message": "Invoice successfully voided"
+}
+```

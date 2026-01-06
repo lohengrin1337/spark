@@ -14,13 +14,15 @@ status<br>
 coordinates<br>
 
 Fetch all bikes:
+
 >GET /bikes
 
 required role - admin
+
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/bikes', {
+const response = await fetch('http://localhost:3000/api/v1/bikes', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -29,8 +31,10 @@ const response = await fetch('/api/v1/bikes', {
 });
 const result = await response.json();
 ```
+
 Result:
-```
+
+```json
 [
   {
     "bike_id": 1,
@@ -68,7 +72,7 @@ Fetch one bike by id:
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/bikes/5', {
+const response = await fetch('http://localhost:3000/api/v1/bikes/5', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -77,8 +81,10 @@ const response = await fetch('/api/v1/bikes/5', {
 });
 const result = await response.json();
 ```
+
 Result:
-```
+
+```json
 {
   "bike_id": 5,
   "city": "Karlskrona",
@@ -89,14 +95,16 @@ Result:
   }
 }
 ```
+
 Fetch all bikes belonging to a city:
 
 Required role = admin
+
 >GET /bikes?city=\<city>
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/bikes?city=malmö', {
+const response = await fetch('http://localhost:3000/api/v1/bikes?city=malmö', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -105,9 +113,10 @@ const response = await fetch('/api/v1/bikes?city=malmö', {
 });
 const result = await response.json();
 ```
+
 Result:
 
-```
+```json
 [
     {
         "bike_id": 1,
@@ -135,15 +144,17 @@ Result:
     }
 ]
 ```
+
 Fetch all bikes filtered on city and zone type:
 
 Requires admin token.
 
 >GET /bikes?city=\<city>&zone_type=\<zone type>
+
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/bikes?city=karlskrona&zone_type=charging', {
+const response = await fetch('http://localhost:3000/api/v1/bikes?city=karlskrona&zone_type=charging', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -152,9 +163,10 @@ const response = await fetch('/api/v1/bikes?city=karlskrona&zone_type=charging',
 });
 const result = await response.json();
 ```
+
 Result:
 
-```
+```json
 [
     {
         "bike_id": 10,
@@ -200,6 +212,7 @@ Fetch all bikes filtered on city and status:
 Third parties and customers may filter on status available, all other filters require an admin token.
 
 >GET /bikes?city=\<city>&status=\<status>
+
 ```javascript
 const token = localStorage.getItem('token');
 
@@ -212,8 +225,10 @@ const response = await fetch('/api/v1/bikes?city=umeå&status=available', {
 });
 const result = await response.json();
 ```
+
 Result:
-```
+
+```json
 [
     {
         "bike_id": 3,
@@ -241,18 +256,20 @@ Result:
     }
 ]
 ```
+
 Update bike status:
+
 >PUT /bikes/:id
 
-Requires an admin token (om kund ska kunna flagga problem med cykel kanske det ska lösas på annat sätt?)
+Requires an admin or customer token.
 
 Required parameters:
+
 >bike_id<br>
-JWT token
 
 ```javascript
-const bike = { status: "deleted" };
-const response = await fetch(`/api/v1/bikes/:id`, {
+const bike = { status: "active" };
+const response = await fetch(`http://localhost:3000/api/v1/bikes/1`, {
     method: 'PUT',
     headers: {
     'Authorization': `Bearer ${token}`,
@@ -261,8 +278,10 @@ const response = await fetch(`/api/v1/bikes/:id`, {
     body: JSON.stringify(bike)
     });
 ```
+
 Result:
-```
+
+```json
 {
     "success": true,
     "message": "Status updated"

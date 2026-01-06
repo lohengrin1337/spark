@@ -99,12 +99,12 @@
         zones.forEach(zo => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${zo.zone_id}</td>
+            <td><a href="/admin-zone-view?zone_id=${zo.zone_id}">${zo.zone_id}</td>
             <td>${zo.city}</td>
             <td>${zo.zone_type}</td>
             <td>${zo.bikes.length}</td>
             <td>${zo.speed_limit}</td>
-            <td>Kanske en länk här till zonen i rätt karta?<br>Eller vilka cyklar?</td>
+            <td>Kanske en länk här till zonen i rätt karta?</td>
         `;
         tbody.appendChild(tr);
         });
@@ -116,7 +116,6 @@
         const button = document.getElementById('search');
         button.addEventListener('click', async (e) => {
             e.preventDefault();
-            console.log("clicked");
             const zone_id = document.getElementById("zone_id")?.value;
             const token = localStorage.getItem("token");
             const res = await fetch(`/api/v1/zones/${zone_id}`, {
@@ -127,7 +126,6 @@
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const zone = await res.json();
-        console.log(zone);
         const tbody = document.getElementById('zone-table-body');
         tbody.innerHTML = '';
 
@@ -144,14 +142,6 @@
         })
     }
 
-    //export async function updateCustomer(customer) {
-    //const token = localStorage.getItem("token");
-    //const res = await fetch('/api/v1/customers', {
-        //method: 'PUT',
-        //headers: { 'Authorization': `Bearer ${token}`,
-                    //'Content-type': 'application/json' },
-        //body: JSON.stringify(customer)
-    //});
 </script>
 </body>
 </html>

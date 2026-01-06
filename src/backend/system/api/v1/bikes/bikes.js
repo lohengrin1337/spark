@@ -29,7 +29,6 @@ router.get('/:id',
     auth.authToken, 
     rateLimit.limiter,
     auth.authAdminOrUser, 
-    //validateInvoice, //validerar requesten
     async (req, res) => {
     const id = req.params.id;
     const bike = await bikeService.getBikeById(id);

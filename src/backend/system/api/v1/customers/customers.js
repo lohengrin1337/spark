@@ -13,8 +13,6 @@ const rateLimit = require('./../../../middleware/ratelimit');
  * Response: 200 ok and array of customer objects.
  */
 router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrDevice, 
-    //authenticate, // koll valid token
-    //validate, // koll valid request
     async (req, res) => {
     const customers = await customerServices.getCustomers();
     res.status(200).json(customers);
@@ -40,8 +38,6 @@ router.get('/search', auth.authToken, auth.authAdminOrUser,
  * Admin har tillgång till alla, user bara till sin egen
  */
 router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
-    //validateInvoice, //validerar requesten
     async (req, res) => {
     const customerId = req.params.id;
     const customer = await customerServices.getCustomerById(customerId, req.user);
@@ -58,8 +54,6 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
  * Admin can update all, user just their self
  */
 router.put('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    //authenticate, //kollar att det finns en valid token, avkodar, fäster info på req.user
-    //validateInvoice, //validerar requesten
     async (req, res) => {
     const customerId = parseInt(req.query.customer_id, 10);
     const { name, password = null } = req.body;

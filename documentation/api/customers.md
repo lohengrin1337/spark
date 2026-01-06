@@ -4,6 +4,7 @@ If called with a jwt with role: customer, only data belonging to that customer m
 Admin may access all data.
 
 Customer data that can be fetched from the database:
+
 >customer_id<br>
 email<br>
 name<br>
@@ -13,6 +14,7 @@ oauth_provider<br>
 oauth_provider_id<br>
 
 Fetch all customers:
+
 >GET /customers
 
 Requires admin token.
@@ -20,7 +22,7 @@ Requires admin token.
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/customers', {
+const response = await fetch('http://localhost:3000/api/v1/customers', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -29,8 +31,9 @@ const response = await fetch('/api/v1/customers', {
 });
 const result = await response.json();
 ```
+
 Result:
-```
+```json
 [
   {
     "customer_id": 1,
@@ -61,7 +64,9 @@ Result:
   },
   ...]
 ```
+
 Fetch one customer by id:
+
 >GET /customers/:id
 
 Requires admin token or customer token where id matches route param :id.
@@ -69,7 +74,7 @@ Requires admin token or customer token where id matches route param :id.
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/v1/customers/4', {
+const response = await fetch('http://localhost:3000/api/v1/customers/4', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -78,13 +83,15 @@ const response = await fetch('/api/v1/customers/4', {
 });
 const result = await response.json();
 ```
+
 Result:
-```
+
+```json
 {
   "customer_id": 4,
   "email": "olof@olof.se",
   "name": "Olof",
-  "password": "null",
+  "password": <hashed password>,
   "blocked": 0,
   "oauth_provider": "null",
   "oauth_provider_id": "null\r"
@@ -92,23 +99,26 @@ Result:
 ```
 
 Update customer data:
->PUT /customers/:id
 
-Requires admin token or customer token where id matches route param :id.
+>PUT /customers/
+
+Requires admin token or customer token where id matches query parameter customer_id.
 
 Required parameters:
+
 >customer_id<br>
-JWT token
 
 Optional parameters:
+
 >email<br>
 name<br>
 password
+
 ```javascript
 customer = {
     "password": "drowssap"
 }
-const response = await fetch("http://localhost:3000/api/v1/customers/4", {
+const response = await fetch("http://localhost:3000/api/v1/customers?customer_id=4", {
     method: 'PUT',
     body: JSON.stringify(customer),
     headers: {
@@ -119,9 +129,9 @@ const response = await fetch("http://localhost:3000/api/v1/customers/4", {
 const result = await response.json();
 ```
 
-
 Result:
-```
+
+```json
 {
     "success": true,
     "message": "Customer updated"

@@ -29,7 +29,7 @@
         <input id="user-name" class="user-form" type="text" placeholder="User">
   
         <label>Email</label>
-        <input id="user-email" class="user-form" type="text" placeholder="user@user.se">
+        <input id="user-email" class="user-form" type="text" placeholder="user@user.se" readonly>
         
         <label>Lösenord</label>
         <input id="password" class="user-form" type="password" placeholder="P@ssword">
@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const customerData = {
             name: username.value,
-            email: email.value
         };
 
         if (password.value) {

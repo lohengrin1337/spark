@@ -94,15 +94,15 @@ const invoiceModel = {
      * @returns { number } Created invoice id.
      * @throws { Error } If query fails.
      */
-    async createInvoice({ rental_id, amount, due_date }) {
+    async createInvoice({ rental_id, customer_id, amount, due_date }) {
         let conn;
         try {
             conn = await pool.getConnection();
             const result = await conn.query(
                 `INSERT INTO invoice
-                 (rental_id, amount, creation_date, due_date)
-                 VALUES (?, ?, NOW(), ?)`,
-                [rental_id, amount, due_date]
+                 (rental_id, customer_id, amount, creation_date, due_date)
+                 VALUES (?, ?, ?, NOW(), ?)`,
+                [rental_id, customer_id, amount, due_date]
             );
             return result.insertId;
         } catch (err) {

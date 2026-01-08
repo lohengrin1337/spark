@@ -333,9 +333,9 @@ _________________________________________________________ */
 _________________________________________________________ */
 
 .table-wrapper {
+    max-width: 70%;
     margin: var(--unit-6) auto;
-    margin-top: 100px;
-    max-width: 700px;
+    margin-top: 2rem;
     background: var(--pay-bg);
     padding: var(--unit-3);
     border-radius: var(--unit-3);
@@ -763,3 +763,5 @@ user-header{
   bottom: 8px;
   height: auto;
 }
+
+

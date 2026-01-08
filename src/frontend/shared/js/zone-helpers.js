@@ -1,8 +1,9 @@
 /**
  * @module zone-helpers
  * Handles rendering of zones on a Leaflet map.
+ * Now supports real polygon rendering for parking zones when available,
+ * falling back to circle (center + radius) only for POINT geometry.
  */
-
 
 const ZONE_STYLES = {
   city: { color: '#689F38', weight: 2, fillColor: '#00ff00', fillOpacity: 0.13 },
@@ -11,7 +12,7 @@ const ZONE_STYLES = {
   parking: { color: 'blue', weight: 2, fillColor: '#1E90FF', fillOpacity: 0.3 }
 };
 
-const PARKING_RADIUS = 50; // meters
+const PARKING_RADIUS = 50; // meters — fallback for POINT geometry only
 let allLayers = [];
 
 /**
@@ -101,19 +102,20 @@ export async function renderAllZones(map) {
             break;
   
           case 'parking':
-            let center;
-            if (parsed.type === 'point') {
-              center = [parsed.lat, parsed.lng];
-            } else if (parsed.type === 'polygon') {
-              const lat = parsed.points.reduce((a, b) => a + b[0], 0) / parsed.points.length;
-              const lng = parsed.points.reduce((a, b) => a + b[1], 0) / parsed.points.length;
-              center = [lat, lng];
-            } else return;
-  
-            layer = L.circle(center, {
-              radius: PARKING_RADIUS,
-              ...ZONE_STYLES.parking
-            }).bindPopup(`<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: ${zone.zone_id}`);
+            if (parsed.type === 'polygon') {
+              // NEW: Full polygon support for parking zones
+              layer = L.polygon(parsed.points, ZONE_STYLES.parking)
+                .bindPopup(`<strong>${zone.city} - Parkeringszon (Polygon)</strong><br>ID: ${zone.zone_id}`);
+            } else if (parsed.type === 'point') {
+              // Legacy fallback: circle for POINT geometry
+              const center = [parsed.lat, parsed.lng];
+              layer = L.circle(center, {
+                radius: PARKING_RADIUS,
+                ...ZONE_STYLES.parking
+              }).bindPopup(`<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: ${zone.zone_id}`);
+            } else {
+              return;
+            }
             topLayers.push(layer);
             break;
   
@@ -133,5 +135,4 @@ export async function renderAllZones(map) {
     } catch (err) {
       console.error('Failed to load or render zones:', err);
     }
-  }
-  
+}

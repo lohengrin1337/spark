@@ -1,8 +1,12 @@
 status
 charging
-low battery
+needsCharging
+needCharging
 service
-needs service
+needsService
+needService
+deactivated
 active
 available
 deleted
+reduced

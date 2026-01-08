@@ -31,28 +31,23 @@ function startApp() {
   initMap();
 
   // ─────────────────────────────────────────────────────────────
-  // 3. Render the charging zone circles on the map
-  // ─────────────────────────────────────────────────────────────
-  drawChargingZones();
-
-  // ─────────────────────────────────────────────────────────────
-  // 4. Begin aesthetic continuous marker animations for scooters
+  // 3. Begin aesthetic continuous marker animations for scooters
   // ─────────────────────────────────────────────────────────────
   startAnimationLoop();
 
   // ─────────────────────────────────────────────────────────────
-  // 5. Setup WebSocket-client-connection
+  // 4. Setup WebSocket-client-connection
   // ─────────────────────────────────────────────────────────────
   initWebSocket();
 
   // ─────────────────────────────────────────────────────────────
-  // 6. Initialize the bottom city navigation panel
+  // 5. Initialize the bottom city navigation panel
   // ─────────────────────────────────────────────────────────────
   initCityLinks(switchTo);
 
 
   // ─────────────────────────────────────────────────────────────
-  // 7. Render all the three cities' zones
+  // 6. Render all the three cities' zones
   // ─────────────────────────────────────────────────────────────
   renderAllZones(map);
   

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/shared/style/style.css">
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/view-component/user-app-header.js"></script>
+</head>
+<body>
+    <user-app-header style="z-index:1000000"></user-app-header>
+    <div class="non-map-container">
+        <div class="pay-wrapper">
+            <a href="#" id="swish-link">
+                <button class="pay-option"><img class="swish-payment" src="img/swish.svg" alt="Swish Payment SVG"></button>
+            </a><!-- TESTING
+
+            --><a href="#" id="klarna-link">
+                <button class="pay-option"><img class="klarna-payment" src="img/klarna.svg" alt="Klarna Payment SVG"></button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const invoiceId = params.get('id');
+
+        async function payInvoice() {
+            if (!invoiceId) {
+                alert("No invoice selected");
+                return;
+            }
+
+            const res = await fetch(`http://localhost:3000/api/v1/invoices/pay/${invoiceId}`, {
+                method: 'PUT'
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                window.location.href = "user-app-sim-pay.html";
+            } else {
+                alert(data.error || "Payment failed");
+            }
+        }
+
+        document.getElementById("swish-link").onclick = (e) => {
+            e.preventDefault();
+            payInvoice();
+        };
+        document.getElementById("klarna-link").onclick = (e) => {
+            e.preventDefault();
+            payInvoice();
+        };
+
+    </script>
+</body>
+</html>

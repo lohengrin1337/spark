@@ -9,10 +9,11 @@ app.disable('x-powered-by');
 app.use(express.json());
 
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
-  credentials: true
-}));
-
+    origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']  // Explicitly allow Authorization
+  }));
+  
 app.use("/api/v1", apiV1);
 
 // Catch undefined routes

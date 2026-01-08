@@ -19,4 +19,14 @@ async function getOneCity(name) {
     return cityModel.getOneCity(name);
 }
 
-module.exports = { getCities, getOneCity };
+
+/**
+ * Gets all geographic zones for a city (used by simulator).
+ * @param {string} name city name
+ * @returns Array of zone objects with WKT
+ */
+async function getZonesForCity(name) {
+  return cityModel.getZonesForCity(name);
+}
+
+module.exports = { getCities, getOneCity, getZonesForCity };

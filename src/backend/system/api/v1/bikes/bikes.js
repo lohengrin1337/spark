@@ -64,5 +64,65 @@ router.put('/delete/:id', async (req, res) => {
     }
 });
 
+router.put('/:id/status', async (req, res) => {
+    const bikeId = parseInt(req.params.id, 10);
+    const { status: newStatus } = req.body;
+  
+    if (!bikeId || isNaN(bikeId)) {
+      return res.status(400).json({ error: "Invalid bike id" });
+    }
+    if (!newStatus || typeof newStatus !== 'string') {
+      return res.status(400).json({ error: "Valid 'status' field is required in request body" });
+    }
+  
+    try {
+      // ADMIN endpoint: this is a real override command
+      const affectedRows = await bikeService.updateBikeStatusById(bikeId, newStatus.trim(), {
+        publishAdmin: true
+      });
+  
+      if (affectedRows === 0) {
+        return res.status(404).json({ error: "Bike not found or already deleted" });
+      }
+  
+      res.status(200).json({ success: true, message: `Bike ${bikeId} status updated to '${newStatus}'` });
+    } catch (err) {
+      console.error("Error updating bike status:", err);
+      res.status(500).json({ error: "Failed to update bike status" });
+    }
+  });
+  
+  /**
+   * Simulator/system canonical status update endpoint.
+   * Same payload, but does NOT publish to admin command channel.
+   */
+  router.put('/:id/status/sim', async (req, res) => {
+    const bikeId = parseInt(req.params.id, 10);
+    const { status: newStatus } = req.body;
+  
+    if (!bikeId || isNaN(bikeId)) {
+      return res.status(400).json({ error: "Invalid bike id" });
+    }
+    if (!newStatus || typeof newStatus !== 'string') {
+      return res.status(400).json({ error: "Valid 'status' field is required in request body" });
+    }
+  
+    try {
+      const affectedRows = await bikeService.updateBikeStatusById(bikeId, newStatus.trim(), {
+        publishAdmin: false
+      });
+  
+      if (affectedRows === 0) {
+        return res.status(404).json({ error: "Bike not found or already deleted" });
+      }
+  
+      res.status(200).json({ success: true, message: `Bike ${bikeId} status updated to '${newStatus}'` });
+    } catch (err) {
+      console.error("Error updating bike status (sim):", err);
+      res.status(500).json({ error: "Failed to update bike status" });
+    }
+  });
+  
+
 
 module.exports = router;

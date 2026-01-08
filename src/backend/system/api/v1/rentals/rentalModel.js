@@ -1,5 +1,4 @@
-// rental model
-// Handles database queries for rental data.
+// rentalModel.js
 
 const pool = require('../../../database/database');
 
@@ -12,16 +11,17 @@ const rentalModel = {
   async getAllRentals() {
     let conn;
     try {
-        conn = await pool.getConnection();
-        const rentals = await conn.query("SELECT * FROM rental");
-        return rentals;
+      conn = await pool.getConnection();
+      const rentals = await conn.query("SELECT * FROM rental");
+      return rentals;
     } catch (err) {
-        console.error("GET /api/rentals error:", err);
-        throw err;
+      console.error("GET /api/rentals error:", err);
+      throw err;
     } finally {
-        if (conn) conn.release();
+      if (conn) conn.release();
     }
   },
+
   /**
    * Fetch one rental by id.
    * @param { number } id - rental id.
@@ -31,14 +31,14 @@ const rentalModel = {
   async getOneRental(id) {
     let conn;
     try {
-        conn = await pool.getConnection();
-        const rentals = await conn.query("SELECT * FROM rental WHERE rental_id = ?", [id]);
-        return rentals[0];
+      conn = await pool.getConnection();
+      const rentals = await conn.query("SELECT * FROM rental WHERE rental_id = ?", [id]);
+      return rentals[0];
     } catch (err) {
-        console.error('');
-        throw err;
+      console.error("GET rental error:", err);
+      throw err;
     } finally {
-        if (conn) conn.release();
+      if (conn) conn.release();
     }
   },
 
@@ -46,8 +46,8 @@ const rentalModel = {
    * Create a new rental.
    * @param {number} customer_id
    * @param {number} bike_id
-   * @param {object} start_point - GeoJSON point object.
-   * @param {number} start_zone
+   * @param {object} start_point - GeoJSON-ish point object persisted as JSON string.
+   * @param {string} start_zone
    * @returns {number} Inserted rental_id.
    * @throws {Error} If query fails.
    */
@@ -70,10 +70,10 @@ const rentalModel = {
   },
 
   /**
-   * Complete an ongoing rental.
+   * Complete an ongoing rental (full update with route/zone).
    * @param {number} id - Rental ID.
-   * @param {object} end_point - GeoJSON point object.
-   * @param {number} end_zone
+   * @param {object} end_point - GeoJSON-ish point object persisted as JSON string.
+   * @param {string} end_zone
    * @param {Array} route - Array of coordinates.
    * @returns {number} Number of affected rows (1 if successful).
    * @throws {Error} If query fails.
@@ -85,7 +85,7 @@ const rentalModel = {
       const result = await conn.query(
         `UPDATE rental
          SET end_point = ?, end_time = NOW(), end_zone = ?, route = ?
-         WHERE rental_id = ? AND end_time IS NULL`,
+         WHERE rental_id = ?`,
         [JSON.stringify(end_point), end_zone, JSON.stringify(route), id]
       );
       return result.affectedRows;

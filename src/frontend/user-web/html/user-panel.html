@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Fakturor</title>
+
+  <link rel="stylesheet" href="/shared/style/style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
+  <script type="module" src="/shared/js/frontend-helpers.js"></script>
+  <script type="module">
+    import { loadInvoices } from '/shared/js/api.js';
+    loadInvoices();
+  </script>
+
+  <script type="module" src="/shared/view-component/user-header.js"></script>
+</head>
+
+<body>
+  <user-header style="z-index:1000000000000000000"></user-header>
+
+  <div class="non-map-container">
+    <div class="user-panel">
+      <label>Namn</label>
+      <input class="user-form" type="text">
+
+      <label>Email</label>
+      <input class="user-form" type="text">
+      
+      <label>Lösenord</label>
+      <input class="user-form" type="text">
+    </div>
+
+    <div class="user-form-links">
+      <a href="rentals.html">
+        <img class="trip-img" src="/shared/img/trip.svg" alt="Trip Svg">
+      </a>
+
+        <a href="invoices.html">
+          <img class="invoice-img" src="/shared/img/invoice.svg" alt="Invoice Svg">
+        </a>
+    </div>
+
+  </div>
+
+
+
+<script type="module">
+  import { loadInvoices } from '/shared/js/api.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadInvoices('user');
+  });
+</script>
+
+</body>
+</html>

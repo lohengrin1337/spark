@@ -165,14 +165,19 @@ export async function loadInvoices(mode = 'admin') {
               Betala
             </a>
           `;
+        } else if (mode === 'user-app') {
+          actionsCell = `
+            <a href="user-app-pay.html?id=${inv.invoice_id}" class="pay-button">
+              Betala
+            </a>
+          `;
         }
-      }
-      // If finalized (paid or void) → keep actionsCell as '-'
+      };
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${inv.invoice_id}</td>
-        <td>*Här*(Via schemat/join)</td>
+        <td>${inv.customer_id}</td>
         <td>
           <a href="admin-rentals.html#${inv.rental_id}">
             ${inv.rental_id}

@@ -3,10 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const { createServer } = require('http');
 const { WebSocketServer } = require('ws');
-const Redis = require('ioredis');
 const mariadb = require('mariadb');
 const apiV1 = require('./api/v1/apiRoutes.js');
 const oauth = require('./api/v1/auth/oauth.js');
+
+
+const { redisSubscriber } = require('./redis/redisClient');
 
 const { createInvoiceForRental } = require('./api/v1/billing/rentalBillingService');
 
@@ -19,7 +21,8 @@ app.use(express.json());
 
 app.use(cors({
   origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use("/oauth", oauth);
@@ -37,10 +40,7 @@ const pool = mariadb.createPool({
 });
 
 
-// __________________________________________________________________________
-//
-// Herman's intrusion starts here, will tidy up later ..........
-// __________________________________________________________________________
+
 
 const clients = new Set();
 
@@ -54,25 +54,23 @@ wss.on('connection', (ws) => {
   });
 });
 
+// Uses the new modular imported subscriber
 
-const redisSub = new Redis({
-  host: process.env.REDIS_HOST || 'redis',
-  port: 6379
-});
+redisSubscriber.subscribe('scooter:delta', 'rental:completed');
 
-redisSub.subscribe('scooter:delta', 'rental:completed');
+redisSubscriber.on('message', (channel, message) => {
+  try {
+    const data = JSON.parse(message);
 
-redisSub.on('message', (channel, message) => {
-  const data = JSON.parse(message);
-
-  for (const client of clients) {
-    if (client.readyState === client.OPEN) {
-      client.send(JSON.stringify(data));
+    for (const client of clients) {
+      if (client.readyState === client.OPEN) {
+        client.send(JSON.stringify(data));
+      }
     }
+  } catch (err) {
+    console.error('[Redis] Failed to parse message:', err);
   }
 });
-
-
 
 BigInt.prototype.toJSON = function () {
   return this.toString();

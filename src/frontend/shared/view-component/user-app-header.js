@@ -20,7 +20,7 @@ class UserAppHeader extends HTMLElement {
 
       <nav>
         <div class="navlink-box">
-          <a href="user-panel.html">
+          <a href="user-app-panel.html">
             <img class="user-spark" src="/shared/img/user.svg" alt="User Panel">
           </a>
         </div>

@@ -148,7 +148,7 @@ FIELDS
 LINES
         TERMINATED BY '\n'
 IGNORE 1 LINES
-(`rental_id`, `status`, `due_date`)
+(`rental_id`,`customer_id`,`status`,`creation_date`,`due_date`)
 ;
 
 

@@ -28,7 +28,7 @@ def fetch_users():
             for uid in range(1, 21) 
         ]
 
-RENTAL_API = "http://system:3000/api/v1/rentals" # noqa: S112
+RENTAL_API = "http://system:3000/api/v1/rentals/sim" # noqa: S112
 
 def fetch_rentals():
     """ Fetch all rentals from the backend API. """
@@ -107,3 +107,36 @@ def complete_rental(rental_id, end_point, end_zone, route):
         print(f"[API] Exception while completing rental {rental_id}: {e}")
 
     return False
+
+
+
+BIKE_API = "http://system:3000/api/v1/bikes" 
+
+
+def update_bike_status(bike_id, new_status):
+    """
+    Update the status of a given bike via the backend API.
+    
+    Used inside the simulator for automated status changes (e.g. low battery -> needCharging,
+    out of bounds -> deactivated), keeping the db status up to date and as the single
+    canonical source of truth.
+
+    """
+    url = f"{BIKE_API}/{bike_id}/status/sim"
+    payload = {"status": new_status}
+
+    try:
+        print(f"[API] Updating bike status -> PUT {url} | payload: {json.dumps(payload)}")
+        response = requests.put(url, json=payload, timeout=10)
+        print(f"[API] Response {response.status_code}: {response.text}")
+
+        if response.status_code in (200, 201, 204):
+            print(f"[API] Bike {bike_id} status successfully updated to '{new_status}'")
+            return True
+        else:
+            print(f"[API] Failed to update bike {bike_id} status -> HTTP {response.status_code}")
+            return False
+
+    except requests.RequestException as e:
+        print(f"[API] Exception while updating bike {bike_id} status: {e}")
+        return False

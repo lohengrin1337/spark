@@ -9,7 +9,6 @@ const CACHE_NAME = 'spark-user-app-v1';
 const URLs_TO_CACHE = [
   '/',
   '/index.html',
-  '/rentals.html',
   '/style/style.css',
   '/manifest.json',
   '/shared/view-component/user-app-header.js'

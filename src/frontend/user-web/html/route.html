@@ -4,18 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spark - Ruttvisning</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="/shared/style/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <script type="module" src="/shared/view-component/user-header.js"></script>
 </head>
 <body>
 
-  <user-header class="top-layer"></user-header>
+  <user-header></user-header>
 
   <div id="map">
-    <a href="rentals.html" class="back-button">⇐ Tillbaka</a>
+    <a href="rentals.html" style="position: absolute; top: 5px; right: 5px;"><button class="back-button">⇐ Tillbaka</button></a>
   </div>
 
   <div id="info-box" class="table-wrapper">

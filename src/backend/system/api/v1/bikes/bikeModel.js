@@ -95,7 +95,30 @@ const bikeModel = {
         } finally {
             if (conn) conn.release();
         }
+    },
+    /**
+   * Update the status of a bike by id.
+   * @param { number } id - bike id
+   * @param { string } newStatus - the new status value (e.g., 'inactivated', 'needsService')
+   * @returns { number } number of affected rows (1 if updated, 0 if not found or already deleted)
+   * @throws { Error } if the query fails
+   */
+  async updateBikeStatusById(id, newStatus) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(
+            "UPDATE bike SET status = ? WHERE bike_id = ? AND status != 'deleted'",
+            [newStatus, id]
+        );
+        return result.affectedRows;
+    } catch (err) {
+        console.error("Error updating bike status:", err);
+        throw err;
+    } finally {
+        if (conn) conn.release();
     }
+  }
 
 };
 

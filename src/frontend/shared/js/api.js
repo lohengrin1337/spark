@@ -4,10 +4,10 @@ import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } 
  * Fetches all rentals from the API and populates the rental table in the DOM.
  * @async
  */
-export async function loadRentals() {
+export async function loadRentals(source = 'user-web') {
   try {
       const token = localStorage.getItem("token");
-    const url = "/api/v1/rentals";
+    const url = source == "user-web" ? "/api/v1/rentals/customer" : "/api/v1/rentals";
     const res = await fetch(url, {
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -57,7 +57,7 @@ export async function loadRentals() {
         <td>${duration}</td>
         <td>
           ${endDate
-            ? `<a href='route.html'}#${rent.rental_id}">Se på karta</a>`
+            ? `<a href="${source === 'user-app' ? 'user-app-route.html' : 'route.html'}#${rent.rental_id}">Se på karta</a>`
             : '-'}
         </td>
       `;

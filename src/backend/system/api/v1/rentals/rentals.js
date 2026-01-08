@@ -8,7 +8,7 @@ const rateLimit = require('./../../../middleware/ratelimit');
 
 /**
  * GET rentals
- * Response: 200 ok and array of rental objects.
+ * Returns all rentals, active and finished.
  */
 router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrDevice, 
     async (req, res) => {

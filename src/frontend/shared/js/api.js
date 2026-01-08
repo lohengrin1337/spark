@@ -61,6 +61,7 @@ export async function loadRentals(source = 'user-web') {
             : '-'}
         </td>
       `;
+      tr.dataset.status = endDate ? "finished" : "active";
       tbody.appendChild(tr);
     });
 

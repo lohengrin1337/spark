@@ -14,18 +14,18 @@ const rentalModel = {
         conn = await pool.getConnection();
         const rentals = await conn.query(`
         SELECT 
-         rental_id, 
-         customer_id, 
-         bike_id, 
-         start_point, 
-         start_time, 
-         end_point, 
-         end_time, 
-         route,
-         start_zone,
-         end_zone
-       FROM rental 
-       ORDER BY start_time DESC`);
+        rental_id, 
+        customer_id, 
+        bike_id, 
+        start_point, 
+        start_time, 
+        end_point, 
+        end_time, 
+        route,
+        start_zone,
+        end_zone
+        FROM rental 
+        ORDER BY start_time DESC`);
         return rentals;
     } catch (err) {
         console.error("GET /api/rentals error:", err);
@@ -43,7 +43,21 @@ const rentalModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rentals = await conn.query("SELECT * FROM rental WHERE rental_id = ?", [id]);
+        const rentals = await conn.query(`
+        SELECT 
+        rental_id, 
+        customer_id, 
+        bike_id, 
+        start_point, 
+        start_time, 
+        end_point, 
+        end_time, 
+        route,
+        start_zone,
+        end_zone
+        FROM rental
+        WHERE rental_id = ?;`,
+        [id]);
         return rentals[0];
     } catch (err) {
         console.error('');
@@ -59,8 +73,22 @@ const rentalModel = {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rentals = await conn.query(`SELECT * FROM rental WHERE customer_id = ?`, [id]);
-        return rentals;
+            const rentals = await conn.query(`
+            SELECT 
+            rental_id, 
+            customer_id, 
+            bike_id, 
+            start_point, 
+            start_time, 
+            end_point, 
+            end_time, 
+            route,
+            start_zone,
+            end_zone
+            FROM rental
+            WHERE customer_id = ?;`,
+            [id]);
+            return rentals;
     } finally {
         if (conn) conn.release();
     }

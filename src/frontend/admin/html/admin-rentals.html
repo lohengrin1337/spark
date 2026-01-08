@@ -34,6 +34,10 @@
   
   <section class="content">
     <div class="table-wrapper-admin">
+        <div class="filter-options">
+            <label for ="toggle-active">Visa pågående</label>
+            <input type="checkbox" id="filter-rentals" checked>
+        </div>
       <table>
         <h1 class="table-header table-header-admin">Uthyrningar</h1>
 
@@ -67,9 +71,18 @@
   import { loadRentals } from '/shared/js/api.js';
 
   document.addEventListener('DOMContentLoaded', () => {
-    loadRentals("admin-web");
+    loadRentals("admin");
   });
-  
+
+  const checkbox = document.getElementById('filter-rentals');
+  checkbox.addEventListener('change', () => {
+    const showActive = checkbox.checked;
+
+    document.querySelectorAll("tr[data-status='active']").forEach(tr => {
+        tr.style.display = showActive ? "" : "none";
+    });
+
+  });
 </script>
 
 </body>

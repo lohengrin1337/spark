@@ -54,7 +54,8 @@ router.post('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUserOrDevice
 
     try {
         const rental_id = await rentalService.createRental(customer_id, bike_id, start_point, start_zone);
-        res.status(201).json({ rental_id });
+        // res.status(201).json({ rental_id });
+        res.status(201).json({ rental_id: rental_id.toString() });
     } catch (err) {
         console.error('Create rental error:', err);
         res.status(500).json({ error: 'Failed to create rental' });

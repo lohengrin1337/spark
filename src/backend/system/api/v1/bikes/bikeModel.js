@@ -59,7 +59,6 @@ const bikeModel = {
         try {
             conn = await pool.getConnection();
             const bikes = await conn.query(query, params);
-            console.log(query, params);
             return bikes;
         } finally {
             if (conn) conn.release();

@@ -48,22 +48,14 @@ router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
 });
 
 /**
- * PUT /:id
  * Update a customer
  * Response: 200 ok or 404 not found.
  * Admin can update all, user just their self
  */
 router.put('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
     async (req, res) => {
-    const customerId = parseInt(req.query.customer_id, 10);
+    const customerId = req.query.customer_id;
     const { name, password = null } = req.body;
-
-    if(isNaN(customerId)) {
-        const err = new Error("Invalid or missing customer id");
-        err.name = "InvalidIdError";
-        err.status = 400;
-        throw err;
-    }
 
     if (!name) {
         const err = new Error("Name is required");

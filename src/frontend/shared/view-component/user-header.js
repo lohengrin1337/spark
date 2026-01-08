@@ -33,8 +33,14 @@ class UserHeader extends HTMLElement {
       try {
           const customer = await loadCustomer();
           if (customer) {
+            if (customer.blocked) {
+              loggedIn.textContent = `Kontot är spärrat`;
+              loggedIn.classList.add("blocked-account");
+              loggedIn.setAttribute("data-info", "Betala dina fakturor och kontakta kundtjänst");
+            } else {
               loggedIn.textContent = customer.name ? `Välkommen, ${customer.name}` : `Välkommen, anonyma kund`;
             }
+          }
         } catch (e) {
             console.error(e);
         }

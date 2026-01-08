@@ -53,9 +53,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const customer = await loadCustomer();
 
-    if (customer.blocked == true) {
-        alert("Kontakta kundtjänst, ditt konto är blockerat.");
-    };
     username.value = customer.name;
     email.value = customer.email;
 

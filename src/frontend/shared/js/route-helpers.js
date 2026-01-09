@@ -11,18 +11,11 @@ let map, tileLayer, scooter, speedPopup;
  */
 export function updateInfo(data) {
     document.getElementById('rental-id').textContent = data.rental_id;
-    document.getElementById('customer-id').textContent = data.customer_id;
     document.getElementById('bike-id').textContent = data.bike_id;
     document.getElementById('start-time').textContent = data.startDate.toLocaleString('sv-SE');
     document.getElementById('end-time').textContent = data.endDate ? data.endDate.toLocaleString('sv-SE') : 'Pågår';
-    if (data.duration != null) {
-      const m = Math.floor(data.duration);
-      const s = Math.floor((data.duration - m) * 60);
-      document.getElementById('duration').textContent = `${m} min ${s} sek`;
-    } else {
-      document.getElementById('duration').textContent = '-';
-    }
-/*     document.getElementById('cost').textContent = data.cost != null ? `${data.cost} kr` : '-'; */
+    document.getElementById('duration').textContent = data.duration ? data.duration : '-';
+    document.getElementById('cost').textContent = data.cost ? data.cost : '-';
   }
   
   /**

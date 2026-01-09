@@ -15,7 +15,7 @@ export function updateInfo(data) {
     document.getElementById('start-time').textContent = data.startDate.toLocaleString('sv-SE');
     document.getElementById('end-time').textContent = data.endDate ? data.endDate.toLocaleString('sv-SE') : 'Pågår';
     document.getElementById('duration').textContent = data.duration ? data.duration : '-';
-    // document.getElementById('cost').textContent = data.cost != null ? `${data.cost} kr` : '-';
+    document.getElementById('cost').textContent = data.cost ? data.cost : '-';
   }
   
   /**

@@ -31,20 +31,23 @@ export async function loadRentals(source = 'user-web') {
       return;
     }
 
+    const invoices = await getInvoices();
+
     rentals.forEach(rent => {
       const startDate = new Date(rent.start_time);
       const endDate   = rent.end_time ? new Date(rent.end_time) : null;
 
       let duration = '-';
-      let cost = '-';
 
       if (endDate) {
         const diffMs = endDate - startDate;
         const minutes = diffMs / 60000;
 
         duration = Math.floor(minutes) + ' min';
-
       }
+
+      const rentalInvoice = invoices.find(invoice => invoice.rental_id === rent.rental_id);
+      const cost = rentalInvoice ? `${rentalInvoice.amount} kr`: "-";
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -54,6 +57,7 @@ export async function loadRentals(source = 'user-web') {
         <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
         <td>${translateZoneToSwedish(rent.end_zone) ?? '-'}</td>
         <td>${duration}</td>
+        <td>${cost}</td>
         <td>
           ${endDate
             ? `<a href="${source === 'user-app' ? 'user-app-route.html' : 'route.html'}#${rent.rental_id}">Se på karta</a>`
@@ -105,6 +109,11 @@ export async function getRentalForRouteShowcase(id) {
     }
 
     const rent = await res.json();
+
+    // Get cost from invoice
+    const invoices = await getInvoices();
+    const rentalInvoice = invoices.find(invoice => invoice.rental_id === rent.rental_id);
+    rent.cost = rentalInvoice ? `${rentalInvoice.amount} kr` : "-";
     
     ['start_point', 'end_point', 'route'].forEach(field => {
       if (rent[field] && typeof rent[field] === 'string') {
@@ -143,17 +152,7 @@ export async function getRentalForRouteShowcase(id) {
  */
 export async function loadInvoices(mode = 'admin') {
   try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/v1/invoices', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-        });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const invoices = await res.json();
+    const invoices = await getInvoices();
     const tbody = document.getElementById('invoice-table-body');
     tbody.innerHTML = '';
 
@@ -228,7 +227,7 @@ export async function loadInvoices(mode = 'admin') {
         <td>${created}</td>
         <td>${due}</td>
         <td>${translateInvStatusToSwe(inv.status)}</td>
-        <td>${inv.amount}</td>
+        <td>${inv.amount} kr</td>
         <td class="pay-cell">${actionsCell}</td>
       `;
 
@@ -594,4 +593,21 @@ export async function updateCustomer(customer) {
 
     const msg = await res.json();
     return msg;
+}
+
+async function getInvoices() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch('/api/v1/invoices', {
+      method: 'GET',
+      headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      }
+    });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  } catch (err) {
+    console.log(err);
+  }
 }

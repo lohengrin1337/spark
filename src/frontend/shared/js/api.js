@@ -105,7 +105,7 @@ export async function getRentalForRouteShowcase(id) {
     }
 
     const rent = await res.json();
-
+    
     ['start_point', 'end_point', 'route'].forEach(field => {
       if (rent[field] && typeof rent[field] === 'string') {
         try {
@@ -114,13 +114,20 @@ export async function getRentalForRouteShowcase(id) {
         }
       }
     });
-
+    
     // Convert date strings to Date objects
-    return {
-      ...rent,
-      startDate: new Date(rent.start_time),
-      endDate: rent.end_time ? new Date(rent.end_time) : null,
-    };
+    rent.startDate = new Date(rent.start_time);
+    rent.endDate = rent.end_time ? new Date(rent.end_time) : null;
+    
+    // Calc duration
+    if (rent.endDate) {
+      const diffSec = (rent.endDate - rent.startDate) / 1000;
+      const minutes = Math.floor(diffSec / 60);
+      const seconds = Math.floor(diffSec % 60);
+      rent.duration = `${minutes} min ${seconds} sek`;
+    }
+    
+    return rent;
   } catch (err) {
     console.error('Error fetching rental:', err);
     throw err;

@@ -49,7 +49,6 @@ export async function loadRentals(source = 'user-web') {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${rent.rental_id}</td>
-        <td>${rent.customer_id}</td>
         <td>${startDate.toLocaleString()}</td>
         <td>${endDate ? endDate.toLocaleString() : 'Pågår'}</td>
         <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
@@ -201,7 +200,6 @@ export async function loadInvoices(mode = 'admin') {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${inv.invoice_id}</td>
-        <td>${inv.customer_id}</td>
         <td>
           <a href="admin-rentals.html#${inv.rental_id}">
             ${inv.rental_id}

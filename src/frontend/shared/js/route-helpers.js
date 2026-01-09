@@ -11,7 +11,6 @@ let map, tileLayer, scooter, speedPopup;
  */
 export function updateInfo(data) {
     document.getElementById('rental-id').textContent = data.rental_id;
-    document.getElementById('customer-id').textContent = data.customer_id;
     document.getElementById('bike-id').textContent = data.bike_id;
     document.getElementById('start-time').textContent = data.startDate.toLocaleString('sv-SE');
     document.getElementById('end-time').textContent = data.endDate ? data.endDate.toLocaleString('sv-SE') : 'Pågår';

@@ -195,16 +195,29 @@ export async function loadInvoices(mode = 'admin') {
           `;
         }
       };
-      // If finalized (paid or void) → keep actionsCell as '-'
+      // If finalized (paid or void) → keep actionsCell as '-'      
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${inv.invoice_id}</td>
-        <td>
-          <a href="admin-rentals.html#${inv.rental_id}">
-            ${inv.rental_id}
-          </a>
-        </td>
+        <td>${inv.invoice_id}</td>`;
+
+      if (mode === "admin") {
+        tr.innerHTML += `
+          <td>
+            <a href="admin-rentals.html#${inv.rental_id}">
+              ${inv.rental_id}
+            </a>
+          </td>`;
+      } else {
+        tr.innerHTML += `
+          <td>
+            <a href="route.html#${inv.rental_id}">
+              ${inv.rental_id}
+            </a>
+          </td>`;
+      }
+
+      tr.innerHTML += `
         <td>${created}</td>
         <td>${due}</td>
         <td>${translateInvStatusToSwe(inv.status)}</td>
@@ -215,6 +228,7 @@ export async function loadInvoices(mode = 'admin') {
       if (isFinalized) {
         tr.style.opacity = '0.6';
         tr.style.pointerEvents = 'none';
+        tr.querySelector("td a").style.pointerEvents = 'auto';
       }
 
       tbody.appendChild(tr);

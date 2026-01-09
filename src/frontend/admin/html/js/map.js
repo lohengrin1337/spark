@@ -10,6 +10,24 @@ export const trails = {};
 export let map = null;
 let tileLayer = null;
 
+
+// ─────────────────────────────────────────────────────────────
+// Page Activity (to handle trails being reset when page is inactive in mapMarkers.js )
+// ─────────────────────────────────────────────────────────────
+
+export let pageActive = document.visibilityState === 'visible';
+
+document.addEventListener('visibilitychange', () => {
+  pageActive = document.visibilityState === 'visible';
+
+  // Clear all trails when tab becomes active for a clean visual slate/state
+  if (pageActive) {
+    for (const id in trails) {
+      if (trails[id]) trails[id].setLatLngs([]);
+    }
+  }
+});
+
 // ─────────────────────────────────────────────────────────────
 // Initialize the map
 // ─────────────────────────────────────────────────────────────
@@ -143,7 +161,14 @@ export function startAnimationLoop() {
 
 // ─────────────────────────────────────────────────────────────
 // Pan map to a given location (used in the bottom city-nav-bar)
+// Clear all trails when switching to a new city
 // ─────────────────────────────────────────────────────────────
 export function switchTo(lat, lng, zoom = 13) {
-  if (map) map.setView([lat, lng], zoom, { animate: true, duration: 1.5 });
+  if (!map) return;
+
+  map.setView([lat, lng], zoom, { animate: true, duration: 0.5 });
+
+  for (const id in trails) {
+    trails[id].setLatLngs([]);
+  }
 }

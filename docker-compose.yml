@@ -175,16 +175,22 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_TOKEN=${JWT_TOKEN}
+    privileged: true
     volumes:
       - ./src/device/scooter-simulation:/app:cached
     command: >
-      sh -c "
-        pip install --quiet redis requests &&
+      sh -c '
+        pip install --quiet redis requests --root-user-action=ignore &&
         export PYTHONPATH=/app:$PYTHONPATH &&
-        watchfiles 'python ./scenarios/one_malmoe/first-simulation.py'
-          --watch /app
-          --ignore /app/__pycache__
-      "
+        watchfiles
+          --ignore-paths /app/__pycache__
+          --target-type command
+          --
+          sh -c "python scenarios/big_simulation_malmoe.py &
+                python scenarios/big_simulation_karlskrona.py &
+                python scenarios/big_simulation_umea.py"
+          /app
+      '
     depends_on:
       redis:
         condition: service_healthy

@@ -1,8 +1,9 @@
 /**
  * @module zone-helpers
  * Handles rendering of zones on a Leaflet map.
+ * Now supports real polygon rendering for parking zones when available,
+ * falling back to circle (center + radius) only for POINT geometry.
  */
-
 
 const ZONE_STYLES = {
   city: { color: '#689F38', weight: 2, fillColor: '#00ff00', fillOpacity: 0.13 },
@@ -11,7 +12,7 @@ const ZONE_STYLES = {
   parking: { color: 'blue', weight: 2, fillColor: '#1E90FF', fillOpacity: 0.3 }
 };
 
-const PARKING_RADIUS = 50; // meters
+const PARKING_RADIUS = 50; // meters - fallback for POINT geometry
 let allLayers = [];
 
 /**
@@ -107,7 +108,7 @@ export async function renderAllZones(map) {
             break;
   
           case 'parking':
-            let center;
+              let center;
             if (parsed.type === 'point') {
               center = [parsed.lat, parsed.lng];
             } else if (parsed.type === 'polygon') {
@@ -120,6 +121,18 @@ export async function renderAllZones(map) {
               radius: PARKING_RADIUS,
               ...ZONE_STYLES.parking
             }).bindPopup(`<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: ${zone.zone_id}<br>Antal cyklar: ${zone.bikes.length}`);
+            if (parsed.type === 'polygon') {
+              layer = L.polygon(parsed.points, ZONE_STYLES.parking)
+                .bindPopup(`<strong>${zone.city} - Parkeringszon (Polygon)</strong><br>ID: ${zone.zone_id}`);
+            } else if (parsed.type === 'point') {
+              const center = [parsed.lat, parsed.lng];
+              layer = L.circle(center, {
+                radius: PARKING_RADIUS,
+                ...ZONE_STYLES.parking
+              }).bindPopup(`<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: ${zone.zone_id}`);
+            } else {
+              return;
+            }
             topLayers.push(layer);
             break;
   
@@ -131,7 +144,7 @@ export async function renderAllZones(map) {
         if (layer) allLayers.push(layer);
       });
   
-      // Render in order: slow -> city -> topLayers
+      // Render in order: slow -> city -> parking/charging
       slowLayers.forEach(l => l.addTo(map));
       cityLayers.forEach(l => l.addTo(map));
       topLayers.forEach(l => l.addTo(map).bringToFront());
@@ -139,5 +152,4 @@ export async function renderAllZones(map) {
     } catch (err) {
       console.error('Failed to load or render zones:', err);
     }
-  }
-  
+}

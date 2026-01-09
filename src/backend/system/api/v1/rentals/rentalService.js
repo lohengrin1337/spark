@@ -1,8 +1,26 @@
-// rental services
+// rentalService.js
 
 const rentalModel = require('./rentalModel');
-
 const { createInvoiceForRental } = require('../billing/rentalBillingService');
+
+function assertRentalModelShape() {
+  // This guard makes the “what is being required at runtime?” question trivial.
+  if (!rentalModel || typeof rentalModel !== 'object') {
+    throw new Error(`[RentalService] rentalModel export is invalid: ${typeof rentalModel}`);
+  }
+  if (typeof rentalModel.createRental !== 'function') {
+    const keys = Object.keys(rentalModel);
+    throw new Error(
+      `[RentalService] rentalModel.createRental is not a function. Exported keys: ${keys.join(', ')}`
+    );
+  }
+  if (typeof rentalModel.completeRental !== 'function') {
+    const keys = Object.keys(rentalModel);
+    throw new Error(
+      `[RentalService] rentalModel.completeRental is not a function. Exported keys: ${keys.join(', ')}`
+    );
+  }
+}
 
 /**
  * Gets all rentals from model.
@@ -37,7 +55,6 @@ async function getRentalById(id, user) {
     return rental;
 }
 
-
 /**
  * Create a new rental.
  * @param {number} customer_id
@@ -53,9 +70,9 @@ async function createRental(customer_id, bike_id, start_point, start_zone) {
 /**
  * Complete an ongoing rental.
  * Updates the rental and generates an invoice.
- * @param {number} id - Rental ID.
+ * @param {number} id
  * @param {object} end_point
- * @param {number} end_zone
+ * @param {string} end_zone
  * @param {Array} route
  * @returns {promise} The generated invoice.
  * @throws {Error} If rental not found or already completed.

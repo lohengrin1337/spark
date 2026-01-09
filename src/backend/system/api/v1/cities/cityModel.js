@@ -33,7 +33,41 @@ const cityModel = {
     } finally {
         if (conn) conn.release();
     }
+  },
+  // cityModel.js — add this method
+
+/**
+ * Fetch all zones for a city, including speed_limit from zone_type table.
+ * Uses ST_AsText() to get WKT strings for Python compatibility.
+ * @param {string} cityName
+ * @returns {Array} Array of { zone_type, coordinates_wkt, speed_limit }
+ */
+async getZonesForCity(cityName) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const zones = await conn.query(`
+      SELECT 
+        sz.zone_type,
+        ST_AsText(sz.coordinates) AS coordinates_wkt,
+        zt.speed_limit
+      FROM spark_zone sz
+      JOIN zone_type zt ON sz.zone_type = zt.zone_type
+      WHERE sz.city = ?
+    `, [cityName]);
+
+    return zones;
+  } catch (err) {
+    console.error(`Error fetching zones for city ${cityName}:`, err);
+    throw err;
+  } finally {
+    if (conn) conn.release();
   }
+}
+
 };
+
+
+
 
 module.exports = cityModel;

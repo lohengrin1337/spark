@@ -42,18 +42,20 @@ class Scooter:
     adjusting the scooter's speed, status, and battery state accordingly.
     """
     def tick(self, activity: str, speed_kmh: float, in_charging_zone: bool, elapsed_time: float):
-        if activity != "active" and in_charging_zone and self.battery < 100:
+        self.speed_kmh = speed_kmh
+
+        # Charging has absolute highest priority
+        if in_charging_zone and activity != "active":
             self.status = "charging"
+        # Low battery warning — only if not charging
         elif self.battery < LOW_BATTERY_THRESHOLD:
             self.status = "needCharging"
+        # Normal activity
         else:
             self.status = activity
 
-        self.speed_kmh = speed_kmh
-
-        # Update battery
+        # Update battery based on final status
         self._update_battery(elapsed_time)
-
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Adjust battery
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,13 +76,17 @@ class Scooter:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     """
     Reset scooter at trip's end, updating status and stopping movement.
+    Now: if the scooter is in a charging zone, immediately go to charging status.
     """
-    def end_trip(self):
-        if self.battery >= LOW_BATTERY_THRESHOLD:
-            self.status = "idle"
-        else:
-            self.status = "needCharging"
+    def end_trip(self, in_charging_zone=False):
         self.speed_kmh = 0.0
+
+        if in_charging_zone:
+            self.status = "charging"
+        elif self.battery < LOW_BATTERY_THRESHOLD:
+            self.status = "needCharging"
+        else:
+            self.status = "idle"
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Publish/Broadcast Scooter-state
@@ -88,7 +94,7 @@ class Scooter:
     """
     Sends current state to Redis (if a redis-broadcaster is provided)
     """
-    def publish(self):
+    def publish(self, in_charging_zone=False):
         if not self.rbroadcast:
             return
         payload = {

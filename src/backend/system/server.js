@@ -1,6 +1,14 @@
 const { createServer } = require('http');
 const { WebSocketServer } = require('ws');
-const Redis = require('ioredis');
+const mariadb = require('mariadb');
+const apiV1 = require('./api/v1/apiRoutes.js');
+const oauth = require('./api/v1/auth/oauth.js');
+
+
+const { redisSubscriber } = require('./redis/redisClient');
+
+const { createInvoiceForRental } = require('./api/v1/billing/rentalBillingService');
+
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -9,6 +17,15 @@ const app = require('./app.js');
 
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
+
+const pool = mariadb.createPool({
+  host: 'mariadb', 
+  user: 'root',
+  password: 'admin',
+  database: 'spark_db',
+  connectionLimit: 10,
+});
+
 
 // __________________________________________________________________________
 //
@@ -27,25 +44,23 @@ wss.on('connection', (ws) => {
   });
 });
 
+// Uses the new modular imported subscriber
 
-const redisSub = new Redis({
-  host: process.env.REDIS_HOST || 'redis',
-  port: 6379
-});
+redisSubscriber.subscribe('scooter:delta', 'rental:completed');
 
-redisSub.subscribe('scooter:delta', 'rental:completed');
+redisSubscriber.on('message', (channel, message) => {
+  try {
+    const data = JSON.parse(message);
 
-redisSub.on('message', (channel, message) => {
-  const data = JSON.parse(message);
-
-  for (const client of clients) {
-    if (client.readyState === client.OPEN) {
-      client.send(JSON.stringify(data));
+    for (const client of clients) {
+      if (client.readyState === client.OPEN) {
+        client.send(JSON.stringify(data));
+      }
     }
+  } catch (err) {
+    console.error('[Redis] Failed to parse message:', err);
   }
 });
-
-
 
 BigInt.prototype.toJSON = function () {
   return this.toString();

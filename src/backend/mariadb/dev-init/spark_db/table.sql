@@ -100,13 +100,15 @@ CREATE TABLE `invoice`
 (
     `invoice_id` INT AUTO_INCREMENT NOT NULL,
     `rental_id` INT NOT NULL,
+    `customer_id` INT NOT NULL,
     `status` VARCHAR(45) NOT NULL DEFAULT 'unpaid',
     `amount` INT NOT NULL,
     `creation_date` DATETIME NOT NULL,
     `due_date` DATETIME NOT NULL,
 
     PRIMARY KEY (`invoice_id`),
-    FOREIGN KEY (`rental_id`) REFERENCES `rental`(`rental_id`)
+    FOREIGN KEY (`rental_id`) REFERENCES `rental`(`rental_id`),
+    FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`)
 );
 
 

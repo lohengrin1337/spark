@@ -1,5 +1,4 @@
-// rental model
-// Handles database queries for rental data.
+// rentalModel.js
 
 const pool = require('../../../database/database');
 
@@ -28,12 +27,13 @@ const rentalModel = {
         ORDER BY start_time DESC`);
         return rentals;
     } catch (err) {
-        console.error("GET /api/rentals error:", err);
-        throw err;
+      console.error("GET /api/rentals error:", err);
+      throw err;
     } finally {
-        if (conn) conn.release();
+      if (conn) conn.release();
     }
   },
+
   /**
    * Fetch one rental by id.
    * @param { number } id - rental id.
@@ -60,10 +60,10 @@ const rentalModel = {
         [id]);
         return rentals[0];
     } catch (err) {
-        console.error('');
-        throw err;
+      console.error("GET rental error:", err);
+      throw err;
     } finally {
-        if (conn) conn.release();
+      if (conn) conn.release();
     }
   },
   /**
@@ -122,7 +122,7 @@ const rentalModel = {
   },
 
   /**
-   * Complete an ongoing rental.
+   * Complete an ongoing rental (full update with route/zone).
    * @param {number} id - Rental ID.
    * @param {object} end_point - GeoJSON point object.
    * @param {number} end_zone - zone_id
@@ -137,7 +137,7 @@ const rentalModel = {
       const result = await conn.query(
         `UPDATE rental
          SET end_point = ?, end_time = NOW(), end_zone = ?, route = ?
-         WHERE rental_id = ? AND end_time IS NULL`,
+         WHERE rental_id = ?`,
         [JSON.stringify(end_point), end_zone, JSON.stringify(route), id]
       );
       return result.affectedRows;

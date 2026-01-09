@@ -818,11 +818,11 @@ bottom: 0;
 }
 
 .user-panel {
-  margin: 0 auto;
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin: 0 auto;
   padding: 2rem;
   padding-top: 3.2rem;
   justify-content: center;
@@ -999,11 +999,204 @@ _________________________________________________________ */
   transform: scale(0.98);
 }
 
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    padding-top: 100px;
-    position: fixed;
-    background: var(--pay-bg);
+
+
+
+
+/* USER APP UI STYLING, TO BE FINE TUNED */
+
+
+.rental-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.rental-backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.rental-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 62%;
+  background: white;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  pointer-events: auto;
+}
+
+.rental-wrapper.open {
+  transform: translateY(0);
+}
+
+.rental-handle {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rental-handle::before {
+  content: '';
+  width: 48px;
+  height: 5px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.wrapper-content {
+  flex: 1;
+  padding: 0 24px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  pointer-events: auto;
+}
+
+.wrapper-info {
+  width: 100%;
+}
+
+.wrapper-action {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.scooter-title {
+  color: rgb(156, 42, 156);
+  font-size: 26px;
+  font-weight: 700;
+  margin: 8px 0 16px;
+}
+
+.info-row {
+  margin-bottom: 16px;
+}
+
+.label {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.status-box {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 14px 18px;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.status-active {
+  background: #e6f7e9;
+  color: #1e8e3e;
+}
+
+.status-charging {
+  background: #fff8e1;
+  color: #f9ab00;
+}
+
+.status-idle {
+  background: #e8f0fe;
+  color: #1967d2;
+}
+
+.battery-bar {
+  height: 14px;
+  background: #e5e5e5;
+  border-radius: 7px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.battery-fill {
+  height: 100%;
+  border-radius: 7px;
+  transition: width 0.4s ease;
+}
+
+.battery-fill.low {
+  background: #d93025;
+}
+
+.battery-fill.medium {
+  background: #f9ab00;
+}
+
+.battery-fill.high {
+  background: #1e8e3e;
+}
+
+.battery-fill.charging {
+  background: linear-gradient(90deg, #f9ab00, #ffdd6f);
+  animation: chargingPulse 2s infinite alternate;
+}
+
+@keyframes chargingPulse {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.battery-value {
+  text-align: right;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.duration-counter {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.action-button {
+  width: 100%;
+  padding: 18px;
+  font-size: 19px;
+  font-weight: 600;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.action-button:active {
+  transform: scale(0.98);
+}
+
+.start-button {
+  background: #1967d2;
+  color: white;
+}
+
+.end-button {
+  background: #d93025;
+  color: white;
 }

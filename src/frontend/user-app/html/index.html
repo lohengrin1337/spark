@@ -1,36 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
-  <link rel="stylesheet" href="style/style.css">
   <meta charset="UTF-8">
-  <title>Spark App- Hem</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spark - Användarapp</title>
 
-  <script type="module" src="./manifest-app.js"></script>
-  <manifest-app></manifest-app>
-
-  <link rel="icon" href="/shared/img/favicon.ico" sizes="any">
-
-
-    <!-- Comment this line in when working on auth: -->
-    <!-- <script type="module" src="/shared/auth/user-check.js"></script> -->
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="/shared/style/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <script type="module" src="/shared/view-component/user-app-header.js"></script>
 </head>
 <body>
-    <user-app-header style="z-index:1000000000"></user-app-header>
 
-    
-    <div class="intro-text"><h1>Click the invoice-icon in the upper-left.</h1>
-        <br>
-        <h1>App map-heavy index-view goes here.</h1>
-        <br>
+  <user-app-header></user-app-header>
 
-        <h2><a href="user-app-rentals.html">User Rentals</a></h2>
 
+  <div id="map"></div>
+
+
+  <div class="city-nav-bar">
+    <button class="city-link malmo-link">Malmö</button>
+    <button class="city-link karlskrona-link">Karlskrona</button>
+    <button class="city-link umea-link">Umeå</button>
+  </div>
+
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script type="module" src="/shared/js/map/utils.js"></script>
+  <script type="module" src="/shared/theme/theme.js"></script>
+  <script type="module" src="/shared/js/map/cities.js"></script>
+  <script type="module" src="/shared/js/zone-helpers.js"></script>
+
+  <script type="module" src="js/user-map.js"></script>
+  <script type="module" src="js/user-mapMarkers.js"></script>
+  <script type="module" src="js/socket-user.js"></script>
+  <script type="module" src="js/index-user.js"></script>
+
+  <script type="module">
+    import { updateTileLayer } from './js/user-map.js';
+
+    document.addEventListener('themeChanged', (e) => {
+      if (e.detail && e.detail.isDark !== undefined) {
+        updateTileLayer();
+      }
+    });
+  </script>
+  
 </body>
+
 </html>

@@ -1,6 +1,6 @@
-rental_id,status,due_date
-1,paid,2025-12-16
-2,unpaid,2026-01-01
-3,void,2025-12-09
-4,unpaid,2025-12-02
-5,unpaid,2026-01-17
+rental_id, customer_id,status,creation_date,due_date
+1,3,paid,2025-12-16,2026-01-15
+2,4,unpaid,2025-12-16,2026-01-15
+3,2,void,2025-12-16,2026-01-15
+4,5,unpaid,2025-12-16,2026-01-15
+5,1,unpaid,2025-12-16,2026-01-15

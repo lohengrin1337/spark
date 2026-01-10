@@ -81,7 +81,7 @@ class Simulator:
         self.next_waypoint_index = {scooter.id: {"route_index": 0} for scooter in scooters}
 
         # Last known position (used for smoothing out transitions in speed)
-        self.last_position = {scooter.id: (scooter.lat, scooter.lon) for scooter in scooters}
+        self.last_position = {scooter.id: (scooter.lat, scooter.lng) for scooter in scooters}
 
         # Last travel_direction (for realistic slowdown in turns)
         self.last_travel_direction = {scooter.id: None for scooter in scooters}
@@ -196,7 +196,7 @@ class Simulator:
             def permanent_lock(scooter, elapsed_time):
                 return {
                     "lat": scooter.lat,
-                    "lon": scooter.lon,
+                    "lng": scooter.lng,
                     "speed_kmh": 0.0,
                     "activity": scooter.status,
                     "route_finished": False
@@ -246,7 +246,7 @@ class Simulator:
 
         complete_rental(
             rental_id=rental_state["rental_id"],
-            end_point={"lat": float(scooter.lat), "lon": float(scooter.lon)},
+            end_point={"lat": float(scooter.lat), "lng": float(scooter.lng)},
             end_zone=end_zone,
             route=path_coordinates,
         )
@@ -389,12 +389,12 @@ class Simulator:
                 rental_state["start_ts"] = current_time
                 rental_state["user_id"] = user_id
                 rental_state["user_name"] = user_name
-                rental_state["start_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lon)
+                rental_state["start_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lng)
                 rental_state["end_zone"] = "free"
 
                 # Start fresh route logging for this rental
                 self.rbroadcast.clear_coords(rental_id)
-                self.rbroadcast.log_coord(rental_id, scooter.lat, scooter.lon, 0.0)
+                self.rbroadcast.log_coord(rental_id, scooter.lat, scooter.lng, 0.0)
 
                 # Movement: external rentals are stationary by default - route-following is disabled below.)
 
@@ -459,7 +459,7 @@ class Simulator:
 
         for scooter in self.scooters:
             scooter_id = scooter.id
-            prev_lat, prev_lon = self.last_position[scooter_id]
+            prev_lat, prev_lng = self.last_position[scooter_id]
             current_route = self.get_route_for_trip(scooter_id)
 
             external_mode = self.external_rentals[scooter_id]["active"]
@@ -471,7 +471,7 @@ class Simulator:
                 def lock_due_to_low_battery(scooter, elapsed_time):
                     return {
                         "lat": scooter.lat,
-                        "lon": scooter.lon,
+                        "lng": scooter.lng,
                         "speed_kmh": 0.0,
                         "route_finished": False,
                         "activity": "needCharging"
@@ -491,14 +491,14 @@ class Simulator:
             if external_mode and external_rental_id:
                 movement_update = {
                     "lat": scooter.lat,
-                    "lon": scooter.lon,
+                    "lng": scooter.lng,
                     "speed_kmh": 0.0,
                     "activity": "active",  # Rental is active externally; keep activity consistent
                     "route_finished": False
                 }
 
                 # Zone classification (still useful for UI)
-                current_zone = self.city.classify_zone(scooter.lat, scooter.lon)
+                current_zone = self.city.classify_zone(scooter.lat, scooter.lng)
 
                 # Speed limits irrelevant here (stationary), but keep the structure intact
                 movement_update["speed_kmh"] = 0.0
@@ -520,18 +520,18 @@ class Simulator:
                 self.rbroadcast.log_coord(
                     external_rental_id,
                     scooter.lat,
-                    scooter.lon,
+                    scooter.lng,
                     scooter.speed_kmh,
                 )
 
                 # Remember position for next tick
-                self.last_position[scooter_id] = (scooter.lat, scooter.lon)
+                self.last_position[scooter_id] = (scooter.lat, scooter.lng)
 
                 # Publish state
                 publish_payload = {
                     "id": scooter.id,
                     "lat": round(scooter.lat, 7),
-                    "lon": round(scooter.lon, 7),
+                    "lng": round(scooter.lng, 7),
                     "bat": round(scooter.battery, 1),
                     "st": scooter.status,
                     "spd": scooter.speed_kmh,
@@ -545,12 +545,12 @@ class Simulator:
 
             # Apply new position FIRST - critical for accurate zone detection this tick
             new_lat = movement_update["lat"]
-            new_lon = movement_update["lon"]
+            new_lng = movement_update["lng"]
             scooter.lat = new_lat
-            scooter.lon = new_lon
+            scooter.lng = new_lng
 
             # Classify zone using the UPDATED position
-            current_zone = self.city.classify_zone(scooter.lat, scooter.lon)
+            current_zone = self.city.classify_zone(scooter.lat, scooter.lng)
 
             # OUT OF BOUNDS: Permanent deactivation - lock position permanently
             if current_zone == 'outofbounds':
@@ -565,7 +565,7 @@ class Simulator:
                         """Special override: scooter is out of bounds - deactivated, awaiting pickup."""
                         return {
                             "lat": scooter.lat,
-                            "lon": scooter.lon,
+                            "lng": scooter.lng,
                             "speed_kmh": 0.0,
                             "activity": "deactivated",
                             "route_finished": False
@@ -587,7 +587,7 @@ class Simulator:
 
                         complete_rental(
                             rental_id=rental_state["rental_id"],
-                            end_point={"lat": float(scooter.lat), "lon": float(scooter.lon)},
+                            end_point={"lat": float(scooter.lat), "lng": float(scooter.lng)},
                             end_zone="outofbounds",
                             route=path_coordinates,
                         )
@@ -632,8 +632,6 @@ class Simulator:
             # Charging detection
             in_charging_zone = self._is_in_charging_zone(scooter)
 
-            print(f"DEBUG CHARGING: scooter {scooter.id} | in_charging_zone={in_charging_zone} | activity={final_activity} | current_status={scooter.status}")
-
             # Update physical state
             scooter.tick(
                 activity=final_activity,
@@ -647,7 +645,7 @@ class Simulator:
             self._handle_rental_tick(
                 scooter=scooter,
                 prev_lat=prev_lat,
-                prev_lon=prev_lon,
+                prev_lng=prev_lng,
                 route_finished=route_finished,
                 current_time=current_time
             )
@@ -661,13 +659,13 @@ class Simulator:
                 scenario(scooter, simulator=self)
 
             # Remember position for next tick
-            self.last_position[scooter_id] = (scooter.lat, scooter.lon)
+            self.last_position[scooter_id] = (scooter.lat, scooter.lng)
 
             # Publish with inChargingZone flag for immediate frontend visual feedback
             publish_payload = {
                 "id": scooter.id,
                 "lat": round(scooter.lat, 7),
-                "lon": round(scooter.lon, 7),
+                "lng": round(scooter.lng, 7),
                 "bat": round(scooter.battery, 1),
                 "st": scooter.status,
                 "spd": scooter.speed_kmh,
@@ -693,7 +691,7 @@ class Simulator:
             if result is not None:
                 return {
                     "lat": result.get("lat", scooter.lat),
-                    "lon": result.get("lon", scooter.lon),
+                    "lng": result.get("lng", scooter.lng),
                     "speed_kmh": result.get("speed_kmh", 0.0),
                     "route_finished": result.get("route_finished", False),
                 }
@@ -704,7 +702,7 @@ class Simulator:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Rental lifecycle logic - now persists to real DB via API
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _handle_rental_tick(self, scooter, prev_lat, prev_lon, route_finished, current_time):
+    def _handle_rental_tick(self, scooter, prev_lat, prev_lng, route_finished, current_time):
         scooter_id = scooter.id
         rental_state = self.rentals[scooter_id]
 
@@ -716,14 +714,14 @@ class Simulator:
         if self.can_start_rental(scooter):
             rental_state["rental_id"] = self._new_rental_id()
             rental_state["start_ts"] = current_time
-            rental_state["start_zone"] = self.classify_zone_at_point(prev_lat, prev_lon)
+            rental_state["start_zone"] = self.classify_zone_at_point(prev_lat, prev_lng)
 
             self._assign_user(rental_state)
 
             real_data = create_rental(
                 customer_id=rental_state["user_id"],
                 bike_id=scooter_id,
-                start_point={"lat": float(scooter.lat), "lon": float(scooter.lon)},
+                start_point={"lat": float(scooter.lat), "lng": float(scooter.lng)},
                 start_zone=rental_state["start_zone"],
             )
 
@@ -740,7 +738,7 @@ class Simulator:
             self.rbroadcast.log_coord(
                 rental_state["rental_id"],
                 scooter.lat,
-                scooter.lon,
+                scooter.lng,
                 0.0  # Start from standstill
             )
 
@@ -749,7 +747,7 @@ class Simulator:
             self.rbroadcast.log_coord(
                 rental_state["rental_id"],
                 scooter.lat,
-                scooter.lon,
+                scooter.lng,
                 scooter.speed_kmh,
             )
 
@@ -761,7 +759,7 @@ class Simulator:
         if not rental_id:
             return
 
-        rental_state["end_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lon)
+        rental_state["end_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lng)
         path_coordinates = self.rbroadcast.load_coords(rental_id)
 
         # Ensure last coordinate has 0 speed (realistic stop)
@@ -770,7 +768,7 @@ class Simulator:
 
         complete_rental(
             rental_id=rental_id,
-            end_point={"lat": float(scooter.lat), "lon": float(scooter.lon)},
+            end_point={"lat": float(scooter.lat), "lng": float(scooter.lng)},
             end_zone=rental_state["end_zone"],
             route=path_coordinates,
         )
@@ -885,11 +883,11 @@ class Simulator:
         current_index = route_state["route_index"]
         target_point = route[current_index]
 
-        distance_to_target = calculate_distance_in_m((scooter.lat, scooter.lon), target_point)
+        distance_to_target = calculate_distance_in_m((scooter.lat, scooter.lng), target_point)
         max_distance_this_tick = NOMINAL_MAX_SPEED_MPS * UPDATE_INTERVAL
 
         if distance_to_target <= max_distance_this_tick:
-            new_lat, new_lon = target_point
+            new_lat, new_lng = target_point
             route_state["route_index"] += 1
             route_finished = route_state["route_index"] >= len(route)
             if route_finished:
@@ -897,14 +895,14 @@ class Simulator:
         else:
             fraction = max_distance_this_tick / distance_to_target
             new_lat = scooter.lat + (target_point[0] - scooter.lat) * fraction
-            new_lon = scooter.lon + (target_point[1] - scooter.lon) * fraction
+            new_lng = scooter.lng + (target_point[1] - scooter.lng) * fraction
             route_finished = False
 
-        distance_traveled_meters = calculate_distance_in_m((scooter.lat, scooter.lon), (new_lat, new_lon))
+        distance_traveled_meters = calculate_distance_in_m((scooter.lat, scooter.lng), (new_lat, new_lng))
         raw_speed_kmh = distance_traveled_meters / UPDATE_INTERVAL * 3.6
 
         previous_travel_direction = self.last_travel_direction[scooter_id]
-        current_travel_direction = math.atan2(new_lon - scooter.lon, new_lat - scooter.lat)
+        current_travel_direction = math.atan2(new_lng - scooter.lng, new_lat - scooter.lat)
 
         if previous_travel_direction is not None:
             travel_direction_change = abs(current_travel_direction - previous_travel_direction)
@@ -917,7 +915,7 @@ class Simulator:
 
         return {
             "lat": new_lat,
-            "lon": new_lon,
+            "lng": new_lng,
             "speed_kmh": final_speed_kmh,
             "activity": "active" if final_speed_kmh > 0 else "idle",
             "route_finished": route_finished
@@ -933,18 +931,18 @@ class Simulator:
         """
         if scooter.status == "active":
             return False
-        return self.city.is_inside(scooter.lat, scooter.lon, 'charging')
+        return self.city.is_inside(scooter.lat, scooter.lng, 'charging')
 
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Geo-based zone-classification helper - now powered by City with real polygons
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def classify_zone_at_point(self, lat, lon):
+    def classify_zone_at_point(self, lat, lng):
         """
         Classifies a point using polygon priority:
         charging -> parking -> city (free) -> slow -> outofbounds
         """
-        return self.city.classify_zone(lat, lon)
+        return self.city.classify_zone(lat, lng)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Can start rental?-check

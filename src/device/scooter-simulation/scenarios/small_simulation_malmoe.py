@@ -1,21 +1,20 @@
-### big_simulation_karlskrona
+### big_simulation_malmoe.py
 
 """
-@module big_simulation_karlskrona
+@module big_simulation_malmoe
 """
 
 import time
 from city import City 
 from simulator import Simulator
-from routes import KARLSKRONA_ROUTES
+from routes import MALMOE_ROUTES
 from redisbroadcast import ScooterBroadcaster
 from config import UPDATE_INTERVAL
-from helpers import wait_for_backend_response   
+from helpers import wait_for_backend_response
 from behavior import (
-    park_in_nearest_charging_zone,
+    special_behavior_one,
     breakdown_after_seconds
 )
-
 from admin_listener import AdminStatusListener
 from rental_listener import RentalEventListener
 from simulation_helper import (
@@ -25,7 +24,7 @@ from simulation_helper import (
     BATCH_DELAY
 )
 
-NUM_BATCHES = 1  # Karlskrona specific
+NUM_BATCHES = 1  # Malmö specific
 
 
 def run():
@@ -36,45 +35,50 @@ def run():
     rbroadcast = ScooterBroadcaster()
     scooters = []
 
-    karlskrona_city = City.from_api("Karlskrona")
-    print(f"Loaded zones: {list(karlskrona_city.zones.keys())} with speed limits: {karlskrona_city.speed_limits}")
+    malmo_city = City.from_api("Malmö")
+    print(f"Loaded zones: {list(malmo_city.zones.keys())} with speed limits: {malmo_city.speed_limits}")
 
-    ordered_routes = list(KARLSKRONA_ROUTES.items())
+    ordered_routes = list(MALMOE_ROUTES.items())
 
     # First route batch
     next_sid = add_first_route_batch(
         scooters=scooters,
         rbroadcast=rbroadcast,
         ordered_routes=ordered_routes,
-        start_sid=1501,
-        special_battery_level=19.8
+        start_sid=1,
+        special_battery_level=22
     )
 
     simulator = Simulator(
         scooters=scooters,
-        routes=KARLSKRONA_ROUTES,
-        city=karlskrona_city,
+        routes=MALMOE_ROUTES,
+        city=malmo_city,
         rbroadcast=rbroadcast,
         custom_scooter_scenarios={}
     )
 
-    # Apply hardcoded custom scenarios
-    simulator.custom_scooter_scenarios[1501] = park_in_nearest_charging_zone(required_trips=1)
-    simulator.custom_scooter_scenarios[1504] = breakdown_after_seconds(seconds=25)
+    # Apply route-based custom scenarios
+    sid = 1
+    for route_index, _ in ordered_routes:
+        if route_index == 2:
+            simulator.custom_scooter_scenarios[sid] = breakdown_after_seconds(seconds=20)
+        if route_index == 3:
+            simulator.custom_scooter_scenarios[sid] = special_behavior_one
+        sid += 1
 
     admin_listener = AdminStatusListener(simulator)
     rental_listener = RentalEventListener(simulator)
 
-    print(f"{len(scooters)} route-based scooters active in Karlskrona (first batch)")
+    print(f"{len(scooters)} route-based scooters active in Malmö (first batch)")
 
     # Stationary in zones
     next_sid, added = add_stationary_scooters(
         scooters=scooters,
         simulator=simulator,
         current_sid=next_sid,
-        max_sid=2000
+        max_sid=1000
     )
-    print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Karlskrona")
+    print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Malmö")
 
     # Incremental batches
     run_incremental_batches(
@@ -83,7 +87,7 @@ def run():
         ordered_routes=ordered_routes,
         next_sid=next_sid,
         num_batches=NUM_BATCHES,
-        special_battery_level=19.8
+        special_battery_level=22
     )
 
 

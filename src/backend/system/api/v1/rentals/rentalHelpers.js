@@ -43,7 +43,9 @@ async function loadRouteCoords(rentalId) {
     for (const item of raw) {
         try {
             coords.push(JSON.parse(item));
-        } catch (_) {}
+        } catch (err) {
+            console.warn('Bad route coord JSON:', item, err?.message);
+        }
     }
     return coords;
 }
@@ -167,13 +169,12 @@ async function classifyZoneFromAnyPoint(cityName, point) {
  * Publish lifecycle events.
  * These should be emitted AFTER DB writes succeed (DB-first).
  */
-async function publishRentalStarted({ rental_id, scooter_id, user_id, user_name }) {
+async function publishRentalStarted({ rental_id, scooter_id, user_id }) {
     const payload = JSON.stringify({
         type: 'rental_started',
         rental_id,
         scooter_id,
         user_id,
-        user_name: user_name || null,
     });
 
     await redisPublisher.publish(RENTAL_LIFECYCLE_CHANNEL, payload);

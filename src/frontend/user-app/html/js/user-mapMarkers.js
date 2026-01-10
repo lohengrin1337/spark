@@ -289,8 +289,7 @@ async function startRental(scooterId, lat, lng) {
       body: JSON.stringify({
         customer_id: customerId,
         bike_id: parseInt(scooterId, 10),
-        start_point,
-        user_name: customer.name ?? "Anonymous"
+        start_point
       })
     });
 

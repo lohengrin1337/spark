@@ -25,7 +25,7 @@ from simulation_helper import (
     BATCH_DELAY
 )
 
-NUM_BATCHES = 1  # Karlskrona specific
+NUM_BATCHES = 3  # Karlskrona specific
 
 
 def run():

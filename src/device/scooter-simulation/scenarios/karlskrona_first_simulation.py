@@ -44,7 +44,7 @@ def init_scooters(rbroadcast):
     """
     scooters = []
     for route_index, route_coords in KARLSKRONA_ROUTES.items():
-        start_lat, start_lon = route_coords[0]
+        start_lat, start_lng = route_coords[0]
 
         # Special scenario: scooter for route 3 starts at 22% battery to test charging
         battery_level = 19.8 if route_index == 3 else 100
@@ -53,7 +53,7 @@ def init_scooters(rbroadcast):
             # Each scooter is assigned a 'sid', i.e scooter-id, equal to the route index it starts on.
             sid=route_index + 1500,
             lat=start_lat,
-            lon=start_lon,
+            lng=start_lng,
             battery=battery_level,
             rbroadcast=rbroadcast
         ))
@@ -66,7 +66,7 @@ def init_scooters(rbroadcast):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def run():
     """
-    Execute the actual simulatory process (in this case, ticking along in perpetuity).
+    Execute the actual simulatory process (in this case, ticking alngg in perpetuity).
     """
     print("Simulation starting…", flush=True)
 

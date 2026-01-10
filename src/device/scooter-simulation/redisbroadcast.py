@@ -45,7 +45,7 @@ class ScooterBroadcaster:
     # Rental coordinate tracking - builds the breadcrumb trail for the trip history
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
-    def log_coord(self, rental_id, lat, lon, spd):
+    def log_coord(self, rental_id, lat, lng, spd):
         """
         Records the coordinates, and the given speed, for a scooter at a given state snapshot,
         regulated by UPDATE_INTERVAL.
@@ -53,7 +53,7 @@ class ScooterBroadcaster:
         Each call adds a breadcrumb to the scooter's trip path, that will later be
         used to draw the full route on the map for a user overlooking their rental history.
         """
-        coord = json.dumps({"lat": lat, "lng": lon, "spd": spd})
+        coord = json.dumps({"lat": lat, "lng": lng, "spd": spd})
         self.r.rpush(f"rental:{rental_id}:coords", coord)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

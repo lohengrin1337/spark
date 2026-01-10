@@ -7,8 +7,6 @@ const oauth = require('./api/v1/auth/oauth.js');
 
 const { redisSubscriber } = require('./redis/redisClient');
 
-const { createInvoiceForRental } = require('./api/v1/billing/rentalBillingService');
-
 const dotenv = require('dotenv');
 dotenv.config();
 

@@ -4,6 +4,8 @@
  * Immediate visual charging feedback when in charging zone and not active.
  */
 
+/* global L */
+
 import { getScooterIcon } from '/shared/js/map/marker-icons.js';
 import { scooterMarkers, trails, animateMarkerTo, pageActive } from './map.js';
 import { map } from './map.js';
@@ -12,9 +14,21 @@ import { updateScooterStatus } from './adminUpdatedStatus.js';
 export function updateScooterMarker(id, sc) {
   let marker = scooterMarkers[id];
 
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Coordinate normalization (lon/lng compatibility + stability)
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  const lat = sc?.lat;
+  const lng = (typeof sc?.lng === 'number') ? sc.lng : sc?.lon;
+
+  if (typeof lat !== 'number' || typeof lng !== 'number' || Number.isNaN(lat) || Number.isNaN(lng)) {
+    return;
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Normalize status key
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   const normalize = {
     idle: 'available',
     available: 'available',
@@ -33,18 +47,19 @@ export function updateScooterMarker(id, sc) {
   let key = sc.st?.toLowerCase().trim() || 'available';
   key = normalize[key] || key;
 
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Use normalized key for icon
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   const icon = getScooterIcon(key);
 
   if (!marker) {
-    marker = L.marker([sc.lat, sc.lng], { icon });
+    marker = L.marker([lat, lng], { icon });
     marker.bindPopup('');
     scooterMarkers[id] = marker;
     marker.addTo(map);
 
-    trails[id] = L.polyline([[sc.lat, sc.lng]], { 
+    trails[id] = L.polyline([[lat, lng]], {
       color: '#3388ff',
       weight: 2.5,
       opacity: 0.6
@@ -53,9 +68,10 @@ export function updateScooterMarker(id, sc) {
     marker.setIcon(icon);
   }
 
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Popup text and status class mapping
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   const statusTextMap = {
     charging: "Laddar",
     active: "Aktiv",
@@ -79,7 +95,8 @@ export function updateScooterMarker(id, sc) {
   const statusText = statusTextMap[key] || "Tillgänglig";
   const statusClass = statusClassMap[key] || "status-idle";
 
-  const batteryClass = sc.bat < 20 ? 'low' : sc.bat < 30 ? 'medium' : 'high';
+  const batteryPercent = (typeof sc.bat === 'number') ? sc.bat : 0;
+  const batteryClass = batteryPercent < 20 ? 'low' : batteryPercent < 30 ? 'medium' : 'high';
   const batteryChargingClass = sc.st === 'charging' ? 'charging' : '';
   const userDisplay = sc.user_id ? `User ${sc.user_id}` : '';
 
@@ -103,10 +120,10 @@ export function updateScooterMarker(id, sc) {
         <div class="popup-section">
           <div class="label">Batteri</div>
           <div class="battery-bar-modern">
-            <div class="battery-fill-modern ${batteryClass} ${batteryChargingClass}" 
-                 style="width:${sc.bat}%"></div>
+            <div class="battery-fill-modern ${batteryClass} ${batteryChargingClass}"
+                 style="width:${batteryPercent}%"></div>
           </div>
-          <div class="value">${sc.bat}%</div>
+          <div class="value">${batteryPercent}%</div>
         </div>
       </div>
 
@@ -121,9 +138,10 @@ export function updateScooterMarker(id, sc) {
     </div>
   `);
 
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Popup action handlers
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   marker.off('popupopen');
 
   marker.on('popupopen', (e) => {
@@ -139,13 +157,14 @@ export function updateScooterMarker(id, sc) {
     });
   });
 
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Reset trail when page inactive
-  // ------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   if (pageActive) {
-    animateMarkerTo(marker, [sc.lat, sc.lng]);
+    animateMarkerTo(marker, [lat, lng]);
   } else {
-    marker.setLatLng([sc.lat, sc.lng]);
+    marker.setLatLng([lat, lng]);
     if (trails[id]) {
       trails[id].setLatLngs([]);
     }

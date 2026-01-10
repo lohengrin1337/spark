@@ -24,10 +24,10 @@ class Scooter:
     Represents the physical scooter only.
     It knows and stores nothing about routes or rentals, holds only the scooter state.
     """
-    def __init__(self, sid: int, lat: float, lon: float, battery: float = 100, rbroadcast: ScooterBroadcaster = None):
+    def __init__(self, sid: int, lat: float, lng: float, battery: float = 100, rbroadcast: ScooterBroadcaster = None):
         self.id = sid
         self.lat = lat
-        self.lon = lon
+        self.lng = lng
         self.speed_kmh = 0.0
         self.battery = battery
         self.status = "idle"
@@ -100,7 +100,7 @@ class Scooter:
         payload = {
             "id": self.id,
             "lat": round(self.lat, 7),
-            "lng": round(self.lon, 7),
+            "lng": round(self.lng, 7),
             "bat": round(self.battery, 1),
             "st": self.status,
             "spd": self.speed_kmh,

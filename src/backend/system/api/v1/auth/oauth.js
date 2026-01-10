@@ -70,7 +70,11 @@ router.get("/github/callback", async (req, res) => {
     const jwtToken = await authService.oauthRegisterOrLogin(customer);
 
     // Return token to frontend.`
-    const frontendPort = source === "user-web" ? "8081" : "8082";
+    const frontendPort =
+    source === "user-web" ? "8081" :
+    source === "user-app" ? "8082" :
+    "8082"; // Defaults to 8082 anyway, but I figure making it explicit never hurts
+
     res.redirect(`http://localhost:${frontendPort}?token=${jwtToken}`);
 });
 

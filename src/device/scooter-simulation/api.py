@@ -1,7 +1,7 @@
 """
 @module api
 
-Holds the api-functions used in the container.
+Holds the api-functions used in the device/simulation-container.
 """
 import requests
 import json
@@ -32,7 +32,7 @@ def fetch_users():
             for uid in range(1, 21) 
         ]
 
-RENTAL_API = "http://system:3000/api/v1/rentals/sim" # noqa: S112
+RENTAL_API = "http://system:3000/api/v1/rentals" # noqa: S112
 
 def fetch_rentals():
     """ Fetch all rentals from the backend API. """
@@ -50,7 +50,7 @@ def create_rental(customer_id, bike_id, start_point, start_zone):
     Create a new rental by sending customer_id, bike_id and start_point.
     Returns the created rental object (including rental_id) on success, None on failure.
     """
-    url = f"{RENTAL_API}"
+    url = f"{RENTAL_API}/sim"
     payload = {
         "customer_id": customer_id,
         "bike_id": bike_id,
@@ -88,7 +88,7 @@ def complete_rental(rental_id, end_point, end_zone, route):
         print(f"[API] No route coordinates to send for rental {rental_id}")
         return False
 
-    url = f"{RENTAL_API}/{rental_id}"
+    url = f"{RENTAL_API}/sim/{rental_id}"
     payload = {
         "end_point": end_point,
         "end_zone": end_zone,
@@ -131,7 +131,7 @@ def update_bike_status(bike_id, new_status):
 
     try:
         print(f"[API] Updating bike status -> PUT {url} | payload: {json.dumps(payload)}")
-        response = requests.put(url, json=payload, timeout=10)
+        response = requests.put(url, json=payload, timeout=10, headers=HEADERS)
         print(f"[API] Response {response.status_code}: {response.text}")
 
         if response.status_code in (200, 201, 204):

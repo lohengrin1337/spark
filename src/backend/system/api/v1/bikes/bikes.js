@@ -12,7 +12,7 @@ const bikeService = require('./bikeService');
  * Response: 200 ok and array of bike objects.
  */
 router.get('/',
-    auth.authToken, 
+    auth.authToken,
     rateLimit.limiter,
     async (req, res) => {
         const filters = req.query;
@@ -25,104 +25,163 @@ router.get('/',
  * Get bike with id = req.param.id.
  * Response: 200 ok and bike object or 404 not found.
  */
-router.get('/:id', 
-    auth.authToken, 
+router.get('/:id',
+    auth.authToken,
     rateLimit.limiter,
-    auth.authAdminOrUser, 
+    auth.authAdminOrUser,
     async (req, res) => {
-    const id = req.params.id;
-    const bike = await bikeService.getBikeById(id);
-    res.status(200).json(bike);
+        const id = req.params.id;
+        const bike = await bikeService.getBikeById(id);
+        res.status(200).json(bike);
 });
 
 /**
  * PUT bikes/:id
  * Updates bike status
  */
-router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUserOrDevice, async (req, res) => {
-    const bikeId = parseInt(req.params.id, 10);
-    const { status } = req.body;
+router.put('/:id',
+    auth.authToken,
+    rateLimit.limiter,
+    auth.authAdminOrUserOrDevice,
+    async (req, res) => {
+        const bikeId = parseInt(req.params.id, 10);
+        const { status } = req.body;
 
-    if(isNaN(bikeId)) {
-        const err = new Error("Invalid bike id");
-        err.name = "InvalidIdError";
-        err.status = 400;
-        throw err;
-    }
+        if (isNaN(bikeId)) {
+            const err = new Error("Invalid bike id");
+            err.name = "InvalidIdError";
+            err.status = 400;
+            throw err;
+        }
 
-    if (!status || status === "undefined") {
-        const err = new Error("Bike status is required");
-        err.name = "InvalidBodyError";
-        err.status = 400;
-        throw err;
+        if (!status || status === "undefined") {
+            const err = new Error("Bike status is required");
+            err.name = "InvalidBodyError";
+            err.status = 400;
+            throw err;
+        }
 
-    }
-
-    await bikeService.updateBikeStatus(bikeId, status);
-    res.json({
-        success: true,
-        message: "Status updated"
-    });
+        await bikeService.updateBikeStatus(bikeId, status);
+        res.json({
+            success: true,
+            message: "Status updated"
+        });
 });
-router.put('/:id/status', async (req, res) => {
-    const bikeId = parseInt(req.params.id, 10);
-    const { status: newStatus } = req.body;
-  
-    if (!bikeId || isNaN(bikeId)) {
-      return res.status(400).json({ error: "Invalid bike id" });
-    }
-    if (!newStatus || typeof newStatus !== 'string') {
-      return res.status(400).json({ error: "Valid 'status' field is required in request body" });
-    }
-  
-    try {
-      // ADMIN endpoint: this is a real override command
-      const affectedRows = await bikeService.updateBikeStatusById(bikeId, newStatus.trim(), {
-        publishAdmin: true
-      });
-  
-      if (affectedRows === 0) {
-        return res.status(404).json({ error: "Bike not found or already deleted" });
-      }
-  
-      res.status(200).json({ success: true, message: `Bike ${bikeId} status updated to '${newStatus}'` });
-    } catch (err) {
-      console.error("Error updating bike status:", err);
-      res.status(500).json({ error: "Failed to update bike status" });
-    }
-  });
-  
-  /**
-   * Simulator/system canonical status update endpoint.
-   * Same payload, but does NOT publish to admin command channel.
-   */
-  router.put('/:id/status/sim', async (req, res) => {
-    const bikeId = parseInt(req.params.id, 10);
-    const { status: newStatus } = req.body;
-  
-    if (!bikeId || isNaN(bikeId)) {
-      return res.status(400).json({ error: "Invalid bike id" });
-    }
-    if (!newStatus || typeof newStatus !== 'string') {
-      return res.status(400).json({ error: "Valid 'status' field is required in request body" });
-    }
-  
-    try {
-      const affectedRows = await bikeService.updateBikeStatusById(bikeId, newStatus.trim(), {
-        publishAdmin: false
-      });
-  
-      if (affectedRows === 0) {
-        return res.status(404).json({ error: "Bike not found or already deleted" });
-      }
-  
-      res.status(200).json({ success: true, message: `Bike ${bikeId} status updated to '${newStatus}'` });
-    } catch (err) {
-      console.error("Error updating bike status (sim):", err);
-      res.status(500).json({ error: "Failed to update bike status" });
-    }
-  });
-  
 
+/**
+ * PUT bikes/:id/status
+ * Updates bike status and publishes admin command update (used by admin UI).
+ *
+ * This endpoint is the "control-plane" status change:
+ * - DB is updated
+ * - status event is published to admin:scooter_status_update so the simulator can react
+ */
+router.put('/:id/status',
+    auth.authToken,
+    rateLimit.limiter,
+    auth.authAdminOrUserOrDevice,
+    async (req, res) => {
+        const bikeId = parseInt(req.params.id, 10);
+        const { status: newStatus } = req.body;
+
+        if (!bikeId || isNaN(bikeId)) {
+            return res.status(400).json({ error: "Invalid bike id" });
+        }
+        if (!newStatus || typeof newStatus !== 'string') {
+            return res.status(400).json({ error: "Valid 'status' field is required in request body" });
+        }
+
+        try {
+            const affectedRows = await bikeService.updateBikeStatusById(
+                bikeId,
+                newStatus.trim(),
+                { publishAdmin: true }
+            );
+
+            if (affectedRows === 0) {
+                return res.status(404).json({ error: "Bike not found or already deleted" });
+            }
+
+            res.status(200).json({
+                success: true,
+                message: `Bike ${bikeId} status updated to '${newStatus}'`
+            });
+        } catch (err) {
+            console.error("Error updating bike status:", err);
+            res.status(500).json({ error: "Failed to update bike status" });
+        }
+});
+
+/**
+ * PUT bikes/:id/status/sim
+ * Simulator/system canonical status update endpoint.
+ * Same payload, but does NOT publish to admin command channel.
+ */
+router.put('/:id/status/sim',
+    auth.authToken,
+    auth.authAdminOrUserOrDevice,
+    async (req, res) => {
+        const bikeId = parseInt(req.params.id, 10);
+        const { status: newStatus } = req.body;
+
+        if (!bikeId || isNaN(bikeId)) {
+            return res.status(400).json({ error: "Invalid bike id" });
+        }
+        if (!newStatus || typeof newStatus !== 'string') {
+            return res.status(400).json({ error: "Valid 'status' field is required in request body" });
+        }
+
+        try {
+            const affectedRows = await bikeService.updateBikeStatusById(
+                bikeId,
+                newStatus.trim(),
+                { publishAdmin: false }
+            );
+
+            if (affectedRows === 0) {
+                return res.status(404).json({ error: "Bike not found or already deleted" });
+            }
+
+            res.status(200).json({
+                success: true,
+                message: `Bike ${bikeId} status updated to '${newStatus}'`
+            });
+        } catch (err) {
+            console.error("Error updating bike status (sim):", err);
+            res.status(500).json({ error: "Failed to update bike status" });
+        }
+});
+
+/**
+ * DELETE bikes/:id
+ * Soft deletes bike by setting status to deleted.
+ */
+router.delete('/:id',
+    auth.authToken,
+    rateLimit.limiter,
+    auth.authAdminOrUserOrDevice,
+    async (req, res) => {
+        const bikeId = parseInt(req.params.id, 10);
+
+        if (!bikeId || isNaN(bikeId)) {
+            return res.status(400).json({ error: "Invalid bike id" });
+        }
+
+        try {
+            const affectedRows = await bikeService.removeBikeById(bikeId);
+
+            if (affectedRows === 0) {
+                return res.status(404).json({ error: "Bike not found or already deleted" });
+            }
+
+            res.status(200).json({
+                success: true,
+                message: `Bike ${bikeId} deleted`
+            });
+        } catch (err) {
+            console.error("Error deleting bike:", err);
+            res.status(500).json({ error: "Failed to delete bike" });
+        }
+});
 
 module.exports = router;

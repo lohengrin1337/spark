@@ -49,6 +49,8 @@ export async function loadRentals(source = 'user-web') {
       const rentalInvoice = invoices.find(invoice => invoice.rental_id === rent.rental_id);
       const cost = rentalInvoice ? `${rentalInvoice.amount} kr`: "-";
 
+      // Removed <td>${cost}</td> (perhaps) temporarily for table harmony
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${rent.rental_id}</td>
@@ -57,7 +59,6 @@ export async function loadRentals(source = 'user-web') {
         <td>${translateZoneToSwedish(rent.start_zone) ?? '-'}</td>
         <td>${translateZoneToSwedish(rent.end_zone) ?? '-'}</td>
         <td>${duration}</td>
-        <td>${cost}</td>
         <td>
           ${endDate
             ? `<a href="${source === 'user-app' ? 'user-app-route.html' : 'route.html'}#${rent.rental_id}">Se på karta</a>`

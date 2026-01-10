@@ -2,41 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spark - Uthyrningar</title>
+  <title>Spark - Resehistorik</title>
+    <script type="module" src="/shared/auth/user-check.js"></script>
 
+  <link rel="stylesheet" href="/shared/style/style.css">
   <link rel="stylesheet" href="/shared/style/style.css">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
 
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Doto:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zilla+Slab+Highlight:wght@400;700&display=swap" rel="stylesheet">
+
   <script type="module" src="/shared/js/frontend-helpers.js"></script>
   <script type="module">
     import { loadRentals } from '/shared/js/api.js';
-    loadRentals('user-app');
+    loadRentals();
   </script>
 <script type="module" src="/shared/view-component/user-app-header.js"></script>
+<script type="module" src="/shared/view-component/user-app-sidebar.js"></script>
 </head>
 
 <body>
 
-  <user-app-header></user-app-header>
+<user-app-header style="z-index:1000000000"></user-app-header>
+
+
 <div class="non-map-container">
+<user-app-sidebar></user-app-sidebar>
   <div class="table-wrapper">
     <table>
-      <h1 class="table-header">Uthyrningar</h1>
-      <h2>(Kommer senare innehålla bara den givna användarens resor, inte alla. Styling ur synk, ska omorganisera elementen lite.)</h2>
+      <h1 class="table-header">Min resehistorik</h1>
 
       <thead>
-        <tr>
-          <th>Id</th>
-          <th>Kund-ID</th>
-          <th>Startad</th>
-          <th>Avslutad</th>
-          <th>Startzon</th>
-          <th>Slutzon</th>
-          <th>Varaktighet</th>
-          <th>Rutt</th>
+        <th>Id</th>
+        <th>Startad</th>
+        <th>Avslutad</th>
+        <th>Startzon</th>
+        <th>Slutzon</th>
+        <th>Varaktighet</th>
+        <th>Kostnad</th>
+        <th>Rutt</th>
+        </tr>
+      </thead>
         </tr>
       </thead>
 
@@ -50,5 +58,8 @@
     </table>
   </div>
 </div>
+
+  </div>
+
 </body>
 </html>

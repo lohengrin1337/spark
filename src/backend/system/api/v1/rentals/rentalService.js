@@ -1,26 +1,7 @@
-// rentalService.js
+// rental services
 
 const rentalModel = require('./rentalModel');
 const { createInvoiceForRental } = require('../billing/rentalBillingService');
-
-function assertRentalModelShape() {
-  // This guard makes the “what is being required at runtime?” question trivial.
-  if (!rentalModel || typeof rentalModel !== 'object') {
-    throw new Error(`[RentalService] rentalModel export is invalid: ${typeof rentalModel}`);
-  }
-  if (typeof rentalModel.createRental !== 'function') {
-    const keys = Object.keys(rentalModel);
-    throw new Error(
-      `[RentalService] rentalModel.createRental is not a function. Exported keys: ${keys.join(', ')}`
-    );
-  }
-  if (typeof rentalModel.completeRental !== 'function') {
-    const keys = Object.keys(rentalModel);
-    throw new Error(
-      `[RentalService] rentalModel.completeRental is not a function. Exported keys: ${keys.join(', ')}`
-    );
-  }
-}
 
 /**
  * Gets all rentals from model.
@@ -47,6 +28,11 @@ async function getRentalsByCustomer(customerId, user) {
  */
 async function getRentalById(id, user) {
     const rental = await rentalModel.getOneRental(id);
+    if (!rental) {
+        const err = new Error(`Rental with id ${id} not found.`);
+        err.status = 404;
+        throw err;
+    }
     if (user.role !== "admin" && user.id !== rental.customer_id) {
         const err = new Error("Nope");
         err.status = 403;
@@ -65,26 +51,26 @@ async function getRentalById(id, user) {
  */
 async function createRental(customer_id, bike_id, start_point, start_zone) {
     return await rentalModel.createRental(customer_id, bike_id, start_point, start_zone);
-  }
-  
+}
+
 /**
  * Complete an ongoing rental.
  * Updates the rental and generates an invoice.
- * @param {number} id
+ * @param {number} id - Rental ID.
  * @param {object} end_point
- * @param {string} end_zone
+ * @param {number} end_zone
  * @param {Array} route
  * @returns {promise} The generated invoice.
  * @throws {Error} If rental not found or already completed.
  */
 async function completeRental(id, end_point, end_zone, route) {
     const affectedRows = await rentalModel.completeRental(id, end_point, end_zone, route);
-  
+
     if (affectedRows === 0) {
-      throw new Error('Rental not found or already completed');
+        throw new Error('Rental not found or already completed');
     }
-  
+
     return await createInvoiceForRental(id);
-  }
-  
-  module.exports = { getRentals, getRentalById, createRental, completeRental, getRentalsByCustomer };
+}
+
+module.exports = { getRentals, getRentalById, createRental, completeRental, getRentalsByCustomer };

@@ -10,14 +10,20 @@
 
 import { getScooterIcon } from '/shared/js/map/marker-icons.js';
 import { scooterMarkers, map, animateMarkerTo } from './user-map.js';
+import { loadCustomer } from '/shared/js/api.js';
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "";
 const RENTAL_API = `${API_BASE}/api/v1/rentals`;
-const USER_START_API = `${RENTAL_API}/user`;
-const USER_END_API = (id) => `${RENTAL_API}/user/${id}`;
+const USER_START_API = `${RENTAL_API}`;
+const USER_END_API = (id) => `${RENTAL_API}/${id}`;
 
-const placeholderUserId = 5;
+let currentCustomer = null;
 
+async function ascertainCustomer() {
+  if (currentCustomer) return currentCustomer;
+  currentCustomer = await loadCustomer();
+  return currentCustomer;
+}
 let currentRental = {
   rental_id: null,
   scooter_id: null,
@@ -242,9 +248,37 @@ export function updateScooterMarker(id, sc) {
 async function startRental(scooterId, lat, lng) {
   const lon = parseFloat(lng);
   const la = parseFloat(lat);
+
+  if (Number.isNaN(lon) || Number.isNaN(la)) {
+    console.error("[UserApp] Invalid coordinates for startRental:", { lat, lng });
+    alert("Ogiltig position för startpunkt.");
+    return;
+  }
+
   const start_point = { lat: la, lon };
 
   try {
+    // Resolve logged-in customer dynamically (no placeholder id)
+    const customer = await ascertainCustomer();
+
+    if (!customer) {
+      alert("Ingen kund inloggad.");
+      return;
+    }
+
+    const customerId = customer.customer_id ?? customer.id;
+    if (!customerId) {
+      console.error("[UserApp] Customer object missing id fields:", customer);
+      alert("Kunde inte läsa kund-ID. Logga in igen.");
+      return;
+    }
+
+    // Prevent starting a new rental if one is already active
+    if (currentRental?.rental_id) {
+      alert("Du har redan en aktiv hyra.");
+      return;
+    }
+
     const response = await fetch(USER_START_API, {
       method: "POST",
       credentials: "include",
@@ -253,32 +287,36 @@ async function startRental(scooterId, lat, lng) {
         "Authorization": "Bearer test-token"
       },
       body: JSON.stringify({
-        customer_id: placeholderUserId,
+        customer_id: customerId,
         bike_id: parseInt(scooterId, 10),
         start_point,
-        user_name: "Test User"
+        user_name: customer.name ?? "Anonymous"
       })
     });
 
     if (response.ok) {
       const data = await response.json();
+
       currentRental = {
-        rental_id: data.rental_id,
+        rental_id: data.rental_id ?? data.id ?? null,
         scooter_id: parseInt(scooterId, 10),
         lat: la,
         lng: lon,
         startTime: Date.now()
       };
+
       alert("Uthyrning startad. Ha en trevlig tur!");
     } else {
-      const err = await response.text();
-      alert(`Kunde inte starta uthyrning: ${err}`);
+      const errText = await response.text().catch(() => "");
+      console.error("[UserApp] Start rental failed:", response.status, errText);
+      alert(`Kunde inte starta uthyrning: ${errText || response.status}`);
     }
   } catch (err) {
     console.error("[UserApp] Start rental error:", err);
     alert("Nätverksfel...");
   }
 }
+
 
 async function endRental(rentalId) {
   try {

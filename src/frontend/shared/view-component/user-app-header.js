@@ -1,4 +1,5 @@
 import { initTheme } from '/shared/theme/theme.js';
+import { loadCustomer } from '/shared/js/api.js';
 
 /**
  * Custom element for the user app interface header with theme toggle and user link.
@@ -29,8 +30,24 @@ class UserAppHeader extends HTMLElement {
     this.appendChild(header);
   }
 
-  connectedCallback() {
-    initTheme("#theme-toggle");
+  async connectedCallback() {
+      
+    const loggedIn = this.querySelector('#logged-in-as');
+    try {
+        const customer = await loadCustomer();
+        if (customer) {
+          if (customer.blocked) {
+            loggedIn.textContent = `Kontot är spärrat`;
+            loggedIn.classList.add("blocked-account");
+            loggedIn.setAttribute("data-info", "Betala dina fakturor och kontakta kundtjänst");
+          } else {
+            loggedIn.textContent = customer.name ? `Välkommen, ${customer.name}` : `Välkommen, anonyma kund`;
+          }
+        }
+      } catch (e) {
+          console.error(e);
+      }
+      initTheme("#theme-toggle");
   }
 }
 

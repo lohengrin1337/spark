@@ -9,8 +9,7 @@ const CACHE_NAME = 'spark-user-app-v1';
 const URLs_TO_CACHE = [
   '/',
   '/style/style.css',
-  '/manifest.json',
-  '/shared/view-component/user-app-header.js'
+  '/manifest.json'
 ];
 
 self.addEventListener('install', event => {

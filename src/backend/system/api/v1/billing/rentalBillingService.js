@@ -40,7 +40,7 @@ async function createInvoiceForRental(rental_id, dueDays = 30) {
         fee
     );
 
-    const customer_id = rental.customer_id
+    const customer_id = rental.customer_id;
 
     const due_date = new Date();
     due_date.setDate(due_date.getDate() + dueDays);

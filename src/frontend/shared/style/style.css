@@ -1007,3 +1007,14 @@ _________________________________________________________ */
     position: fixed;
     background: var(--pay-bg);
 }
+
+.img-wrapper {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.img-wrapper img {
+  max-width:35%;
+  height: auto;
+  display: inline-block;
+}

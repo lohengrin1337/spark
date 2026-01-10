@@ -9,11 +9,12 @@ class UserSidebar extends HTMLElement {
     sidebar.innerHTML = `
             <a href="user-panel.html">
                 <img class="invoice-img" src="/shared/img/user.svg" alt="User Panel">
-            <a href="invoices.html">
-                <img class="invoice-img" src="/shared/img/invoice.svg" alt="Invoice Svg">
             </a>
             <a href="rentals.html">
                 <img class="trip-img" src="/shared/img/trip.svg" alt="Trip Svg">
+            </a>
+            <a href="invoices.html">
+                <img class="invoice-img" src="/shared/img/invoice.svg" alt="Invoice Svg">
             </a>
             <br>
             <h1 id="logout" class="link-pointer" style="cursor: pointer">Logga ut</h1>

@@ -7,8 +7,7 @@
 /* global L */
 
 import { getScooterIcon } from '/shared/js/map/marker-icons.js';
-import { scooterMarkers, trails, animateMarkerTo, pageActive } from './map.js';
-import { map } from './map.js';
+import { map, scooterMarkers, trails, animateMarkerTo, pageActive } from './map.js';
 import { updateScooterStatus } from './adminUpdatedStatus.js';
 
 export function updateScooterMarker(id, sc) {
@@ -148,11 +147,13 @@ export function updateScooterMarker(id, sc) {
     const popupEl = e.popup.getElement();
     if (!popupEl) return;
 
+    const token = localStorage.getItem("token");
+
     popupEl.querySelectorAll('.popup-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const scooterId = btn.dataset.id;
         const action = btn.dataset.action;
-        updateScooterStatus(scooterId, action);
+        updateScooterStatus(scooterId, action, token);
       });
     });
   });

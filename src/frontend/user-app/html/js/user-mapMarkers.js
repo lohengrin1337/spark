@@ -115,7 +115,10 @@ function attachWrapperButtonListeners() {
       const id = startBtn.dataset.id;
       const lat = startBtn.dataset.lat;
       const lng = startBtn.dataset.lng;
-      await startRental(id, lat, lng);
+
+      const token = localStorage.getItem("token");
+      await startRental(id, lat, lng, token);
+
       closeRentalWrapper();
     };
   }
@@ -124,7 +127,10 @@ function attachWrapperButtonListeners() {
   if (endBtn) {
     endBtn.onclick = async () => {
       const rentalId = endBtn.dataset.rentalId;
-      await endRental(rentalId);
+
+      const token = localStorage.getItem("token");
+      await endRental(rentalId, token);
+
       closeRentalWrapper();
     };
   }
@@ -245,7 +251,7 @@ export function updateScooterMarker(id, sc) {
   animateMarkerTo(marker, [lat, lng]);
 }
 
-async function startRental(scooterId, lat, lng) {
+async function startRental(scooterId, lat, lng, token) {
   const lon = parseFloat(lng);
   const la = parseFloat(lat);
 
@@ -284,7 +290,7 @@ async function startRental(scooterId, lat, lng) {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer test-token"
+        "Authorization": token ? `Bearer ${token}` : '',
       },
       body: JSON.stringify({
         customer_id: customerId,
@@ -317,14 +323,14 @@ async function startRental(scooterId, lat, lng) {
 }
 
 
-async function endRental(rentalId) {
+async function endRental(rentalId, token) {
   try {
     const response = await fetch(USER_END_API(rentalId), {
       method: "PUT",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer test-token"
+        "Authorization": token ? `Bearer ${token}` : '',
       }
     });
 

@@ -201,7 +201,7 @@ export async function loadInvoices(mode = 'admin') {
           `;
         }
       };
-      // If finalized (paid or void) → keep actionsCell as '-'      
+      // If finalized (paid or void) -> keep actionsCell as '-'      
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -224,6 +224,7 @@ export async function loadInvoices(mode = 'admin') {
       }
 
       tr.innerHTML += `
+        <td>${inv.customer_id}</td>
         <td>${created}</td>
         <td>${due}</td>
         <td>${translateInvStatusToSwe(inv.status)}</td>

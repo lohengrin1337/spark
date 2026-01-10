@@ -140,7 +140,7 @@ const bikeModel = {
      * Update the status of a bike by id (safe against deleted bikes).
      * @param { number } id - bike id
      * @param { string } newStatus - the new status value
-     * @returns { number } number of affected rows (1 if updated, 0 if not found or already deleted)
+     * @returns { Promise<number> } number of affected rows (1 if updated, 0 if not found or already deleted)
      * @throws { Error } if the query fails
      */
     async updateBikeStatusById(id, newStatus) {

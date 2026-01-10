@@ -31,7 +31,7 @@
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(globalThis.location?.search);
         const invoiceId = params.get('id');
 
         async function payInvoice() {
@@ -51,7 +51,7 @@
             const data = await res.json();
 
             if (data.success) {
-                window.location.href = "simulate-payment.html";
+                globalThis.location?.href = "simulate-payment.html";
             } else {
                 alert(data.error || "Payment failed");
             }

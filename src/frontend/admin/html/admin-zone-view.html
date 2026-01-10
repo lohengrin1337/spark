@@ -69,7 +69,7 @@
         loadBikes();
     });
     async function loadZone() {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(globalThis.location?.search);
         const zoneId = params.get('zone_id');
 
         const token = localStorage.getItem("token");
@@ -99,7 +99,7 @@
     }
     async function loadBikes() {
         const token = localStorage.getItem("token");
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(globalThis.location.search);
         const zoneId = params.get('zone_id');
         const res = await fetch(`/api/v1/bikes?zone_id=${zoneId}`, {
             method: 'GET',

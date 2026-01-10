@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         await updateCustomer(customerData);
-        window.location.reload();
+        globalThis.location?.reload();
     });
   });
 </script>

@@ -7,10 +7,23 @@
 // Initialize theme and header animations
 // ─────────────────────────────────────────────────────────────
 export function initTheme() {
+  // Hide logout until header animations complete
+  const logout = document.querySelector('.logout-admin');
+  if (logout) {
+    logout.classList.remove('visible');
+  }
+
   // Enable pointer events only after animations finish
   document.querySelectorAll('.title-spark, .invoice-spark').forEach(el => {
     el.addEventListener('animationend', () => {
       el.style.pointerEvents = 'auto';
+
+      // Show logout after animation finishes
+      if (logout) {
+        requestAnimationFrame(() => {
+          logout.classList.add('visible');
+        });
+      }
     });
   });
 

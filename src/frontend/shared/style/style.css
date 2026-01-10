@@ -1192,11 +1192,21 @@ _________________________________________________________ */
 }
 
 .start-button {
-  background: #1967d2;
+  background: #609aeb;
   color: white;
 }
 
 .end-button {
-  background: #d93025;
+  background: #c9443b;
   color: white;
+}
+
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding-top: 100px;
+  position: fixed;
+  background: var(--pay-bg);
 }

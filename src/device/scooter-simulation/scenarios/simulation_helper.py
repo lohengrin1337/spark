@@ -18,6 +18,9 @@ import random
 from scooter import Scooter
 from config import UPDATE_INTERVAL
 
+from admin_listener import AdminStatusListener
+from rental_listener import RentalEventListener
+
 
 # Config constants
 BATCH_DELAY = 18  # seconds between batches
@@ -26,6 +29,16 @@ SPREAD_MODES = ['start', 'middle', 'end']
 
 SCOOTERS_PER_ZONE = 10  # scooters per individual charging/parking-zone
 ZONE_SCOOTER_MARGIN = 0.000030
+
+
+def setup_simulator_listeners(simulator):
+    """
+    Create and return the standard listeners for a simulator instance.
+    Extracted to reduce duplication across city simulation scripts.
+    """
+    admin_listener = AdminStatusListener(simulator)
+    rental_listener = RentalEventListener(simulator)
+    return admin_listener, rental_listener
 
 
 def stationary_behavior(scooter, elapsed_time):

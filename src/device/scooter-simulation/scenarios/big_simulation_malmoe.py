@@ -21,6 +21,7 @@ from simulation_helper import (
     add_first_route_batch,
     add_stationary_scooters,
     run_incremental_batches,
+    setup_simulator_listeners,
     BATCH_DELAY
 )
 
@@ -66,8 +67,7 @@ def run():
             simulator.custom_scooter_scenarios[sid] = special_behavior_one
         sid += 1
 
-    admin_listener = AdminStatusListener(simulator)
-    rental_listener = RentalEventListener(simulator)
+    admin_listener, rental_listener = setup_simulator_listeners(simulator)
 
     print(f"{len(scooters)} route-based scooters active in Malmö (first batch)")
 

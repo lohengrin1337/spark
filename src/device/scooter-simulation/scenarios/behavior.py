@@ -38,10 +38,10 @@ def special_behavior_one(scooter, simulator):
     charging_polygon = charging_polygons[0]
     center = charging_polygon.centroid
     center_lat = center.y
-    center_lon = center.x
+    center_lng = center.x
 
     scooter.lat = center_lat
-    scooter.lon = center_lon
+    scooter.lng = center_lng
     scooter.speed_kmh = 0
     scooter.end_trip(in_charging_zone=True)
 
@@ -49,13 +49,13 @@ def special_behavior_one(scooter, simulator):
         """Keep position fixed — do NOT return 'activity' to allow charging status"""
         return {
             "lat": scooter.lat,
-            "lon": scooter.lon,
+            "lng": scooter.lng,
             "speed_kmh": 0.0
         }
 
     simulator.per_scooter_special_behavior[scooter.id] = park_and_charge
 
-    print(f"Scooter 3 parked in FIRST charging zone at ({center_lat:.8f}, {center_lon:.8f})")
+    print(f"Scooter 3 parked in FIRST charging zone at ({center_lat:.8f}, {center_lng:.8f})")
 
     return True
 
@@ -80,7 +80,7 @@ def park_in_nearest_charging_zone(required_trips=2):
             print(f"Warning: No charging zones — scooter {scooter.id} continues normally")
             return False
 
-        current_point = Point(scooter.lon, scooter.lat)
+        current_point = Point(scooter.lng, scooter.lat)
 
         nearest_polygon = min(
             charging_polygons,
@@ -89,10 +89,10 @@ def park_in_nearest_charging_zone(required_trips=2):
 
         center = nearest_polygon.centroid
         park_lat = center.y
-        park_lon = center.x
+        park_lng = center.x
 
         scooter.lat = park_lat
-        scooter.lon = park_lon
+        scooter.lng = park_lng
         scooter.speed_kmh = 0.0
         scooter.end_trip(in_charging_zone=True)
 
@@ -100,14 +100,14 @@ def park_in_nearest_charging_zone(required_trips=2):
             """Keep position fixed — do NOT return 'activity' to allow charging status"""
             return {
                 "lat": scooter.lat,
-                "lon": scooter.lon,
+                "lng": scooter.lng,
                 "speed_kmh": 0.0
             }
 
         simulator.per_scooter_special_behavior[scooter.id] = permanent_parking
 
         print(f"Scooter {scooter.id} parked in NEAREST charging zone "
-              f"at ({park_lat:.8f}, {park_lon:.8f})")
+              f"at ({park_lat:.8f}, {park_lng:.8f})")
 
         return True
 
@@ -133,7 +133,7 @@ def park_in_nearest_parking_zone(required_trips=2):
             print(f"Warning: No parking zones - scooter {scooter.id} continues normally")
             return False
 
-        current_point = Point(scooter.lon, scooter.lat)
+        current_point = Point(scooter.lng, scooter.lat)
 
         nearest_polygon = min(
             parking_polygons,
@@ -142,10 +142,10 @@ def park_in_nearest_parking_zone(required_trips=2):
 
         center = nearest_polygon.centroid
         park_lat = center.y
-        park_lon = center.x
+        park_lng = center.x
 
         scooter.lat = park_lat
-        scooter.lon = park_lon
+        scooter.lng = park_lng
         scooter.speed_kmh = 0.0
         scooter.end_trip(in_charging_zone=False)
 
@@ -153,14 +153,14 @@ def park_in_nearest_parking_zone(required_trips=2):
             """Keep position fixed — do NOT return 'activity'"""
             return {
                 "lat": scooter.lat,
-                "lon": scooter.lon,
+                "lng": scooter.lng,
                 "speed_kmh": 0.0
             }
 
         simulator.per_scooter_special_behavior[scooter.id] = permanent_parking
 
         print(f"Scooter {scooter.id} parked in NEAREST parking zone "
-              f"at ({park_lat:.8f}, {park_lon:.8f})")
+              f"at ({park_lat:.8f}, {park_lng:.8f})")
 
         return True
 
@@ -192,7 +192,7 @@ def breakdown_after_seconds(seconds=300):
                 """Scooter is broken - will not move again until serviced."""
                 return {
                     "lat": scooter.lat,
-                    "lon": scooter.lon,
+                    "lng": scooter.lng,
                     "speed_kmh": 0.0,
                     "activity": "idle"
                 }

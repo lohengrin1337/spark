@@ -1,5 +1,3 @@
-### simulation_helper.py
-
 """
 @module simulation_helper
 
@@ -52,24 +50,31 @@ def stationary_behavior(scooter, elapsed_time):
     }
 
 
-def add_first_route_batch(scooters, rbroadcast, ordered_routes, start_sid,
-                          special_battery_route=3, special_battery_level=22):
+def add_first_route_batch(
+    scooters,
+    rbroadcast,
+    ordered_routes,
+    start_sid,
+    special_battery_route=3,
+    special_battery_level=22
+):
     """
     Add the initial route-based batch with sequential SIDs (Scooter IDs) starting from start_sid.
     Returns the next available SID after this batch.
     """
     current_sid = start_sid
 
-    for route_index, route_coords in ordered_routes:
-        if len(route_coords) < 1:
+    for route_index, route_coordinates in ordered_routes:
+        if len(route_coordinates) < 1:
             continue
-        lat, lng = route_coords[0]
+
+        start_latitude, start_longitude = route_coordinates[0]
         battery_level = special_battery_level if route_index == special_battery_route else 100
 
         scooter = Scooter(
             sid=current_sid,
-            lat=lat,
-            lng=lng,
+            lat=start_latitude,
+            lng=start_longitude,
             battery=battery_level,
             rbroadcast=rbroadcast
         )
@@ -90,19 +95,20 @@ def add_stationary_scooters(scooters, simulator, current_sid, max_sid):
 
     added = 0
     for zone_type in ['parking', 'charging']:
-        polys = simulator.city.zones.get(zone_type, [])
-        for poly in polys:
-            cent = poly.centroid
+        zone_polygons = simulator.city.zones.get(zone_type, [])
+        for zone_polygon in zone_polygons:
+            zone_centroid = zone_polygon.centroid
             for _ in range(SCOOTERS_PER_ZONE):
                 if current_sid > max_sid:
                     return current_sid, added
-                lat = cent.y + random.uniform(-ZONE_SCOOTER_MARGIN, ZONE_SCOOTER_MARGIN)
-                lng = cent.x + random.uniform(-ZONE_SCOOTER_MARGIN, ZONE_SCOOTER_MARGIN)
+
+                latitude = zone_centroid.y + random.uniform(-ZONE_SCOOTER_MARGIN, ZONE_SCOOTER_MARGIN)
+                longitude = zone_centroid.x + random.uniform(-ZONE_SCOOTER_MARGIN, ZONE_SCOOTER_MARGIN)
 
                 scooter = Scooter(
                     sid=current_sid,
-                    lat=lat,
-                    lng=lng,
+                    lat=latitude,
+                    lng=longitude,
                     battery=100,
                     rbroadcast=simulator.rbroadcast
                 )
@@ -113,7 +119,7 @@ def add_stationary_scooters(scooters, simulator, current_sid, max_sid):
                 simulator.scooter_to_route[current_sid] = dummy_route_id
                 simulator.trip_counter[current_sid] = 0
                 simulator.next_waypoint_index[current_sid] = {"route_index": 0}
-                simulator.last_position[current_sid] = (lat, lng)
+                simulator.last_position[current_sid] = (latitude, longitude)
                 simulator.last_travel_direction[current_sid] = None
                 simulator.per_scooter_special_behavior[current_sid] = stationary_behavior
                 simulator.rentals[current_sid] = {
@@ -138,8 +144,15 @@ def add_stationary_scooters(scooters, simulator, current_sid, max_sid):
     return current_sid, added
 
 
-def run_incremental_batches(simulator, scooters, ordered_routes, next_sid, num_batches,
-                          special_battery_route=3, special_battery_level=22):
+def run_incremental_batches(
+    simulator,
+    scooters,
+    ordered_routes,
+    next_sid,
+    num_batches,
+    special_battery_route=3,
+    special_battery_level=22
+):
     """
     Main loop with incremental batch addition.
     """
@@ -153,71 +166,76 @@ def run_incremental_batches(simulator, scooters, ordered_routes, next_sid, num_b
                 scooter.publish()
 
             if batches_started < num_batches and time.time() >= next_batch_time:
-                mode_idx = batches_started % 3
-                mode = SPREAD_MODES[mode_idx]
+                spread_mode_index = batches_started % 3
+                spread_mode = SPREAD_MODES[spread_mode_index]
 
                 new_scooters = []
-                state_list = []
+                scooter_initialization_state = []
                 current_sid = next_sid
 
-                for route_index, route_coords in ordered_routes:
-                    if len(route_coords) < 1:
+                for route_index, route_coordinates in ordered_routes:
+                    if len(route_coordinates) < 1:
                         continue
 
                     battery_level = special_battery_level if route_index == special_battery_route else 100
 
-                    if mode == 'start' or len(route_coords) < 2:
-                        lat, lng = route_coords[0]
-                        waypoint_idx = 0
-                        trip_c = 0
-                    elif mode == 'end':
-                        lat, lng = route_coords[-1]
-                        waypoint_idx = 0
-                        trip_c = 1
+                    if spread_mode == 'start' or len(route_coordinates) < 2:
+                        latitude, longitude = route_coordinates[0]
+                        waypoint_index = 0
+                        trip_counter_value = 0
+                    elif spread_mode == 'end':
+                        latitude, longitude = route_coordinates[-1]
+                        waypoint_index = 0
+                        trip_counter_value = 1
                     else:
-                        if len(route_coords) < 3:
-                            lat, lng = route_coords[0]
-                            waypoint_idx = 0
-                            trip_c = 0
+                        middle_index = len(route_coordinates) // 2
+                        if len(route_coordinates) < 3:
+                            latitude, longitude = route_coordinates[0]
+                            waypoint_index = 0
+                            trip_counter_value = 0
                         else:
-                            mid_idx = len(route_coords) // 2
-                            lat, lng = route_coords[mid_idx]
-                            waypoint_idx = mid_idx + 1
-                            waypoint_idx = min(waypoint_idx, len(route_coords) - 1)
-                            trip_c = 0
+                            latitude, longitude = route_coordinates[middle_index]
+                            waypoint_index = middle_index + 1
+                            waypoint_index = min(waypoint_index, len(route_coordinates) - 1)
+                            trip_counter_value = 0
 
                     scooter = Scooter(
                         sid=current_sid,
-                        lat=lat,
-                        lng=lng,
+                        lat=latitude,
+                        lng=longitude,
                         battery=battery_level,
                         rbroadcast=simulator.rbroadcast
                     )
                     new_scooters.append(scooter)
-                    state_list.append((route_index, waypoint_idx, trip_c))
+                    scooter_initialization_state.append((route_index, waypoint_index, trip_counter_value))
                     current_sid += 1
 
                 scooters.extend(new_scooters)
 
-                for s, (route_id, w_idx, t_c) in zip(new_scooters, state_list):
-                    simulator.scooter_to_route[s.id] = route_id
-                    simulator.trip_counter[s.id] = t_c
-                    simulator.next_waypoint_index[s.id] = {"route_index": w_idx}
-                    simulator.last_position[s.id] = (s.lat, s.lng)
-                    simulator.last_travel_direction[s.id] = None
-                    simulator.per_scooter_special_behavior[s.id] = None
-                    simulator.rentals[s.id] = {
+                for scooter, (route_id, waypoint_index, trip_counter_value) in zip(
+                    new_scooters, scooter_initialization_state
+                ):
+                    simulator.scooter_to_route[scooter.id] = route_id
+                    simulator.trip_counter[scooter.id] = trip_counter_value
+                    simulator.next_waypoint_index[scooter.id] = {"route_index": waypoint_index}
+                    simulator.last_position[scooter.id] = (scooter.lat, scooter.lng)
+                    simulator.last_travel_direction[scooter.id] = None
+                    simulator.per_scooter_special_behavior[scooter.id] = None
+                    simulator.rentals[scooter.id] = {
                         "rental_id": None, "start_ts": None, "user_id": None, "user_name": None,
                         "start_zone": "free", "end_zone": "free"
                     }
-                    simulator.external_rentals[s.id] = {
+                    simulator.external_rentals[scooter.id] = {
                         "active": False, "rental_id": None, "user_id": None, "user_name": None, "start_ts": None
                     }
 
                 next_sid = current_sid
                 batches_started += 1
                 next_batch_time += BATCH_DELAY
-                print(f"Started batch {batches_started}/{num_batches} (mode: {mode}): now {len(scooters)} scooters active")
+                print(
+                    f"Started batch {batches_started}/{num_batches} (mode: {spread_mode}): "
+                    f"now {len(scooters)} scooters active"
+                )
 
             time.sleep(UPDATE_INTERVAL)
     except KeyboardInterrupt:

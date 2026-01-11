@@ -1,12 +1,6 @@
 // auth service
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-    // check db for matching email
-    // if unique - allow register
-    // hash password
-    // save in db (authModel)
-    // create jwt
-    // return jwt
 const authModel = require('./authModel');
 
 /**
@@ -16,12 +10,13 @@ const authModel = require('./authModel');
  * @param { object } customer - contains { name, email, oauth_provider, oauth_provicer_id }
  */
 async function oauthRegisterOrLogin(customer) {
-    const oauthCustomer = authModel.getCustomerByOauth(customer.oauth_provider_id);
-    let customerId = oauthCustomer.customer_id;
-    if (!oauthCustomer) {
-        customerId = authModel.saveOauthCustomer(customer);
+    const customerExists = await authModel.getCustomerByOauth(customer.oauth_provider_id);
+    if (!customerExists) {
+        const customerId = await authModel.saveOauthCustomer(customer);
+        const token = await createJsonWebToken(customerId, "customer");
+        return token;
     }
-    const token = await createJsonWebToken(customerId, "customer");
+    const token = await createJsonWebToken(customerExists.customer_id, "customer");
     return token;
 };
 
@@ -53,13 +48,11 @@ async function registerCustomer(email, name, password) {
  * @param { string } password - customer input password.
  */
 async function customerEmailLogin(email, password) {
-    console.log(password);
     const customer = await authModel.getCustomerByEmail(email);
-    console.log(customer);
     const passwordOk = await bcrypt.compare(password, customer.password);
     if (!passwordOk) {
         const err = new Error(
-            "The input password does not match, please type better."
+            "The input password does not match."
         );
         err.status = 401;
         err.name = "Wrong password";
@@ -79,7 +72,7 @@ async function adminLogin(adminId, password) {
     const passwordOk = await bcrypt.compare(password, admin.password);
     if (!passwordOk) {
         const err = new Error(
-            "The input password does not match, please type better."
+            "The input password does not match."
         );
         err.status = 401;
         err.name = "Wrong password";
@@ -99,7 +92,7 @@ async function thirdPartyLogin(thirdPartyId, password) {
     const passwordOk = await bcrypt.compare(password, thirdParty.password);
     if (!passwordOk) {
         const err = new Error(
-            "The input password does not match, please type better."
+            "The input password does not match."
         );
         err.status = 401;
         err.name = "Wrong password";

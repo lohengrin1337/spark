@@ -579,12 +579,13 @@ export async function newFees(fee) {
     throw err;
   }
 }
+
 export async function loadCustomer() {
     const token = localStorage.getItem("token");
-    const res = await fetch('/api/v1/customers/search', {
+    const res = await fetch('/api/v1/customers/me', {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${token}`,
-                    'Content-type': 'application/json' },
+                    'Content-Type': 'application/json'},
     });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);

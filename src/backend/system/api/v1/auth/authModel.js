@@ -5,7 +5,7 @@ const authModel = {
     /**
    * Fetch one customer by oauth_provider_id.
    * @param { number } oauthProviderId - the id returned from the oauth provider (github).
-   * @returns { object|undefined } user object if found.
+   * Returns user object if found.
    */
   async getCustomerByOauth(oauthProviderId) {
     let conn;
@@ -20,7 +20,7 @@ const authModel = {
   /**
    * Insert a customer with oauth identification.
    * @param { object } customer - contains { name, email, oauth_provider, oauth_provicer_id }
-   * @returns { number } customer_id of newly inserted customer.
+   * Return customer_id of newly inserted customer.
    */
   async saveOauthCustomer(customer) {
     let conn;
@@ -28,8 +28,7 @@ const authModel = {
     conn = await pool.getConnection();
     const newCustomer = await conn.query("INSERT INTO customer (email, name, oauth_provider, oauth_provider_id) VALUES (?, ?, ?, ?)",
         [customer.email, customer.name, customer.oauth_provider, customer.oauth_provider_id]);
-    console.log(newCustomer);
-    return newCustomer.insertId;
+    return Number(newCustomer.insertId);
     } finally {
         if (conn) conn.release();
     }
@@ -53,7 +52,6 @@ const authModel = {
    * @param { string } admin - admin username
    */
   async getAdmin(adminId) {
-    console.log(adminId);
     let conn;
     try {
         conn = await pool.getConnection();

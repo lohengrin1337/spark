@@ -138,7 +138,7 @@ router.put('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
  * Simulator create rental endpoint.
  * Requires start_zone to be provided by simulator.
  */
-router.post('/sim', auth.authToken, auth.authAdminOrUserOrDevice,
+router.post('/sim', auth.authToken, rateLimit.simulationLimiter, auth.authAdminOrUserOrDevice,
     async (req, res) => {
     const { customer_id, bike_id, start_point, start_zone } = req.body;
 
@@ -160,7 +160,7 @@ router.post('/sim', auth.authToken, auth.authAdminOrUserOrDevice,
  * Simulator complete rental endpoint.
  * Requires end_point, end_zone and full route to be provided by simulator.
  */
-router.put('/sim/:id', auth.authToken, auth.authAdminOrUserOrDevice,
+router.put('/sim/:id', auth.authToken, rateLimit.simulationLimiter, auth.authAdminOrUserOrDevice,
     async (req, res) => {
     const { id } = req.params;
     const { end_point, end_zone, route } = req.body;

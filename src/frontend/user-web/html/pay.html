@@ -51,7 +51,7 @@
             const data = await res.json();
 
             if (data.success) {
-                globalThis.location?.href = "simulate-payment.html";
+                window.location.replace("simulate-payment.html");
             } else {
                 alert(data.error || "Payment failed");
             }

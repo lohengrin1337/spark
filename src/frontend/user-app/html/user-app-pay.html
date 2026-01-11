@@ -51,7 +51,7 @@
             const data = await res.json();
 
             if (data.success) {
-                globalThis.location?.href = "user-app-sim-pay.html";
+                window.location.replace("user-app-sim-pay.html");
             } else {
                 alert(data.error || "Payment failed");
             }

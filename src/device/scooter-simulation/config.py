@@ -27,4 +27,5 @@ NON_RENTABLE_STATUSES = {
     "needService",
     "needCharging",
     "deactivated",
+    "chargingLow"
 }

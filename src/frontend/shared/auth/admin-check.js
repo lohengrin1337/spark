@@ -4,7 +4,7 @@
 const token = localStorage.getItem("token");
 
 if (!token) {
-    globalThis.location?.replace('/admin-login.html');
+    window.location.replace('/admin-login.html');
 } else {
     try {
         // Parse base-64 encoded jwt token
@@ -15,10 +15,10 @@ if (!token) {
         // Check role & expire date
         if (role !== "admin" || now >= exp) {
             localStorage.removeItem('token');
-            globalThis.location?.replace('/admin-login.html');
+            window.location.replace('/admin-login.html');
         }
     } catch (err) {
         localStorage.removeItem('token');
-        globalThis.location?.replace('/admin-login.html');
+        window.location.replace('/admin-login.html');
     }
 }

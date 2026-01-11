@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (res.ok) {
             const data = await res.json();
             localStorage.setItem("token", data.token);
-            globalThis.location?.replace('/index.html');
+            window.location.replace('/index.html');
 
         }
     });

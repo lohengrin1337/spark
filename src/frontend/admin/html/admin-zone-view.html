@@ -69,7 +69,7 @@
         loadBikes();
     });
     async function loadZone() {
-        const params = new URLSearchParams(globalThis.location?.search);
+        const params = new URLSearchParams(window.location.search);
         const zoneId = params.get('zone_id');
 
         const token = localStorage.getItem("token");

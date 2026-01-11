@@ -31,7 +31,7 @@
     </div>
 
     <script>
-        const params = new URLSearchParams(globalThis.location?.search);
+        const params = new URLSearchParams(window.location.search);
         const invoiceId = params.get('id');
 
         async function payInvoice() {

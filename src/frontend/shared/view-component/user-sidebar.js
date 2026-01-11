@@ -34,7 +34,7 @@ class UserSidebar extends HTMLElement {
     logoutButton.addEventListener("click", (e) => {
         e.preventDefault();
         localStorage.removeItem("token");
-        globalThis.location?.replace("/user-login.html");
+        window.location.replace("/user-login.html");
     });
   }
 }

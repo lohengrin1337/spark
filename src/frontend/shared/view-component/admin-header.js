@@ -45,7 +45,7 @@ class AdminHeader extends HTMLElement {
       logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
         localStorage.removeItem("token");
-        globalThis.location?.replace('/admin-login.html');
+        window.location.replace('/admin-login.html');
         console.log('Successfully Logged out')
       });
     };

@@ -8,10 +8,14 @@ const customerModel = {
    * Fetch all customers in database ordered by issued date.
    * @throws { Error } If the query fails.
    */
-  async getAllCustomers() {
+  async getAllCustomers(filters = {}) {
     let conn;
     try {
         conn = await pool.getConnection();
+        if (filters.customer_id) {
+            const customers = await conn.query("SELECT * FROM customer WHERE customer_id = ?", [filters.customer_id]);
+            return customers[0];
+        }
         const customers = await conn.query("SELECT * FROM customer");
         return customers;
     } catch (err) {

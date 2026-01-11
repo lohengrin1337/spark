@@ -7,12 +7,14 @@ const customerModel = require('./customerModel.js');
  * Gets all customers from model.
  * @returns Array of customers
  */
-async function getCustomers() {
-    return await customerModel.getAllCustomers();
+async function getCustomers(filters) {
+    return await customerModel.getAllCustomers(filters);
 }
 
 /**
  * Gets one customer from model.
+ * If called with admin token returns customer with id = customer_id,
+ * else returns customer with id = req.user.id.
  * @param { number } id customer id
  * @param { object } user - user id and role from token
  * @returns customer as object (if found)

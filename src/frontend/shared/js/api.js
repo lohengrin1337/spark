@@ -6,7 +6,7 @@ import { translateZoneToSwedish, calculateRentalCost, translateInvStatusToSwe } 
  */
 export async function loadRentals(source = 'user-web') {
   try {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     const url = source == "user-web" ? "/api/v1/rentals/customer" : "/api/v1/rentals";
     const res = await fetch(url, {
             headers: {
@@ -213,7 +213,8 @@ export async function loadInvoices(mode = 'admin') {
             <a href="admin-rentals.html#${inv.rental_id}">
               ${inv.rental_id}
             </a>
-          </td>`;
+          </td>
+          <td>${inv.customer_id}</td>`;
       } else {
         tr.innerHTML += `
           <td>
@@ -224,7 +225,6 @@ export async function loadInvoices(mode = 'admin') {
       }
 
       tr.innerHTML += `
-        <td>${inv.customer_id}</td>
         <td>${created}</td>
         <td>${due}</td>
         <td>${translateInvStatusToSwe(inv.status)}</td>
@@ -615,7 +615,7 @@ async function getInvoices() {
           'Content-Type': 'application/json'
       }
     });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);  
     return res.json();
   } catch (err) {
     console.log(err);

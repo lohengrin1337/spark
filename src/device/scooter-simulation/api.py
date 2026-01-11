@@ -125,6 +125,9 @@ def update_bike_status(bike_id, new_status):
     out of bounds -> deactivated), keeping the db status up to date and as the single
     canonical source of truth.
 
+    Note: this function has now been supplanted by update_bike_status_and_position, but is
+    kept for reference.
+
     """
     url = f"{BIKE_API}/{bike_id}/status/sim"
     payload = {"status": new_status}
@@ -144,3 +147,37 @@ def update_bike_status(bike_id, new_status):
     except requests.RequestException as e:
         print(f"[API] Exception while updating bike {bike_id} status: {e}")
         return False
+    
+
+def update_bike_status_and_position(bike_id, new_status, lat, lng):
+    """
+    Update the status and coordinates of a given bike via the backend API.
+    
+    Used inside the simulator for automated status changes (e.g. low battery -> needCharging,
+    out of bounds -> deactivated), keeping the db status and position up to date and as the single
+    canonical source of truth.
+
+    This function intentionally updates both status and coordinates in one canonical operation,
+    keeping it coherent and crystal clear, to avoid partial updates (status without position,
+    or position without status).
+
+    """
+    url = f"{BIKE_API}/{bike_id}/status/sim"
+    payload = {"status": new_status, "lat": float(lat), "lng": float(lng)}
+
+    try:
+        print(f"[API] Updating bike status and position -> PUT {url} | payload: {json.dumps(payload)}")
+        response = requests.put(url, json=payload, timeout=10, headers=HEADERS)
+        print(f"[API] Response {response.status_code}: {response.text}")
+
+        if response.status_code in (200, 201, 204):
+            print(f"[API] Bike {bike_id} status and position successfully updated -> '{new_status}' @ ({lat}, {lng})")
+            return True
+        else:
+            print(f"[API] Failed to update bike {bike_id} status and position -> HTTP {response.status_code}")
+            return False
+
+    except requests.RequestException as e:
+        print(f"[API] Exception while updating bike {bike_id} status and position: {e}")
+        return False
+

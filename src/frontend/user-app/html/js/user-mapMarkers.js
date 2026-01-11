@@ -159,15 +159,18 @@ export function updateScooterMarker(id, sc) {
   let marker = scooterMarkers[id];
 
   if (!marker) {
-    const icon = isMyRental ? getScooterIcon('active')
-                 : sc.st === 'charging' ? getScooterIcon('charging')
-                 : getScooterIcon('available');
-
+    let icon = getScooterIcon('available');
+  
+    if (isMyRental) {
+      icon = getScooterIcon('active');
+    } else if (sc.st === 'charging') {
+      icon = getScooterIcon('charging');
+    }
+  
     marker = L.marker([lat, lng], { icon });
     marker.addTo(map);
     scooterMarkers[id] = marker;
   }
-
   const newIcon = isMyRental ? getScooterIcon('active')
                   : sc.st === 'charging' ? getScooterIcon('charging')
                   : getScooterIcon('available');

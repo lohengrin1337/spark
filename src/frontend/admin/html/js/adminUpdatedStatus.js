@@ -17,11 +17,18 @@ const SCOOTER_API = "/api/v1/bikes"; // Backend route uses /bikes
  * @param {string|number} scooterId - The ID of the scooter.
  * @param {string} newStatus - New status to set (e.g., "deactivated", "needService").
  * @param {string} [token] - Required JWT for authenticated admin req.
+ * @param {{lat: number, lng: number}} [finalPosition] - Final coordinates at standstill (authoritative position).
  * @returns {Promise<{success: boolean, status?: string, error?: string}>}
  */
-export async function updateScooterStatus(scooterId, newStatus, token) {
+export async function updateScooterStatus(scooterId, newStatus, token, finalPosition) {
   const url = `${SCOOTER_API}/${encodeURIComponent(scooterId)}/status`;
-  const payload = { status: newStatus };
+
+  const payload = {
+    status: newStatus,
+    ...(finalPosition && typeof finalPosition.lat === "number" && typeof finalPosition.lng === "number"
+      ? { lat: finalPosition.lat, lng: finalPosition.lng }
+      : {}),
+  };
 
   const headers = {
     "Content-Type": "application/json",

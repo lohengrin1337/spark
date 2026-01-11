@@ -153,7 +153,7 @@ export function updateScooterMarker(id, sc) {
       btn.addEventListener('click', () => {
         const scooterId = btn.dataset.id;
         const action = btn.dataset.action;
-        updateScooterStatus(scooterId, action, token);
+        updateScooterStatus(scooterId, action, token, { lat, lng });
       });
     });
   });

@@ -94,5 +94,73 @@ async function updateBikeStatusById(id, newStatus, opts = {}) {
 
     return affectedRows;
 }
+/**
+ * Update the status and position of a bike atomically.
+ *
+ * @param { number } id bike id
+ * @param { string } newStatus the new status
+ * @param { number } lat current latitude
+ * @param { number } lng current longitude
+ * @param { object } [opts]
+ * @param { boolean } [opts.publishAdmin=false] publish to admin command channel
+ * @returns number of affected rows (1 if updated, 0 if not found or already deleted)
+ * @throws { Error } on invalid status or DB error
+ */
+async function updateBikeStatusAndPositionById(id, newStatus, lat, lng, opts = {}) {
+  const { publishAdmin = false } = opts;
 
-module.exports = { getBikes, getBikeById, updateBikeStatus, removeBikeById, updateBikeStatusById };
+  const allowedStatuses = [
+      'available',
+      'active',
+      'reduced',
+      'deactivated',
+      'needService',
+      'needCharging',
+      'charging'
+  ];
+
+  if (!allowedStatuses.includes(newStatus)) {
+      throw new Error(`Invalid status '${newStatus}'. Allowed: ${allowedStatuses.join(', ')}`);
+  }
+
+  const affectedRows = await bikeModel.updateBikeStatusAndPositionById(
+      id,
+      newStatus,
+      lat,
+      lng
+  );
+
+  if (affectedRows === 1) {
+      // Frontend delta channel
+      const uiDelta = JSON.stringify({
+          id: parseInt(id, 10),
+          st: newStatus,
+          lat,
+          lng
+      });
+      await redisPublisher.publish('scooter:delta', uiDelta);
+
+      // Admin command channel (used to sync simulator-admin events)
+      if (publishAdmin) {
+          const adminPayload = JSON.stringify({
+              id: parseInt(id, 10),
+              status: newStatus,
+              lat,
+              lng
+          });
+          await redisPublisher.publish('admin:scooter_status_update', adminPayload);
+      }
+  }
+
+  return affectedRows;
+}
+
+
+module.exports = {
+    getBikes,
+    getBikeById,
+    updateBikeStatus,
+    removeBikeById,
+    updateBikeStatusById,
+    updateBikeStatusAndPositionById
+};

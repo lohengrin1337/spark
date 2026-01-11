@@ -82,7 +82,7 @@ router.put('/:id/status',
     auth.authAdminOrUserOrDevice,
     async (req, res) => {
         const bikeId = parseInt(req.params.id, 10);
-        const { status: newStatus } = req.body;
+        const { status: newStatus, lat, lng } = req.body;
 
         if (!bikeId || isNaN(bikeId)) {
             return res.status(400).json({ error: "Invalid bike id" });
@@ -91,10 +91,19 @@ router.put('/:id/status',
             return res.status(400).json({ error: "Valid 'status' field is required in request body" });
         }
 
+        const parsedLat = parseFloat(lat);
+        const parsedLng = parseFloat(lng);
+
+        if (isNaN(parsedLat) || isNaN(parsedLng)) {
+            return res.status(400).json({ error: "Valid 'lat' and 'lng' fields are required in request body" });
+        }
+
         try {
-            const affectedRows = await bikeService.updateBikeStatusById(
+            const affectedRows = await bikeService.updateBikeStatusAndPositionById(
                 bikeId,
                 newStatus.trim(),
+                parsedLat,
+                parsedLng,
                 { publishAdmin: true }
             );
 
@@ -104,7 +113,7 @@ router.put('/:id/status',
 
             res.status(200).json({
                 success: true,
-                message: `Bike ${bikeId} status updated to '${newStatus}'`
+                message: `Bike ${bikeId} status updated to '${newStatus}' @ (${parsedLat}, ${parsedLng})`
             });
         } catch (err) {
             console.error("Error updating bike status:", err);
@@ -116,13 +125,19 @@ router.put('/:id/status',
  * PUT bikes/:id/status/sim
  * Simulator/system canonical status update endpoint.
  * Same payload, but does NOT publish to admin command channel.
+ *
+ * This endpoint is the "data-plane" truth for bikes:
+ * 
+ * Status + coordinates are updated atomically in db, no admin command is published
+ * 
  */
 router.put('/:id/status/sim',
     auth.authToken,
+    rateLimit.simulationLimiter,
     auth.authAdminOrUserOrDevice,
     async (req, res) => {
         const bikeId = parseInt(req.params.id, 10);
-        const { status: newStatus } = req.body;
+        const { status: newStatus, lat, lng } = req.body;
 
         if (!bikeId || isNaN(bikeId)) {
             return res.status(400).json({ error: "Invalid bike id" });
@@ -131,10 +146,19 @@ router.put('/:id/status/sim',
             return res.status(400).json({ error: "Valid 'status' field is required in request body" });
         }
 
+        const parsedLat = parseFloat(lat);
+        const parsedLng = parseFloat(lng);
+
+        if (isNaN(parsedLat) || isNaN(parsedLng)) {
+            return res.status(400).json({ error: "Valid 'lat' and 'lng' fields are required in request body" });
+        }
+
         try {
-            const affectedRows = await bikeService.updateBikeStatusById(
+            const affectedRows = await bikeService.updateBikeStatusAndPositionById(
                 bikeId,
                 newStatus.trim(),
+                parsedLat,
+                parsedLng,
                 { publishAdmin: false }
             );
 
@@ -144,13 +168,14 @@ router.put('/:id/status/sim',
 
             res.status(200).json({
                 success: true,
-                message: `Bike ${bikeId} status updated to '${newStatus}'`
+                message: `Bike ${bikeId} status updated to '${newStatus}' @ (${parsedLat}, ${parsedLng})`
             });
         } catch (err) {
-            console.error("Error updating bike status (sim):", err);
-            res.status(500).json({ error: "Failed to update bike status" });
+            console.error("Error updating bike status and position (sim):", err);
+            res.status(500).json({ error: "Failed to update bike status and position" });
         }
 });
+
 
 /**
  * DELETE bikes/:id

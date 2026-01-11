@@ -17,7 +17,7 @@ import random
 import math
 import threading
 from collections import deque
-from api import fetch_users, create_rental, complete_rental, update_bike_status
+from api import fetch_users, create_rental, complete_rental, update_bike_status_and_position
 from utils import calculate_distance_in_m
 from config import UPDATE_INTERVAL, NOMINAL_MAX_SPEED_MPS, LOW_BATTERY_THRESHOLD, NON_RENTABLE_STATUSES
 from redisbroadcast import ScooterBroadcaster
@@ -99,6 +99,12 @@ class Simulator:
         self.battery_locked_scooters = set()
         self.outofbounds_locked_scooters = set()
 
+        # Battery locks that should be applied after the current rental ends
+        self.pending_battery_lock = set()
+
+        # Track which charging-related status (charging / chargingLow) this simulator last wrote to DB
+        self.last_db_charging_status = {}
+
         # Current rental state per scooter
         self.rentals = {
             scooter.id: {
@@ -166,23 +172,73 @@ class Simulator:
         with self._rental_event_lock:
             self._rental_events.append(payload)
 
+
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Bike status update helper (DB-first)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _update_bike_status_db_first(self, scooter_id, new_status):
+    def _update_bike_status_position_db_first(self, scooter, new_status):
         """
-        Best-effort canonical status update.
-        Ensures DB is updated before applying locally.
+        Canonical status + positional bike update.
+        Ensures DB is updated before applying the status-change locally.
         """
         try:
-            success = update_bike_status(scooter_id, new_status)
+            success = update_bike_status_and_position(
+                scooter.id,
+                new_status,
+                scooter.lat,
+                scooter.lng
+            )
             if success:
-                print(f"[Simulator] Status updated: scooter {scooter_id} -> '{new_status}'")
+                print(f"[Simulator] Status and position updated: scooter {scooter.id} -> '{new_status}' @ ({scooter.lat}, {scooter.lng})")
             else:
-                print(f"[Simulator] WARNING: Status update failed: scooter {scooter_id} -> '{new_status}'")
+                print(f"[Simulator] WARNING: Status+position update failed: scooter {scooter.id} -> '{new_status}'")
         except Exception as e:
-            print(f"[Simulator] WARNING: Status update threw: scooter {scooter_id} -> '{new_status}' | {e}")
+            print(f"[Simulator] WARNING: Status+position update threw: scooter {scooter.id} -> '{new_status}' | {e}")
 
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Charging status update helper (DB-first)
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _sync_charging_status_db_first(self, scooter, in_charging_zone):
+        """
+        Canonical charging status update (charging / chargingLow), DB-first.
+        Ensures DB is updated before applying the status-change locally.
+        """
+        # Never mark charging while actively rented
+        if scooter.status == "active":
+            self.last_db_charging_status.pop(scooter.id, None)
+            return
+
+        # Admin or out-of-bounds owns the status
+        if scooter.id in self.admin_locked_scooters or scooter.id in self.outofbounds_locked_scooters:
+            self.last_db_charging_status.pop(scooter.id, None)
+            return
+
+        last_written = self.last_db_charging_status.get(scooter.id)
+
+        if in_charging_zone:
+            next_charging_status = (
+                "chargingLow"
+                if scooter.battery < LOW_BATTERY_THRESHOLD
+                else "charging"
+            )
+
+            if last_written != next_charging_status:
+                self._update_bike_status_position_db_first(scooter, next_charging_status)
+                scooter.status = next_charging_status
+                self.last_db_charging_status[scooter.id] = next_charging_status
+            return
+
+        # We previously set charging / chargingLow and now left the zone === restore correct non-charging state
+        if last_written in ("charging", "chargingLow"):
+            if scooter.battery < LOW_BATTERY_THRESHOLD:
+                self._update_bike_status_position_db_first(scooter, "needCharging")
+                scooter.status = "needCharging"
+            else:
+                self._update_bike_status_position_db_first(scooter, "available")
+                scooter.status = "available"
+
+            self.last_db_charging_status.pop(scooter.id, None)
 
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -227,6 +283,33 @@ class Simulator:
         if scooter_id in self.deactivated_scooters:
             self.per_scooter_special_behavior[scooter_id] = None
             self.deactivated_scooters.remove(scooter_id)
+
+    def _apply_battery_lock(self, scooter):
+        """
+        Apply low-battery lock immediately (immobilize + mark needCharging), DB-first.
+        Safe to call multiple times; will no-op if already locked by any reason.
+        """
+        if scooter.id in self.deactivated_scooters:
+            return
+
+        def lock_due_to_low_battery(scooter, elapsed_time):
+            return {
+                "lat": scooter.lat,
+                "lng": scooter.lng,
+                "speed_kmh": 0.0,
+                "route_finished": False,
+                "activity": "needCharging"
+            }
+
+        self.per_scooter_special_behavior[scooter.id] = lock_due_to_low_battery
+        self.deactivated_scooters.add(scooter.id)
+        self.battery_locked_scooters.add(scooter.id)
+
+        # Canonical status update should happen once when we first apply the needCharging-lock.
+        self._update_bike_status_position_db_first(scooter, "needCharging")
+
+        scooter.status = "needCharging"
+        print(f"DEBUG: Scooter {scooter.id} locked due to low battery ({scooter.battery}%)")
 
     def _force_complete_active_rental_at_current_position(self, scooter, current_time, end_zone="admin_forced"):
         """
@@ -311,7 +394,7 @@ class Simulator:
             print(f"[Simulator] Applying admin status update: scooter {scooter.id} -> '{new_status}' (was '{old_status}')")
 
             # DB-first
-            self._update_bike_status_db_first(scooter.id, new_status)
+            self._update_bike_status_position_db_first(scooter, new_status)
 
             # Apply locally
             scooter.status = new_status
@@ -419,6 +502,12 @@ class Simulator:
                 # Clear simulator-local rental state - backend already completed it canonically.
                 self._reset_rental_state(self.rentals[scooter.id])
 
+                # If battery is low (or we deferred during external rental), lock now
+                if scooter.id in self.pending_battery_lock or scooter.battery < LOW_BATTERY_THRESHOLD:
+                    self.pending_battery_lock.discard(scooter.id)
+                    self._apply_battery_lock(scooter)
+                    continue  # keep it non-rentable
+
                 # If nothing else locks this scooter, return it to a rentable local state.
                 # Actual determinative db-state remains backend-owned.
                 if scooter.id not in self.deactivated_scooters and scooter.status not in NON_RENTABLE_STATUSES:
@@ -466,22 +555,17 @@ class Simulator:
             external_rental_id = self.external_rentals[scooter_id]["rental_id"]
 
 
-            # Battery logic for locking at sub-20%. External rentals can still run while scooter is stationary.
+            # Battery logic for locking at sub-20%
             if scooter.battery < LOW_BATTERY_THRESHOLD and scooter.id not in self.deactivated_scooters:
-                def lock_due_to_low_battery(scooter, elapsed_time):
-                    return {
-                        "lat": scooter.lat,
-                        "lng": scooter.lng,
-                        "speed_kmh": 0.0,
-                        "route_finished": False,
-                        "activity": "needCharging"
-                    }
+                sim_rental_active = self.rentals[scooter.id]["rental_id"] is not None
+                ext_rental_active = self.external_rentals[scooter.id]["active"]
 
-                self.per_scooter_special_behavior[scooter.id] = lock_due_to_low_battery
-                self.deactivated_scooters.add(scooter.id)
-                self.battery_locked_scooters.add(scooter.id)
-                scooter.status = "needCharging"
-                print(f"DEBUG: Scooter {scooter.id} locked due to low battery ({scooter.battery}%)")
+                if sim_rental_active or ext_rental_active or scooter.status == "active":
+                    # Allow ride to finish, but ensure it won't become rentable afterwards
+                    self.pending_battery_lock.add(scooter.id)
+                else:
+                    # Not rented -> lock immediately
+                    self._apply_battery_lock(scooter)
 
             # External rental mode:
             # - Do not move scooter along route
@@ -493,22 +577,23 @@ class Simulator:
                     "lat": scooter.lat,
                     "lng": scooter.lng,
                     "speed_kmh": 0.0,
-                    "activity": "active",  # Rental is active externally; keep activity consistent
+                    "activity": "active",
                     "route_finished": False
                 }
 
-                # Zone classification (still useful for UI)
                 current_zone = self.city.classify_zone(scooter.lat, scooter.lng)
 
-                # Speed limits irrelevant here (stationary), but keep the structure intact
+                # Speed limits irrelevant here (stationary), but to keep the structure intact
                 movement_update["speed_kmh"] = 0.0
 
                 # Charging detection
                 in_charging_zone = self._is_in_charging_zone(scooter)
 
+                self._sync_charging_status_db_first(scooter, in_charging_zone)
+
                 print(f"DEBUG EXTERNAL RENTAL: scooter {scooter.id} | rental_id={external_rental_id} | activity=active | current_status={scooter.status}")
 
-                # Update physical state (battery drain may still apply depending on Scooter.tick implementation)
+                # Update physical state
                 scooter.tick(
                     activity="active",
                     speed_kmh=0.0,
@@ -543,22 +628,22 @@ class Simulator:
             # Resolve movement: special behavior wins, otherwise follow route
             movement_update = self._resolve_movement_for_scooter(scooter, current_route)
 
-            # Apply new position FIRST - critical for accurate zone detection this tick
+            # Apply new position first - critical for accurate zone detection this tick
             new_lat = movement_update["lat"]
             new_lng = movement_update["lng"]
             scooter.lat = new_lat
             scooter.lng = new_lng
 
-            # Classify zone using the UPDATED position
+            # Classify zone using the updates position
             current_zone = self.city.classify_zone(scooter.lat, scooter.lng)
 
             # OUT OF BOUNDS: Permanent deactivation - lock position permanently
             if current_zone == 'outofbounds':
                 scooter.status = "deactivated"
 
-                # Canonical status update should happen once when we first apply the lock.
+                # Canonical status update should happen after first applying the lock
                 if scooter.id not in self.outofbounds_locked_scooters:
-                    self._update_bike_status_db_first(scooter_id, "deactivated")
+                    self._update_bike_status_position_db_first(scooter, "deactivated")
 
                 if scooter.id not in self.deactivated_scooters:
                     def permanent_lock(scooter, elapsed_time):
@@ -631,6 +716,8 @@ class Simulator:
 
             # Charging detection
             in_charging_zone = self._is_in_charging_zone(scooter)
+
+            self._sync_charging_status_db_first(scooter, in_charging_zone)
 
             # Update physical state
             scooter.tick(
@@ -731,7 +818,7 @@ class Simulator:
 
             # Canonical status update to active (only if rentable)
             if scooter.status not in NON_RENTABLE_STATUSES:
-                self._update_bike_status_db_first(scooter_id, "active")
+                self._update_bike_status_position_db_first(scooter, "active")
 
             self.rbroadcast.clear_coords(rental_state["rental_id"])
             # Log first coordinate with 0 speed (realistic start)
@@ -840,6 +927,12 @@ class Simulator:
 
         self.trip_counter[scooter_id] = next_trip_count
         self._reset_rental_state(rental_state)
+
+        # If we dipped below threshold during the ride, lock now that rental is over
+        if scooter.id in self.pending_battery_lock or scooter.battery < LOW_BATTERY_THRESHOLD:
+            self.pending_battery_lock.discard(scooter.id)
+            self._apply_battery_lock(scooter)
+
         in_charging = self._is_in_charging_zone(scooter)
         scooter.end_trip(in_charging_zone=in_charging)
 

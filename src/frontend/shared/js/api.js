@@ -252,6 +252,7 @@ export async function loadInvoices(mode = 'admin') {
           }
 
           try {
+            const token = localStorage.getItem("token");
             const res = await fetch(`/api/v1/invoices/void/${invoiceId}`, {
               method: 'PUT',
         headers: {
@@ -290,7 +291,16 @@ export async function loadInvoices(mode = 'admin') {
  * Fetches all bikes from the API and populates the invoice table in the DOM.
  * @async
  */
+let filterListenersAttached = false;
+
 export async function loadBikes() {
+    if (!filterListenersAttached) {
+        ['city-filter', 'status-filter', 'zone_type-filter'].forEach(id => {
+            document.getElementById(id).addEventListener('change', loadBikes);
+        });
+        filterListenersAttached = true;
+    }
+
     const city = document.getElementById("city-filter")?.value;
     const status = document.getElementById("status-filter")?.value;
     const zone_type = document.getElementById("zone_type-filter")?.value;
@@ -341,9 +351,6 @@ export async function loadBikes() {
     
       tbody.appendChild(tr);
     });
-    ['city-filter', 'status-filter', 'zone_type-filter'].forEach(id => {
-        document.getElementById(id).addEventListener('change', loadBikes);
-    });
 
     tbody.querySelectorAll('.delete-bike').forEach(button => {
         button.addEventListener('click', async (e) => {
@@ -381,7 +388,7 @@ export async function loadBikes() {
     
         try {
             const token = localStorage.getItem("token");
-            const bike = { status: "needs service" };
+            const bike = { status: "needService" };
             const res = await fetch(`/api/v1/bikes/${bikeId}`, {
                 method: 'PUT',
                 headers: {
@@ -412,6 +419,7 @@ export async function loadBikes() {
     `;
   }
 }
+
 
 /**
  * Fetches all customers from the API and populates the customers table in the DOM.

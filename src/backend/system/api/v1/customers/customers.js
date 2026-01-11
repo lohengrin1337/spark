@@ -14,10 +14,25 @@ const rateLimit = require('./../../../middleware/ratelimit');
  */
 router.get('/', auth.authToken, rateLimit.limiter, auth.authAdminOrDevice, 
     async (req, res) => {
-    const customers = await customerServices.getCustomers();
+    const filters = req.query;
+    const customers = await customerServices.getCustomers(filters);
     res.status(200).json(customers);
 });
 
+/**
+ * GET customers/me
+ * Gets the customer data for a logged in user.
+ */
+router.get('/me', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
+    async (req, res) => {
+        const customerId = req.user.id;
+        const customerData = await customerServices.getCustomerById(customerId, req.user);
+        if (!customerData) {
+            return res.status(404).json({ error: "Customer not found" });
+        }
+        res.status(200).json(customerData);
+    }
+)
 /**
  * Get customer data for one logged in customer.
  * Update later to work for admin to search for customers?
@@ -37,15 +52,15 @@ router.get('/search', auth.authToken, auth.authAdminOrUser,
  * Response: 200 ok and invoice object or 404 not found.
  * Admin har tillgång till alla, user bara till sin egen
  */
-router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
-    async (req, res) => {
-    const customerId = req.params.id;
-    const customer = await customerServices.getCustomerById(customerId, req.user);
-    if (!customer) {
-        return res.status(404).json({ error: 'Customer not found'});
-    }
-    res.status(200).json(customer);
-});
+// router.get('/:id', auth.authToken, rateLimit.limiter, auth.authAdminOrUser, 
+//     async (req, res) => {
+//     const customerId = req.params.id;
+//     const customer = await customerServices.getCustomerById(customerId, req.user);
+//     if (!customer) {
+//         return res.status(404).json({ error: 'Customer not found'});
+//     }
+//     res.status(200).json(customer);
+// });
 
 /**
  * Update a customer

@@ -73,8 +73,6 @@
 
         if (res.ok) {
             localStorage.setItem("token", data.token);
-            console.log(data.token);
-            console.log(localStorage);
             globalThis.location.href = "/index.html";
         } else {
             const message = data.errors[0].detail;

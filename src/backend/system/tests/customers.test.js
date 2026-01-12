@@ -11,9 +11,9 @@ describe('GET /customers', () => {
     });
 });
 
-describe('GET /customers/:id', () => {
+describe('GET /customers?customer_id=<id>', () => {
     it('should return costumer with id 4', async () => {
-        const res = await request(app).get('/api/v1/customers/4');
+        const res = await request(app).get('/api/v1/customers?customer_id=4');
         expect(res.statusCode).toEqual(200);
         expect(res.body.customer_id).toEqual(4);
     });

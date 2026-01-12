@@ -127,11 +127,20 @@ export function updateScooterMarker(id, sc) {
       </div>
 
       <div class="popup-actions">
-        <button class="popup-btn popup-btn-danger" data-action="deactivated" data-id="${id}">
-        Inaktivera
+        <button class="popup-btn popup-btn-danger admin-status-button" data-action="deactivated" data-id="${id}">
+          Inaktivera
         </button>
-        <button class="popup-btn popup-btn-warning" data-action="needService" data-id="${id}">
-          Markera för service
+
+        <button class="popup-btn popup-btn-success admin-status-button" data-action="available" data-id="${id}">
+          Gör tillgänglig
+        </button>
+
+        <button class="popup-btn popup-btn-warning admin-status-button" data-action="needService" data-id="${id}">
+          Behöver service
+        </button>
+
+        <button class="popup-btn popup-btn-info admin-status-button" data-action="onService" data-id="${id}">
+          På service
         </button>
       </div>
     </div>

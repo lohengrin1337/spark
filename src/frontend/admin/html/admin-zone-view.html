@@ -34,7 +34,6 @@
                     <div>Stad</div>
                     <div>Zontyp</div>
                     <div>Antal cyklar</div>
-                    <div>Cyklar</div>
                     <div>Hastighetsbegränsning</div>
                 </div>
                 <div class="right column" id="zone-data">
@@ -75,19 +74,15 @@
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const zones = await res.json();
-        const tbody = document.getElementById('zone-data');
-        tbody.innerHTML = '';
+        const zoneData = document.getElementById('zone-data');
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+        zoneData.innerHTML = `
             <div>${zones.zone_id}</div>
             <div>${zones.city}</div>
             <div>${zones.zone_type}</div>
             <div>${zones.bikes.length}</div>
-            <div>${zones.bikes}</div>
-            <div>${zones.speed_limit}</div>
+            <div>${zones.speed_limit} km/h</div>
         `;
-        tbody.appendChild(tr);
 
     }
     async function loadBikes() {

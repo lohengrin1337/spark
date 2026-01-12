@@ -106,7 +106,7 @@ export async function renderAllZones(map) {
 
           layer = L.polygon(geometry.points, ZONE_STYLES.slow)
             .bindPopup(
-              `<strong>${zone.city} - Ytterzon (Slow zone)</strong><br>ID: ${zone.zone_id}<br>Antal cyklar: ${bikeCount}`,
+              `<strong>${zone.city} - Ytterzon (Slow zone)</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-slow-zone' }
             );
 
@@ -119,7 +119,7 @@ export async function renderAllZones(map) {
 
           layer = L.polygon(geometry.points, ZONE_STYLES.city)
             .bindPopup(
-              `<strong>${zone.city} - Stadszon (City zone)</strong><br>ID: ${zone.zone_id}<br>Antal cyklar: ${bikeCount}`,
+              `<strong>${zone.city} - Stadszon (City zone)</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-city-zone' }
             );
 
@@ -132,7 +132,7 @@ export async function renderAllZones(map) {
 
           layer = L.polygon(geometry.points, ZONE_STYLES.charging)
             .bindPopup(
-              `<strong>${zone.city} - Laddzon</strong><br>ID: ${zone.zone_id}<br>Antal cyklar: ${bikeCount}`,
+              `<strong>${zone.city} - Laddzon</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-charging-zone' }
             );
 
@@ -144,7 +144,7 @@ export async function renderAllZones(map) {
           if (geometry.type === 'polygon') {
             layer = L.polygon(geometry.points, ZONE_STYLES.parking)
               .bindPopup(
-                `<strong>${zone.city} - Parkeringszon (Polygon)</strong><br>ID: ${zone.zone_id}`,
+                `<strong>${zone.city} - Parkeringszon (Polygon)</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar ${bikeCount}`,
                 { className: 'popup-parking-zone' }
               );
 
@@ -159,7 +159,7 @@ export async function renderAllZones(map) {
               radius: PARKING_RADIUS,
               ...ZONE_STYLES.parking
             }).bindPopup(
-              `<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: ${zone.zone_id}<br>Antal cyklar: ${bikeCount}`,
+              `<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-parking-zone' }
             );
 

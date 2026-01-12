@@ -28,27 +28,39 @@
 
         <section class="content">
         <div class="table-wrapper-admin">
+            
+            <table>
+            <h1 class="table-header table-header-admin">Zoner</h1>
+
             <div class="filter-options">
-                <label for="city-filter">Stad:</label>
-                <select id="city-filter">
+                <div class="select-container">
+                  <label for="city-filter">Stad</label>
+                  <select id="city-filter">
                     <option value="">Alla</option>
                     <option value="malmö">Malmö</option>
                     <option value="karlskrona">Karlskrona</option>
                     <option value="umeå">Umeå</option>
-                </select>
-                <label for="zone_type-filter">Zontyp</label>
-                <select id="zone_type-filter">
+                  </select>
+                </div>
+              
+                <div class="select-container">
+                  <label for="zone_type-filter">Zontyp</label>
+                  <select id="zone_type-filter">
                     <option value="">Alla</option>
                     <option value="charging">Laddstation</option>
                     <option value="parking">Parkering</option>
                     <option value="city">Stad</option>
                     <option value="slow">Buffertzon</option>
-                </select>
-                <label for="zone_id">Sök zon (id)</label>
-                <input id="zone_id" type="number">
-                <input id="search" type="submit">
-            <table>
-            <h1 class="table-header table-header-admin">Zoner</h1>
+                  </select>
+                </div>
+              
+                <div class="select-container">
+                  <label for="zone_id">Sök zon (id)</label>
+                  <input id="zone_id" type="number">
+                  <input class="zone-search-button" id="search" type="submit">
+                </div>
+              </div>
+              
             <thead>
                 <tr>
                 <th>Zon-Id</th>

@@ -12,11 +12,13 @@ const STATUS_TO_PATH = {
   available:     '/shared/img/markers/scooter-green.svg',
   active:        '/shared/img/markers/scooter-blue.svg',
   charging:      '/shared/img/markers/scooter-yellow.svg',
+  chargingLow:   '/shared/img/markers/scooter-yellow.svg',
   reduced:       '/shared/img/markers/scooter-red.svg',
   deactivated:   '/shared/img/markers/scooter-grey.svg',
   needService:   '/shared/img/markers/scooter-orange.svg',
+  onService:     '/shared/img/markers/scooter-orange-dark.svg',
   needCharging:  '/shared/img/markers/scooter-yellow-nc.svg',
-  needcharging:  '/shared/img/markers/scooter-yellow-nc.svg'
+  needcharging:  '/shared/img/markers/scooter-yellow-nc.svg',
 };
 
 
@@ -38,10 +40,12 @@ export function getScooterIcon(status = 'available') {
     'need_service': 'needService',
     'needservice': 'needService',
     'needsService': 'needService',
+    'onService': 'onService',
     'charging': 'charging',
+    'chargingLow': 'chargingLow',
     'needsCharging': 'needCharging',
     'needscharging': 'needCharging',
-    'needCharging': 'needCharging'
+    'needCharging': 'needCharging',
   };
 
   key = normalize[key] || key;

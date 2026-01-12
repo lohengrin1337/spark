@@ -1032,3 +1032,63 @@ admin-header {
   opacity: 1;
   pointer-events: auto;
 }
+
+.admin-status-button {
+  padding: 0.3rem;
+  margin: 0.28rem 0.44rem;
+  border-radius: 6px;
+  transition: transform ease-in-out 0.14s;
+}
+
+.admin-status-button:hover {
+  transform: scale(1.035)
+}
+
+.delete-bike,
+.service-bike {
+  padding: 0.2rem;
+  margin: 0.1rem;
+  border-radius: 6px;
+}
+
+select {
+  height: 2rem;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.filter-options {
+  display: flex;
+  align-items: center;
+  gap: 20%;
+  flex-wrap: nowrap;
+  margin-bottom: 1.4rem;
+}
+
+
+.filter-options-rental {
+  display: flex;
+  gap: 0.4rem; 
+}
+
+.zone-search-button {
+  padding: 0.3rem;
+  margin: 0.28rem 0.44rem;
+  border-radius: 6px;
+}
+
+.leaflet-popup-content {
+  padding: 0.2rem 0.4rem;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+
+.leaflet-popup.popup-city-zone .leaflet-popup-content,
+.leaflet-popup.popup-slow-zone .leaflet-popup-content,
+.leaflet-popup.popup-parking-zone .leaflet-popup-content,
+.leaflet-popup.popup-charging-zone .leaflet-popup-content {
+  padding: 1rem 0.5rem !important;
+  font-size: 15px;
+  line-height: 1.4;
+}

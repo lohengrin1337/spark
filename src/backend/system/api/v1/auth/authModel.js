@@ -81,7 +81,7 @@ const authModel = {
    * @param { string|null } - customer name if provided.
    * @param { string } password - hashed password.
   */
- async saveEmailCustomer(email, name, password) {
+  async saveEmailCustomer(email, name, password) {
     let conn;
     try {
         conn = await pool.getConnection();
@@ -90,7 +90,25 @@ const authModel = {
     } finally {
         if (conn) conn.release();
     }
- }
+  },
+  /** 
+   * Add oauth credentials to an existing user (with same email)
+   * @param { integer } id - customer id.
+   * @param { Object } customer - { oauth_provider, oauth_provider_id }
+  */
+  async addOauthCredentials(id, customer) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const result = await conn.query(
+            "UPDATE customer SET oauth_provider = ?, oauth_provider_id = ? WHERE customer_id = ?",
+            [customer.oauth_provider, customer.oauth_provider_id, id]
+        );
+        return result.affectedRows === 1;
+    } finally {
+        if (conn) conn.release();
+    }
+  },
 };
 
 module.exports = authModel;

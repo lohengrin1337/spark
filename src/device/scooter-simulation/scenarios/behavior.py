@@ -32,7 +32,7 @@ def special_behavior_one(scooter, simulator):
     charging_polygons = city.zones.get('charging', [])
 
     if not charging_polygons:
-        print("Warning: No charging zones loaded — scooter 3 continues normally")
+        print("Warning: No charging zones loaded - scooter 3 continues normally")
         return False
 
     charging_polygon = charging_polygons[0]
@@ -46,7 +46,7 @@ def special_behavior_one(scooter, simulator):
     scooter.end_trip(in_charging_zone=True)
 
     def park_and_charge(scooter, elapsed_time):
-        """Keep position fixed — do NOT return 'activity' to allow charging status"""
+        """Keep position fixed - do NOT return 'activity' to allow charging status"""
         return {
             "lat": scooter.lat,
             "lng": scooter.lng,
@@ -77,7 +77,7 @@ def park_in_nearest_charging_zone(required_trips=2):
         charging_polygons = city.zones.get('charging', [])
 
         if not charging_polygons:
-            print(f"Warning: No charging zones — scooter {scooter.id} continues normally")
+            print(f"Warning: No charging zones - scooter {scooter.id} continues normally")
             return False
 
         current_point = Point(scooter.lng, scooter.lat)
@@ -97,7 +97,7 @@ def park_in_nearest_charging_zone(required_trips=2):
         scooter.end_trip(in_charging_zone=True)
 
         def permanent_parking(scooter, elapsed_time):
-            """Keep position fixed — do NOT return 'activity' to allow charging status"""
+            """Keep position fixed - do not return 'activity' to allow charging status"""
             return {
                 "lat": scooter.lat,
                 "lng": scooter.lng,
@@ -106,7 +106,7 @@ def park_in_nearest_charging_zone(required_trips=2):
 
         simulator.per_scooter_special_behavior[scooter.id] = permanent_parking
 
-        print(f"Scooter {scooter.id} parked in NEAREST charging zone "
+        print(f"Scooter {scooter.id} parked in nearest charging zone "
               f"at ({park_lat:.8f}, {park_lng:.8f})")
 
         return True
@@ -150,7 +150,7 @@ def park_in_nearest_parking_zone(required_trips=2):
         scooter.end_trip(in_charging_zone=False)
 
         def permanent_parking(scooter, elapsed_time):
-            """Keep position fixed — do NOT return 'activity'"""
+            """Keep position fixed - do NOT return 'activity'"""
             return {
                 "lat": scooter.lat,
                 "lng": scooter.lng,
@@ -200,7 +200,7 @@ def breakdown_after_seconds(seconds=300):
             simulator.per_scooter_special_behavior[scooter.id] = broken_down
 
             print(
-                f"Scooter {scooter.id} broke down after ~{int(elapsed)}s — "
+                f"Scooter {scooter.id} broke down after ~{int(elapsed)}s"
                 f"status canonized as needService"
             )
 

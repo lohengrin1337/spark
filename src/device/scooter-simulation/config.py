@@ -25,6 +25,7 @@ CHARGE_RATE_PER_MIN = 3.0
 
 NON_RENTABLE_STATUSES = {
     "needService",
+    "onService",
     "needCharging",
     "deactivated",
     "chargingLow"

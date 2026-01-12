@@ -49,6 +49,15 @@ async function registerCustomer(email, name, password) {
  */
 async function customerEmailLogin(email, password) {
     const customer = await authModel.getCustomerByEmail(email);
+    if (!customer) {
+        const err = new Error(
+            "The input email does not match."
+        );
+        err.status = 401;
+        err.name = "Wrong email";
+        throw err;
+    }
+    
     const passwordOk = await bcrypt.compare(password, customer.password);
     if (!passwordOk) {
         const err = new Error(
@@ -58,6 +67,7 @@ async function customerEmailLogin(email, password) {
         err.name = "Wrong password";
         throw err;
     }
+
     const token = createJsonWebToken(customer.customer_id, "customer");
     return token;
 };

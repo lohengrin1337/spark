@@ -618,7 +618,6 @@ async function getInvoices(customer = '') {
     if (customer) {
         url += `/customer/${customer}`;
     }
-    console.log(url)
     const res = await fetch(`${url}`, {
       method: 'GET',
       headers: {

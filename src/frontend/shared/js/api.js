@@ -450,7 +450,7 @@ export async function loadCustomers() {
     if (customers.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="5" style="text-align:center; opacity: 0.6;">
+          <td colspan="6" style="text-align:center; opacity: 0.6;">
             Inga kunder ännu...
           </td>
         </tr>
@@ -464,6 +464,7 @@ export async function loadCustomers() {
         <td>${c.customer_id}</td>
         <td>${c.email}</td>
         <td>${c.name}</td>
+        <td><a href="admin-customer-invoices.html?customer_id=${c.customer_id}">visa fakturor</a></td>
         <td>${c.blocked ? 'Ja' : 'Nej'}</td>
         <td>
           <a href="#" class="toggle-block" data-id="${c.customer_id}">

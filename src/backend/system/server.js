@@ -1,9 +1,6 @@
 const { createServer } = require('http');
 const { WebSocketServer } = require('ws');
 const mariadb = require('mariadb');
-const apiV1 = require('./api/v1/apiRoutes.js');
-const oauth = require('./api/v1/auth/oauth.js');
-
 
 const { redisSubscriber } = require('./redis/redisClient');
 

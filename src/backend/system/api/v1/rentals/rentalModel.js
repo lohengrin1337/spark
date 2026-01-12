@@ -114,7 +114,7 @@ const rentalModel = {
                  VALUES (?, ?, ?, ?, NOW())`,
                 [customer_id, bike_id, JSON.stringify(start_point), start_zone]
             );
-            return result.insertId;
+            return Number(result.insertId);
         } catch (err) {
             console.error("CREATE rental error:", err);
             throw err;

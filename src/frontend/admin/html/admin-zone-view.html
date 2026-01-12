@@ -28,26 +28,19 @@
 
         <section class="content">
         <div class="table-wrapper-admin">
-            <table>
-            <h1 class="table-header table-header-admin">Zoner</h1>
-            <thead>
-                <tr>
-                <th>Zon-Id</th>
-                <th>Stad</th>
-                <th>Zontyp</th>
-                <th>Antal cyklar</th>
-                <th>Cyklar</th>
-                <th>Hastighetsbegränsning</th>
-                </tr>
-            </thead>
-            <tbody id="zone-table-body">
-                <tr>
-                <td colspan="4" style="text-align:center; opacity:.6;">
-                    Laddar zoner...
-                </td>
-                </tr>
-            </tbody>
-            </table>
+            <div class="half row border">
+                <div class="left column">
+                    <div>Zon-Id</div>
+                    <div>Stad</div>
+                    <div>Zontyp</div>
+                    <div>Antal cyklar</div>
+                    <div>Cyklar</div>
+                    <div>Hastighetsbegränsning</div>
+                </div>
+                <div class="right column" id="zone-data">
+                        Laddar zoner...
+                </div>
+            </div>
             <div class="table-wrapper-admin">
                 <table>
                     <thead>
@@ -82,17 +75,17 @@
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const zones = await res.json();
-        const tbody = document.getElementById('zone-table-body');
+        const tbody = document.getElementById('zone-data');
         tbody.innerHTML = '';
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${zones.zone_id}</td>
-            <td>${zones.city}</td>
-            <td>${zones.zone_type}</td>
-            <td>${zones.bikes.length}</td>
-            <td>${zones.bikes}</td>
-            <td>${zones.speed_limit}</td>
+            <div>${zones.zone_id}</div>
+            <div>${zones.city}</div>
+            <div>${zones.zone_type}</div>
+            <div>${zones.bikes.length}</div>
+            <div>${zones.bikes}</div>
+            <div>${zones.speed_limit}</div>
         `;
         tbody.appendChild(tr);
 

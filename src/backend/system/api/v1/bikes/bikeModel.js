@@ -17,10 +17,15 @@ const bikeModel = {
         b.city,
         b.status,
         b.coordinates,
-        z.zone_id
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+            'zone_id', z.zone_id,
+            'zone_type', z.zone_type
+            )
+        ) AS zones
         FROM bike AS b
         JOIN spark_zone AS z
-        ON ST_Contains(z.coordinates, b.coordinates)`;
+        ON ST_Within(b.coordinates, z.coordinates)`;
 
         const where = [];
         const params = [];

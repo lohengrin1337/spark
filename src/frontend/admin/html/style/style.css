@@ -1092,3 +1092,31 @@ select {
   font-size: 15px;
   line-height: 1.4;
 }
+
+.border {
+    border: 1px solid black;
+    padding: 2rem;
+}
+.half {
+    max-width: 50%;
+    margin: auto;
+}
+
+.left {
+    text-align: left;
+    font-weight: 500;
+}
+
+.right {
+    text-align: right;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

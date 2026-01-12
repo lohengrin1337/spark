@@ -48,7 +48,7 @@ CREATE TABLE `bike`
 (
     `bike_id` INT AUTO_INCREMENT NOT NULL,
     `city` VARCHAR(45),
-    `status` VARCHAR(45) DEFAULT 'available',
+    `status` VARCHAR(45) DEFAULT 'onService',
     `coordinates` POINT NULL DEFAULT NULL,
 
     PRIMARY KEY (`bike_id`),

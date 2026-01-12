@@ -287,7 +287,7 @@ class Simulator:
     def _apply_battery_lock(self, scooter):
         """
         Apply low-battery lock immediately (immobilize + mark needCharging), DB-first.
-        Safe to call multiple times; will no-op if already locked by any reason.
+        Safe to call multiple times - will not operate if already locked for any reason.
         """
         if scooter.id in self.deactivated_scooters:
             return
@@ -305,7 +305,7 @@ class Simulator:
         self.deactivated_scooters.add(scooter.id)
         self.battery_locked_scooters.add(scooter.id)
 
-        # Canonical status update should happen once when we first apply the needCharging-lock.
+        # Canonical status update should happen before when we apply the needCharging-lock-status.
         self._update_bike_status_position_db_first(scooter, "needCharging")
 
         scooter.status = "needCharging"
@@ -344,28 +344,37 @@ class Simulator:
         self._return_user_to_pool(rental_state)
         self._reset_rental_state(rental_state)
 
+
+
     def _find_scooter_by_id(self, scooter_id):
         """
-        Scooter finder by id.
+        Locate a scooter in the simulator by its ID, tolerating int/str mismatches.
         """
-        for s in self.scooters:
-            if s.id == scooter_id:
-                return s
+        # First try direct comparison
+        for scooter in self.scooters:
+            if scooter.id == scooter_id:
+                return scooter
+
+        # Fallback: compare as integers
         try:
-            sid_int = int(scooter_id)
-            for s in self.scooters:
-                if s.id == sid_int:
-                    return s
+            target_id_int = int(scooter_id)
+            for scooter in self.scooters:
+                if scooter.id == target_id_int:
+                    return scooter
+        except (TypeError, ValueError):
+            pass
+
+        # Fallback: compare as strings
+        try:
+            target_id_str = str(scooter_id)
+            for scooter in self.scooters:
+                if str(scooter.id) == target_id_str:
+                    return scooter
         except Exception:
             pass
-        try:
-            sid_str = str(scooter_id)
-            for s in self.scooters:
-                if str(s.id) == sid_str:
-                    return s
-        except Exception:
-            pass
+
         return None
+
 
     def _drain_and_apply_admin_updates(self, current_time):
         """
@@ -499,17 +508,16 @@ class Simulator:
                     "start_ts": None,
                 })
 
-                # Clear simulator-local rental state - backend already completed it canonically.
+                # Clear simulator-local rental state - backend already completed the rental canonically.
                 self._reset_rental_state(self.rentals[scooter.id])
 
-                # If battery is low (or we deferred during external rental), lock now
+                # If battery is low (or we deferred this during external rental), lock now
                 if scooter.id in self.pending_battery_lock or scooter.battery < LOW_BATTERY_THRESHOLD:
                     self.pending_battery_lock.discard(scooter.id)
                     self._apply_battery_lock(scooter)
                     continue  # keep it non-rentable
 
                 # If nothing else locks this scooter, return it to a rentable local state.
-                # Actual determinative db-state remains backend-owned.
                 if scooter.id not in self.deactivated_scooters and scooter.status not in NON_RENTABLE_STATUSES:
                     scooter.status = "available"
 

@@ -18,14 +18,9 @@ class AdminHeader extends HTMLElement {
       </h1>
 
       <nav>
-        <div class="navlink-box">
-          <a href="/index.html">
-            <img class="invoice-spark" src="img/admin.svg" alt="Admin">
-            
-            <a class="logout-admin" href="/admin-login.html">
-              <img class="logout-admin-img" src="img/logout.svg" alt="Logout Admin">
-            </a>
-          </a>
+        <div class="invoice-spark">
+            <div><img style="height: 42px" src="img/admin.svg" alt="Admin"></div>
+            <div><a id="logout-admin"></a></div>
         </div>
       </nav>
     `;
@@ -35,22 +30,19 @@ class AdminHeader extends HTMLElement {
   connectedCallback() {
     initTheme("#theme-toggle");
 
-    const enableLogout = () => {
-      const logoutLink = this.querySelector('.logout-admin');
-      if (!logoutLink) return;
+    const token = localStorage.getItem("token");
 
-      const token = localStorage.getItem("token");
-      if (!token) return;
+    if (token) {
+        const logoutLink = this.querySelector('#logout-admin');
+        logoutLink.textContent = "logga ut";
 
-      logoutLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        localStorage.removeItem("token");
-        window.location.replace('/admin-login.html');
-        console.log('Successfully Logged out')
-      });
-    };
-
-    enableLogout();
+        logoutLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            alert("loggar ut");
+            window.location.replace('/admin-login.html');
+        });
+    }
   }
 }
 

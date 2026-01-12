@@ -150,9 +150,9 @@ export async function getRentalForRouteShowcase(id) {
  * @async
  * @param {string} [mode='admin'] - 'admin' shows void option, 'user' shows pay option
  */
-export async function loadInvoices(mode = 'admin') {
+export async function loadInvoices(mode = 'admin', customer = '') {
   try {
-    const invoices = await getInvoices();
+    const invoices = await getInvoices(customer);
     const tbody = document.getElementById('invoice-table-body');
     tbody.innerHTML = '';
 
@@ -210,11 +210,11 @@ export async function loadInvoices(mode = 'admin') {
       if (mode === "admin") {
         tr.innerHTML += `
           <td>
-            <a href="admin-rentals.html#${inv.rental_id}">
-              ${inv.rental_id}
-            </a>
+          <a href="route.html#${inv.rental_id}">${inv.rental_id}</a>
           </td>
-          <td>${inv.customer_id}</td>`;
+          <td>
+            <a href="admin-customer-invoices.html?customer_id=${inv.customer_id}">${inv.customer_id}</a>
+          </td>`;
       } else {
         tr.innerHTML += `
           <td>
@@ -611,10 +611,15 @@ export async function updateCustomer(customer) {
     return msg;
 }
 
-async function getInvoices() {
+async function getInvoices(customer = '') {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('/api/v1/invoices', {
+    let url = '/api/v1/invoices';
+    if (customer) {
+        url += `/customer/${customer}`;
+    }
+    console.log(url)
+    const res = await fetch(`${url}`, {
       method: 'GET',
       headers: {
           'Authorization': `Bearer ${token}`,

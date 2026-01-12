@@ -32,7 +32,7 @@ router.get('/me', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
         }
         res.status(200).json(customerData);
     }
-)
+);
 /**
  * Get customer data for one logged in customer.
  * Update later to work for admin to search for customers?

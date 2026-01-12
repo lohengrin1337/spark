@@ -54,13 +54,6 @@
                   </select>
                 </div>
               
-                <div class="select-container">
-                  <label for="zone_id">Sök zon (id)</label>
-                  <input id="zone_id" type="number">
-                  <input class="zone-search-button" id="search" type="submit">
-                </div>
-              </div>
-              
             <thead>
                 <tr>
                 <th>Zon-Id</th>
@@ -68,7 +61,6 @@
                 <th>Zontyp</th>
                 <th>Antal cyklar</th>
                 <th>Km/h</th>
-                <th>Kartlänk?</th>
                 </tr>
             </thead>
             <tbody id="zone-table-body">
@@ -116,7 +108,6 @@
             <td>${zo.zone_type}</td>
             <td>${zo.bikes.length}</td>
             <td>${zo.speed_limit}</td>
-            <td>Kanske en länk här till zonen i rätt karta?</td>
         `;
         tbody.appendChild(tr);
         });

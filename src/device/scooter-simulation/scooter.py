@@ -47,7 +47,7 @@ class Scooter:
         # Charging has absolute highest priority
         if in_charging_zone and activity != "active":
             self.status = "charging"
-        # Low battery warning — only if not charging
+        # Low battery warning - only if not charging
         elif self.battery < LOW_BATTERY_THRESHOLD:
             self.status = "needCharging"
         # Normal activity

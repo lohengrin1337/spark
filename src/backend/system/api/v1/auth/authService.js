@@ -6,18 +6,24 @@ const authModel = require('./authModel');
 /**
  * Oauth register/login.
  * Registers customer if not already registered.
+ * If email exists - add oauth credentials
  * Returns a jwt if successful.
  * @param { object } customer - contains { name, email, oauth_provider, oauth_provicer_id }
  */
 async function oauthRegisterOrLogin(customer) {
-    const customerExists = await authModel.getCustomerByOauth(customer.oauth_provider_id);
-    if (!customerExists) {
-        const customerId = await authModel.saveOauthCustomer(customer);
-        const token = await createJsonWebToken(customerId, "customer");
-        return token;
+    const oauthCustomer = await authModel.getCustomerByOauth(customer.oauth_provider_id);
+    if (oauthCustomer) {
+        return await createJsonWebToken(oauthCustomer.customer_id, "customer");
     }
-    const token = await createJsonWebToken(customerExists.customer_id, "customer");
-    return token;
+    
+    const emailCustomer = await authModel.getCustomerByEmail(customer.email);
+    if (emailCustomer) {
+        await authModel.addOauthCredentials(emailCustomer.customer_id, customer);
+        return await createJsonWebToken(emailCustomer.customer_id, "customer");
+    }
+
+    const customerId = await authModel.saveOauthCustomer(customer);
+    return await createJsonWebToken(customerId, "customer");
 };
 
 /**

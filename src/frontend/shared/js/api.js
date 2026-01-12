@@ -336,6 +336,12 @@ export async function loadBikes() {
     }
 
     bikes.forEach(bk => {
+      const parking = bk.zones.find(z => z.zone_type == 'parking');
+      const charging = bk.zones.find(z => z.zone_type == 'charging');
+      const city = bk.zones.find(z => z.zone_type == 'city');
+
+      const showZone = parking || charging || city;
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${bk.bike_id}</td>
@@ -346,7 +352,7 @@ export async function loadBikes() {
           <button class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</button><br>
           <button class="service-bike" data-id=${bk.bike_id}>Skicka på service</button>
         </td>
-        <td><a href="/admin-zone-view?zone_id=${bk.zone_id}">${bk.zone_id}</td>
+        <td>${showZone ? `<a href="/admin-zone-view?zone_id=${showZone.zone_id}">${showZone.zone_id}</a>` : '-'}</td>
       `;
     
       tbody.appendChild(tr);

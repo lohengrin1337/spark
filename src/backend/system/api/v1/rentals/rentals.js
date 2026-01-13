@@ -93,6 +93,9 @@ router.post('/', auth.authToken, rateLimit.limiter, auth.authAdminOrUser,
         if (err.code === 'INVALID_START_POINT') {
             return res.status(400).json({ error: err.message });
         }
+        if (err.code === "USER_BLOCKED") {
+            return res.status(403).json({ error: err.message });
+        }
         console.error('[Rentals][user create] error:', err);
         res.status(500).json({ error: 'Failed to create rental' });
     }

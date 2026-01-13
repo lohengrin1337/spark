@@ -186,9 +186,9 @@ services:
           --ignore-paths /app/__pycache__
           --target-type command
           --
-          sh -c "python scenarios/small_simulation_malmoe.py &
-                python scenarios/small_simulation_karlskrona.py &
-                python scenarios/small_simulation_umea.py"
+          sh -c "python scenarios/big_simulation_malmoe.py &
+                python scenarios/big_simulation_karlskrona.py &
+                python scenarios/big_simulation_umea.py"
           /app
       '
     depends_on:
@@ -208,7 +208,7 @@ services:
 #
 #  Volumes & Networks
 # ______________________________________________________________________
-#
+
 
 volumes:
   redis-data:

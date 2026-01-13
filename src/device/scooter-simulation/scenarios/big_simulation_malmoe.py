@@ -37,15 +37,6 @@ def run():
         special_battery_level=22
     )
 
-    # Apply route-based custom scenarios
-    sid = 1
-    for route_index, _ in ordered_routes:
-        if route_index == 2:
-            simulator.custom_scooter_scenarios[sid] = breakdown_after_seconds(seconds=20)
-        if route_index == 3:
-            simulator.custom_scooter_scenarios[sid] = special_behavior_one
-        sid += 1
-
     admin_listener, rental_listener = setup_simulator_listeners(simulator)
 
     print(f"{len(scooters)} route-based scooters active in Malmö (first batch)")

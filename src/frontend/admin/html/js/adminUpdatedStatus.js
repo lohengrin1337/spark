@@ -17,7 +17,7 @@ const SCOOTER_API = "/api/v1/bikes"; // Backend route uses /bikes
  * @param {string|number} scooterId - The ID of the scooter.
  * @param {string} newStatus - New status to set (e.g., "deactivated", "needService").
  * @param {string} [token] - Required JWT for authenticated admin req.
- * @param {{lat: number, lng: number}} [finalPosition] - Final coordinates at standstill (authoritative position).
+ * @param {{lat: number, lng: number}} [finalPosition] - Final coordinates at standstill
  * @returns {Promise<{success: boolean, status?: string, error?: string}>}
  */
 export async function updateScooterStatus(scooterId, newStatus, token, finalPosition) {

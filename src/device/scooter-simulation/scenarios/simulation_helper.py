@@ -23,11 +23,11 @@ from rental_listener import RentalEventListener
 
 
 # Config constants
-BATCH_DELAY = 18  # seconds between batches
+BATCH_DELAY = 14  # seconds between batches
 
 SPREAD_MODES = ['start', 'middle', 'end']
 
-SCOOTERS_PER_ZONE = 10  # scooters per individual charging/parking-zone
+SCOOTERS_PER_SPECIAL_ZONE = 10  # scooters per individual charging/parking-zone, defaults to 10, can be set script-specific
 ZONE_SCOOTER_MARGIN = 0.000030
 
 
@@ -195,7 +195,7 @@ def _register_new_scooter_in_simulator(
 
 
 
-def select_scooter_route_entry_point(route_waypoints, entry_position):
+def select_scooter_route_entry_point(route_waypoints, entry_position, city=None):
     """
     Select where along a route a newly introduced scooter should be placed
     and how the simulator should continue the route from that position.
@@ -215,6 +215,26 @@ def select_scooter_route_entry_point(route_waypoints, entry_position):
     # Enter at the end of the route (route considered already completed once)
     if entry_position == "end":
         latitude, longitude = route_waypoints[-1]
+
+        if city is not None:
+            valid_entry_point = None
+
+            for lat, lng in reversed(route_waypoints):
+                z = city.classify_zone(lat, lng)
+                if z == "slow":
+                    valid_entry_point = (lat, lng)
+                    break
+
+            if valid_entry_point is None:
+                for lat, lng in reversed(route_waypoints):
+                    z = city.classify_zone(lat, lng)
+                    if z != "outofbounds":
+                        valid_entry_point = (lat, lng)
+                        break
+
+            if valid_entry_point is not None:
+                latitude, longitude = valid_entry_point
+
         next_waypoint_index = 0
         trip_counter_value = 1
         return latitude, longitude, next_waypoint_index, trip_counter_value
@@ -347,7 +367,7 @@ def add_first_route_batch(
     return current_sid
 
 
-def add_stationary_scooters(scooters, simulator, current_sid, max_sid):
+def add_stationary_scooters(scooters, simulator, current_sid, max_sid, scooters_per_zone=SCOOTERS_PER_SPECIAL_ZONE):
     """
     Add stationary scooters in parking/charging zones in tight clustering.
     Returns (new_current_sid, added_count)
@@ -361,7 +381,7 @@ def add_stationary_scooters(scooters, simulator, current_sid, max_sid):
         zone_polygons = simulator.city.zones.get(zone_type, [])
         for zone_polygon in zone_polygons:
             zone_centroid = zone_polygon.centroid
-            for _ in range(SCOOTERS_PER_ZONE):
+            for _ in range(scooters_per_zone):
                 if current_sid > max_sid:
                     return current_sid, added
 
@@ -443,7 +463,8 @@ def run_incremental_batches(
 
                     latitude, longitude, waypoint_index, trip_counter_value = select_scooter_route_entry_point(
                         route_coordinates,
-                        spread_mode
+                        spread_mode,
+                        city=simulator.city
                     )
 
                     scooter = Scooter(

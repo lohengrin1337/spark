@@ -18,7 +18,8 @@ from simulation_helper import (
     BATCH_DELAY
 )
 
-NUM_BATCHES = 1  # Malmö specific
+NUM_BATCHES = 5  # Malmö specific
+SCOOTERS_PER_SPECIAL_ZONE = 26
 
 
 def run():
@@ -54,7 +55,8 @@ def run():
         scooters=scooters,
         simulator=simulator,
         current_sid=next_sid,
-        max_sid=1000
+        max_sid=1000,
+        scooters_per_zone=SCOOTERS_PER_SPECIAL_ZONE
     )
     print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Malmö")
 

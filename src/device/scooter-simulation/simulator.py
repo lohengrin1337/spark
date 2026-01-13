@@ -138,8 +138,7 @@ class Simulator:
         self.user_pool = fetch_users()
 
         # Admin status updates arrive from a background thread.
-        # To keep the simulator deterministic and avoid race conditions.  Queue them
-        # and then apply them at the start of each tick().
+        # They are queued and appied at the start of each tick().
         self._admin_lock = threading.Lock()
         self._admin_updates = deque()
 
@@ -375,8 +374,7 @@ class Simulator:
 
         return None
 
-
-    def _drain_and_apply_admin_updates(self, current_time):
+    def _apply_queued_admin_status_updates(self, current_time):
         """
         Apply all queued admin updates deterministically at the start of tick().
         """
@@ -391,7 +389,7 @@ class Simulator:
         for sid, status, ts in updates:
             last_by_scooter[sid] = (status, ts)
 
-        critical_statuses = {"deactivated", "needService"}
+        critical_statuses = {"deactivated", "needService", "onService"}
 
         for sid, (new_status, ts) in last_by_scooter.items():
             scooter = self._find_scooter_by_id(sid)
@@ -401,6 +399,20 @@ class Simulator:
 
             old_status = scooter.status
             print(f"[Simulator] Applying admin status update: scooter {scooter.id} -> '{new_status}' (was '{old_status}')")
+
+            # Guard: never allow forcing "available" while a rental is active (sim-owned or external).
+            # Revert DB to the current (old) status to avoid DB/simulator divergence.
+            if new_status == "available":
+                sim_rental_active = self.rentals[scooter.id]["rental_id"] is not None
+                ext_rental_active = self.external_rentals[scooter.id]["active"]
+                if sim_rental_active or ext_rental_active:
+                    print(
+                        f"[Simulator] WARNING: Rejecting admin status 'available' for scooter {scooter.id} "
+                        f"because rental is active (sim={sim_rental_active}, external={ext_rental_active}). "
+                        f"Reverting DB to '{old_status}'."
+                    )
+                    self._update_bike_status_position_db_first(scooter, old_status)
+                    continue
 
             # DB-first
             self._update_bike_status_position_db_first(scooter, new_status)
@@ -419,12 +431,27 @@ class Simulator:
                     )
                 self._apply_admin_lock(scooter.id)
             else:
+                if new_status == "available":
+                    # Return it to normal simulation flow
+                    # Clear all locking, battery/outofbounds logic will re-assert itself as it should
+                    self.outofbounds_locked_scooters.discard(scooter.id)
+                    self.battery_locked_scooters.discard(scooter.id)
+                    self.pending_battery_lock.discard(scooter.id)
+
+                    if scooter.id in self.deactivated_scooters:
+                        self.deactivated_scooters.discard(scooter.id)
+                        self.per_scooter_special_behavior[scooter.id] = None
+
+                    # Reset charging tracking so next tick can re-sync cleanly.
+                    self.last_db_charging_status.pop(scooter.id, None)
+
                 self._remove_admin_lock(scooter.id)
+
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Apply queued rental lifecycle events (backend/app initiated rentals)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _drain_and_apply_rental_events(self, current_time):
+    def _apply_external_rental_events(self, current_time):
         """
         Apply queued rental lifecycle events deterministically at the start of tick().
 
@@ -475,7 +502,7 @@ class Simulator:
                 if scooter.status not in NON_RENTABLE_STATUSES and scooter.id not in self.deactivated_scooters:
                     scooter.status = "active"
 
-                # Mirror rental id locally for logging only (do NOT call create_rental here)
+                # Mirror rental id locally for logging only
                 rental_state = self.rentals[scooter.id]
                 rental_state["rental_id"] = rental_id
                 rental_state["start_ts"] = current_time
@@ -488,7 +515,7 @@ class Simulator:
                 self.rbroadcast.clear_coords(rental_id)
                 self.rbroadcast.log_coord(rental_id, scooter.lat, scooter.lng, 0.0)
 
-                # Movement: external rentals are stationary by default - route-following is disabled below.)
+                # Movement: external rentals are sim-stationary by default - route-following is disabled below.)
 
             elif event_type == "rental_ended":
                 # Exit external rental mode
@@ -551,8 +578,8 @@ class Simulator:
         current_time = time.time()
 
         # Apply queued inputs deterministically at the start of the tick
-        self._drain_and_apply_admin_updates(current_time)
-        self._drain_and_apply_rental_events(current_time)
+        self._apply_queued_admin_status_updates(current_time)
+        self._apply_external_rental_events(current_time)
 
         for scooter in self.scooters:
             scooter_id = scooter.id

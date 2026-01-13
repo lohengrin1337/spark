@@ -11,9 +11,9 @@ export let map = null;
 let tileLayer = null;
 
 
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Page Activity (to handle trails being reset when page is inactive in mapMarkers.js )
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export let pageActive = document.visibilityState === 'visible';
 
@@ -28,9 +28,9 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Initialize the map
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export function initMap() {
   const mapContainer = document.getElementById('map');
   if (!mapContainer) {
@@ -63,9 +63,9 @@ export function initMap() {
   updateTileLayer();  // Add initial tile layer and sync dark mode
 }
 
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Update tile layer based on dark/light mode
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export function updateTileLayer() {
   const isDark = document.documentElement.classList.contains('dark-mode');
 
@@ -82,74 +82,67 @@ export function updateTileLayer() {
   ).addTo(map);
 }
 
-// ─────────────────────────────────────────────────────────────
-// Charging zones data
-// ─────────────────────────────────────────────────────────────
-export const CHARGING_ZONES = [
-  { lat: 55.5979654, lng: 12.9972124, radius: 30 },
-  { lat: 55.6040, lng: 12.9950, radius: 25 },
-];
 
-// Draw charging zones on the map
-export function drawChargingZones() {
-  if (!map) return;
-
-  CHARGING_ZONES.forEach(zone => {
-    L.circle([zone.lat, zone.lng], {
-      color: 'lightgreen',
-      fillColor: '#e6ffe6',
-      fillOpacity: 0.4,
-      radius: zone.radius,
-      weight: 1
-    }).addTo(map);
-  });
-}
-
-// ─────────────────────────────────────────────────────────────
-// Animate a given marker to a target
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Animate marker to new position (tuned for smooth animation)
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export function animateMarkerTo(marker, targetLatLng) {
-  marker._animStart = marker.getLatLng();
-  marker._animTarget = L.latLng(targetLatLng);
-  marker._animStartTime = performance.now();
-  marker._animDuration = 6200;
+  const now = performance.now();
+
+  const lastMoveUpdateTime = marker._lastMoveUpdateTime || now;
+  const timeSinceLastMoveUpdateMs = Math.max(1, now - lastMoveUpdateTime);
+  marker._lastMoveUpdateTime = now;
+
+  marker._moveStartLatLng = marker.getLatLng();
+  marker._moveEndLatLng = L.latLng(targetLatLng);
+  marker._moveStartTime = now;
+
+  const intervalToDurationMultiplier = 1.16;
+  const minMoveDurationMs = 5900;
+  const maxMoveDurationMs = 6800;
+
+  const computedMoveDurationMs = timeSinceLastMoveUpdateMs * intervalToDurationMultiplier;
+  marker._moveDurationMs = Math.max(minMoveDurationMs, Math.min(maxMoveDurationMs, computedMoveDurationMs));
 }
 
-// ─────────────────────────────────────────────────────────────
-// Continuous animation loop for all markers
-// ─────────────────────────────────────────────────────────────
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Continuous animation loop for all markers (~12 FPS - good UX, good performance)
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export function startAnimationLoop() {
   function loop() {
     const now = performance.now();
 
+    // Throttles
+    const markerUpdateMs = 85;  // ~12 FPS
+
     for (const id in scooterMarkers) {
-      const m = scooterMarkers[id];
-      if (!m._animTarget) continue;
+      const marker = scooterMarkers[id];
+      if (!marker || !marker._moveEndLatLng) continue;
 
-      const elapsed = now - m._animStartTime;
-      const t = Math.min(elapsed / m._animDuration, 1);
-      const easeT = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      marker._lastMarkerUpdateTime = marker._lastMarkerUpdateTime || 0;
+      if (now - marker._lastMarkerUpdateTime < markerUpdateMs) continue;
+      marker._lastMarkerUpdateTime = now;
 
-      const lat = m._animStart.lat + (m._animTarget.lat - m._animStart.lat) * easeT;
-      const lng = m._animStart.lng + (m._animTarget.lng - m._animStart.lng) * easeT;
+      const moveElapsedMs = now - marker._moveStartTime;
+      const completion = Math.min(moveElapsedMs / marker._moveDurationMs, 1);
 
-      m.setLatLng([lat, lng]);
+      const lat =
+      marker._moveStartLatLng.lat + (marker._moveEndLatLng.lat - marker._moveStartLatLng.lat) * completion;
 
-      // Update trail
-      const trail = trails[id];
-      if (trail) {
-        const last = trail.getLatLngs().slice(-1)[0];
-        if (!last || map.distance(last, [lat, lng]) > TRAIL_MIN_DIST) {
-          trail.addLatLng([lat, lng]);
-        }
-      }
+      const lng =
+        marker._moveStartLatLng.lng + (marker._moveEndLatLng.lng - marker._moveStartLatLng.lng) * completion;
+
+      marker.setLatLng([lat, lng]);
 
       // Clean up finished animation
-      if (t >= 1) {
-        delete m._animStart;
-        delete m._animTarget;
-        delete m._animStartTime;
-        delete m._animDuration;
+      if (completion >= 1) {
+        delete marker._moveStartLatLng;
+        delete marker._moveEndLatLng;
+        delete marker._moveStartTime;
+        delete marker._moveDurationMs;
       }
     }
 
@@ -159,10 +152,10 @@ export function startAnimationLoop() {
   requestAnimationFrame(loop);
 }
 
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Pan map to a given location (used in the bottom city-nav-bar)
 // Clear all trails when switching to a new city
-// ─────────────────────────────────────────────────────────────
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export function switchTo(lat, lng, zoom = 13) {
   if (!map) return;
 

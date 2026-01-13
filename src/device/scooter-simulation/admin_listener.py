@@ -18,7 +18,7 @@ class AdminStatusListener:
     """
     Background Redis subscriber for admin status updates, that assigns a new status to the
     scooter immediately.
-    For critical statuses (deactivated/needService):
+    For critical statuses (deactivated/needService/onService):
       - Force-completes any active rental at the current position (clean end, counts as completed trip)
       - Applies permanent lock in place (stops movement immediately)
     No global effects or per-tick enforcement.

@@ -4,7 +4,7 @@
  * The main controller: sets up map, WebSocket-connection, UI, and theme handling.
  */
 
-import { initMap, startAnimationLoop, updateTileLayer, switchTo, drawChargingZones, map } from './map.js';
+import { initMap, startAnimationLoop, updateTileLayer, switchTo, map } from './map.js';
 import { initWebSocket } from './socket.js';
 import { initCityLinks } from './cities.js';
 import { initTheme } from './theme.js';

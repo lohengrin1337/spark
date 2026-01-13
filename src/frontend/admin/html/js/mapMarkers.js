@@ -35,12 +35,15 @@ export function updateScooterMarker(id, sc) {
     in_use: 'active',
     reduced: 'reduced',
     deactivated: 'deactivated',
+    onservice: 'onService',
+    onService: 'onService',
     need_service: 'needService',
     needservice: 'needService',
     charging: 'charging',
     needscharging: 'needCharging',
     needcharging: 'needCharging',
-    needCharging: 'needCharging'
+    needCharging: 'needCharging',
+    charginglow: 'chargingLow'
   };
 
   let key = sc.st?.toLowerCase().trim() || 'available';
@@ -73,12 +76,14 @@ export function updateScooterMarker(id, sc) {
 
   const statusTextMap = {
     charging: "Laddar",
+    chargingLow: "Laddar (Låg batterinivå)",
+    needCharging: "Behöver laddas",
     active: "Aktiv",
     reduced: "Begränsad",
     deactivated: "Inaktiverad",
     needService: "Behöver service",
-    needCharging: "Behöver laddas",
-    available: "Tillgänglig"
+    onService: "På service",
+    available: "Tillgänglig",
   };
 
   const statusClassMap = {
@@ -86,6 +91,7 @@ export function updateScooterMarker(id, sc) {
     active: "status-active",
     reduced: "status-reduced",
     deactivated: "status-deactivated",
+    onService: "status-onservice",
     needService: "status-needservice",
     needCharging: "status-needcharging",
     available: "status-idle"
@@ -98,6 +104,25 @@ export function updateScooterMarker(id, sc) {
   const batteryClass = batteryPercent < 20 ? 'low' : batteryPercent < 30 ? 'medium' : 'high';
   const batteryChargingClass = sc.st === 'charging' ? 'charging' : '';
   const userDisplay = sc.user_id ? `User ${sc.user_id}` : '';
+
+  const isActive = key === 'active';
+  const isDeactivated = key === 'deactivated';
+  const isAvailable = key === 'available';
+  const isNeedService = key === 'needService';
+  const isOnService = key === 'onService';
+  const isReduced = key === 'reduced';
+  const isCharging = key === 'charging';
+  const isChargingLow = key === 'chargingLow';
+
+  const disableDeactivatedButton = isDeactivated;
+  const disableAvailableButton = isActive || isReduced || isCharging || isChargingLow || isAvailable;
+  const disableNeedServiceButton = isNeedService;
+  const disableOnServiceButton = isOnService;
+
+  const deactivatedDisabledAttr = disableDeactivatedButton ? 'disabled aria-disabled="true"' : '';
+  const availableDisabledAttr = disableAvailableButton ? 'disabled aria-disabled="true"' : '';
+  const needServiceDisabledAttr = disableNeedServiceButton ? 'disabled aria-disabled="true"' : '';
+  const onServiceDisabledAttr = disableOnServiceButton ? 'disabled aria-disabled="true"' : '';
 
   marker.setPopupContent(`
     <div class="popup-dashboard-box">
@@ -127,19 +152,19 @@ export function updateScooterMarker(id, sc) {
       </div>
 
       <div class="popup-actions">
-        <button class="popup-btn popup-btn-danger admin-status-button" data-action="deactivated" data-id="${id}">
+        <button class="popup-btn admin-status-button" data-action="deactivated" data-id="${id}" ${deactivatedDisabledAttr}>
           Inaktivera
         </button>
 
-        <button class="popup-btn popup-btn-success admin-status-button" data-action="available" data-id="${id}">
+        <button class="popup-btn admin-status-button" data-action="available" data-id="${id}" ${availableDisabledAttr}>
           Gör tillgänglig
         </button>
 
-        <button class="popup-btn popup-btn-warning admin-status-button" data-action="needService" data-id="${id}">
+        <button class="popup-btn admin-status-button" data-action="needService" data-id="${id}" ${needServiceDisabledAttr}>
           Behöver service
         </button>
 
-        <button class="popup-btn popup-btn-info admin-status-button" data-action="onService" data-id="${id}">
+        <button class="popup-btn admin-status-button" data-action="onService" data-id="${id}" ${onServiceDisabledAttr}>
           På service
         </button>
       </div>
@@ -158,10 +183,21 @@ export function updateScooterMarker(id, sc) {
 
     const token = localStorage.getItem("token");
 
+    L.DomEvent.disableClickPropagation(popupEl);
+    L.DomEvent.disableScrollPropagation(popupEl);
+
     popupEl.querySelectorAll('.popup-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      L.DomEvent.off(btn, 'click');
+
+      L.DomEvent.on(btn, 'click', (evt) => {
+        if (btn.disabled) return;
+
+        L.DomEvent.preventDefault(evt);
+        L.DomEvent.stopPropagation(evt);
+
         const scooterId = btn.dataset.id;
         const action = btn.dataset.action;
+
         updateScooterStatus(scooterId, action, token, { lat, lng });
       });
     });
@@ -172,7 +208,7 @@ export function updateScooterMarker(id, sc) {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   if (pageActive) {
-    animateMarkerTo(marker, [lat, lng]);
+    animateMarkerTo(marker, [lat, lng], sc.spd);
   } else {
     marker.setLatLng([lat, lng]);
     if (trails[id]) {

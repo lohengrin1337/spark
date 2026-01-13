@@ -627,6 +627,11 @@ async function startRental(scooterId, lat, lng) {
     });
 
     if (!response.ok) {
+      if (response.status === 403) {
+        alert("Du är blockerad. Kontakta kundtjänst.");
+        return;
+      }
+
       const errText = await response.text().catch(() => "");
       console.error("[UserApp] Start rental failed:", response.status, errText);
       alert(`Kunde inte starta uthyrning: ${errText || response.status}`);

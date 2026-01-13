@@ -28,6 +28,8 @@
 
     <section class="content">
       <div class="table-wrapper-admin">
+        <label for="toggle-blocked">Hitta spärrade kunder</label>
+            <input id="toggle-blocked" type="checkbox">
         <table>
           <h1 class="table-header table-header-admin">Kunder</h1>
           <thead>
@@ -57,7 +59,16 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       loadCustomers();
-      setInterval(loadCustomers, 10000);
+
+      const checkbox = document.getElementById('toggle-blocked');
+      checkbox.addEventListener('change', () => {
+        const onlyBlocked = checkbox.checked;
+
+        document.querySelectorAll('.not-blocked').forEach(nb => {
+            nb.style.display = onlyBlocked ? "none" : "";
+        })
+
+      })
     });
   </script>
 </body>

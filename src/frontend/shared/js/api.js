@@ -477,6 +477,10 @@ export async function loadCustomers() {
         tr.style.opacity = '0.7';
       }
 
+      if (!c.blocked) {
+        tr.classList.add('not-blocked');
+      }
+
       tbody.appendChild(tr);
     });
 

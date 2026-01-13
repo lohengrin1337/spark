@@ -1045,7 +1045,8 @@ admin-header {
 }
 
 .delete-bike,
-.service-bike {
+.service-bike,
+.available-bike {
   padding: 0.2rem;
   margin: 0.1rem;
   border-radius: 6px;

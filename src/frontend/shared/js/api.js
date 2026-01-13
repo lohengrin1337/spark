@@ -418,7 +418,7 @@ export async function loadBikes() {
         try {
             const token = localStorage.getItem("token");
             const bike = { status: "onService" };
-            const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+            const res = await fetch(`/api/v1/bikes/${bikeId}/status/table`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -445,7 +445,7 @@ export async function loadBikes() {
         try {
             const token = localStorage.getItem("token");
             const bike = { status: "available" };
-            const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+            const res = await fetch(`/api/v1/bikes/${bikeId}/status/table`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

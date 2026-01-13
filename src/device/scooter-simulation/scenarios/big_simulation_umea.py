@@ -20,7 +20,8 @@ from simulation_helper import (
     BATCH_DELAY
 )
 
-NUM_BATCHES = 1  # Umeå specific
+NUM_BATCHES = 4  # Umeå specific
+SCOOTERS_PER_SPECIAL_ZONE = 12
 
 
 def run():
@@ -52,7 +53,8 @@ def run():
         scooters=scooters,
         simulator=simulator,
         current_sid=next_sid,
-        max_sid=1500
+        max_sid=1500,
+        scooters_per_zone=SCOOTERS_PER_SPECIAL_ZONE
     )
     print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Umeå")
 

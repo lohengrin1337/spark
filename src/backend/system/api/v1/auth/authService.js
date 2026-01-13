@@ -125,7 +125,7 @@ async function thirdPartyLogin(thirdPartyId, password) {
 async function createJsonWebToken(userId, userRole) {
     const payload = { id: userId, role: userRole };
     const secretKey = process.env.JWT_SECRET;
-    const expiration = '1h';
+    const expiration = '2h';
     const token = jwt.sign(payload, secretKey, { expiresIn: expiration});
     return token;
 };

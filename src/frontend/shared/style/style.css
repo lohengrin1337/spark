@@ -1221,3 +1221,26 @@ _________________________________________________________ */
   height: auto;
   display: inline-block;
 }
+
+.intro-text {
+    max-width: 60%;
+    margin: auto;
+    padding: 4rem;
+    text-align: left;
+}
+
+.intro-image {
+    max-height: 200px;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.smol {
+    max-height: 150px;
+}

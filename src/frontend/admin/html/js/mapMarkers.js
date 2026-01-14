@@ -46,7 +46,7 @@ export function updateScooterMarker(id, sc) {
     charginglow: 'chargingLow'
   };
 
-  let key = sc.st?.toLowerCase().trim() || 'available';
+  let key = sc.st?.toLowerCase()?.trim() || 'available';
   key = normalize[key] || key;
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,7 +171,7 @@ export function updateScooterMarker(id, sc) {
     </div>
   `);
 
-  
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Popup action handlers
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

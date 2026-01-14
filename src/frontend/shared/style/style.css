@@ -1249,3 +1249,7 @@ _________________________________________________________ */
     display: flex;
     flex-direction: row;
 }
+
+.centered-text {
+    padding: 4rem;
+}

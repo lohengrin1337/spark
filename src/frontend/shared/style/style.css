@@ -1244,3 +1244,8 @@ _________________________________________________________ */
 .smol {
     max-height: 150px;
 }
+
+.row {
+    display: flex;
+    flex-direction: row;
+}

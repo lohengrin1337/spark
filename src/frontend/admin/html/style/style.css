@@ -1121,3 +1121,89 @@ select {
     flex-direction: row;
     justify-content: space-between;
 }
+
+
+/* _________________________________________________________
+
+   Admin map Mobile
+_________________________________________________________ */
+
+
+@media (max-width: 768px) {
+  .map-options {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .grid .sidebar,
+  .sidebar {
+    height: 100px !important;
+    max-height: 100px !important;
+    padding: 6px !important;
+    overflow: hidden !important; 
+  }
+
+
+  .stats-panel {
+    height: 100% !important;
+    max-height: 100% !important;
+    padding: 6px !important;
+    font-size: 12px !important;
+    overflow: hidden !important;
+  }
+
+  .sidebar-vertical {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;     
+    align-content: flex-start !important;
+    gap: 6px !important;
+    overflow: auto !important;
+    padding: 0 !important;
+  }
+
+
+  .sidebar-vertical a {
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+    padding: 10px 8px !important;
+    margin: 0 !important;
+
+    border-radius: 6px !important;
+
+ 
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+
+    width: auto !important;
+    max-width: 48% !important;
+    flex: 0 1 auto !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+
+  .grid .content,
+  .content {
+    padding: 0 !important;
+    height: calc(100vh - 75px - 50px - 100px) !important;
+    max-height: calc(100vh - 75px - 50px - 100px) !important;
+    overflow: hidden !important;
+  }
+
+  #map {
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .title-spark {
+    display: none;
+  }
+}

@@ -1,5 +1,5 @@
 """
-@module big_simulation_karlskrona
+@module small_simulation_karlskrona
 """
 
 import time
@@ -10,7 +10,6 @@ from behavior import (
     park_in_nearest_charging_zone,
     breakdown_after_seconds
 )
-
 from simulation_helper import (
     setup_city_simulation,
     add_stationary_scooters,
@@ -19,7 +18,8 @@ from simulation_helper import (
     BATCH_DELAY
 )
 
-NUM_BATCHES = 2  # Karlskrona specific
+NUM_BATCHES = 1  # Karlskrona specific
+SCOOTERS_PER_SPECIAL_ZONE = 5
 
 
 def run():
@@ -38,8 +38,8 @@ def run():
     )
 
     # Apply hardcoded custom scenarios
-    simulator.custom_scooter_scenarios[1501] = park_in_nearest_charging_zone(required_trips=1)
-    simulator.custom_scooter_scenarios[1504] = breakdown_after_seconds(seconds=25)
+    #simulator.custom_scooter_scenarios[1501] = park_in_nearest_charging_zone(required_trips=1)
+    #simulator.custom_scooter_scenarios[1504] = breakdown_after_seconds(seconds=25)
 
     admin_listener, rental_listener = setup_simulator_listeners(simulator)
 
@@ -50,7 +50,8 @@ def run():
         scooters=scooters,
         simulator=simulator,
         current_sid=next_sid,
-        max_sid=2000
+        max_sid=2000,
+        scooters_per_zone=SCOOTERS_PER_SPECIAL_ZONE
     )
     print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Karlskrona")
 

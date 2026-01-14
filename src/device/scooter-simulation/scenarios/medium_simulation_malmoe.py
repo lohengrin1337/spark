@@ -1,5 +1,5 @@
 """
-@module small_simulation_malmoe
+@module medium_simulation_malmoe
 """
 
 import time
@@ -18,8 +18,8 @@ from simulation_helper import (
     BATCH_DELAY
 )
 
-NUM_BATCHES = 1  # Malmö specific
-SCOOTERS_PER_SPECIAL_ZONE = 5
+NUM_BATCHES = 3  # Malmö specific
+SCOOTERS_PER_SPECIAL_ZONE = 10
 
 
 def run():

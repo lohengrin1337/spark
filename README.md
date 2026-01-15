@@ -17,11 +17,28 @@ This app is being developed as a group project in the course ['Programutveckling
 [emmwid81, Emma Meyer Widengård, emme24]
 ```
 
-## Docker Compose
+## Get Started
 
-### Run services
-* `docker compose up [ --build ] [ -d ] [ service name ]`
+### Clone the repo
+```
+// ssh
+git@github.com:lohengrin1337/spark.git
 
-### Install dependency in a container
-* `docker compose exec <service name> npm install <dependency name>`
-    * reduild image (--build) on next restart
+// https
+https://github.com/lohengrin1337/spark.git
+```
+
+### Set up `.env`
+Take a look in the [env-example](./env-example).
+A set of variables were provided in the submission on Canvas.
+
+### Docker
+```
+# Run
+docker compose up -d
+
+# Exit
+docker compose down -v
+```
+
+## API Documentation

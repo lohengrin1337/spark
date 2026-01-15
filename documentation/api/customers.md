@@ -65,16 +65,16 @@ Result:
   ...]
 ```
 
-Fetch one customer by id:
+Fetch the customer data for a logged in in user:
 
->GET /customers/:id
+>GET /customers/me
 
-Requires admin token or customer token where id matches route param :id.
+Requires customer token.
 
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('http://localhost:3000/api/v1/customers/4', {
+const response = await fetch('http://localhost:3000/api/v1/customers/me', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -135,5 +135,34 @@ Result:
 {
     "success": true,
     "message": "Customer updated"
+}
+```
+
+Block/unblock a customer:
+
+>PUT /block/:id
+
+Requires admin token.
+
+
+
+```javascript
+
+const response = await fetch("http://localhost:3000/api/v1/block/:id", {
+    method: 'PUT',
+    headers: {
+    'Authorization': `Bearer ${token}`,
+    'content-type': 'application/json'
+    }
+});
+const result = await response.json();
+```
+
+Result:
+
+```json
+{
+    "success": true,
+    "message": "Kund spärrad"
 }
 ```

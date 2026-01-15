@@ -43,8 +43,7 @@ docker compose up -d
 docker compose down -v
 ```
 
-[Detailed guide](documentation/information
-/docker-notes.md)
+[Detailed guide](/documentation/information/docker-notes.md)
 
 ### Access the applications
 [**Admin**](http://localhost:8080/)

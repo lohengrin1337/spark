@@ -1,0 +1,8 @@
+# GitHub OAuth App - ID and SECRET is provided in submission on canvas. Optionally you can create your own OAuth App on GitHub.
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+
+JWT_SECRET="100%polyester"
+
+# Generated with '100%polyester' as secret. Optionally generate your own from a unique secret.
+JWT_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InNpbS1jb250YWluZXIiLCJyb2xlIjoiZGV2aWNlIiwiaWF0IjoxNzY3NDYzODU2fQ.PwtaNl-Ov6enG-NThVjvduLbMWEoMCzy7kL47fO2Ric"

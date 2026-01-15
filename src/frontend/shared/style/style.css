@@ -1226,6 +1226,39 @@ _________________________________________________________ */
   display: inline-block;
 }
 
+<<<<<<< HEAD
+.intro-text {
+    max-width: 60%;
+    margin: auto;
+    padding: 4rem;
+    text-align: left;
+}
+
+.intro-image {
+    max-height: 200px;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.smol {
+    max-height: 150px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.centered-text {
+    padding: 4rem;
+}
+=======
 @media (max-width: 499px) {
   .title-spark {
       display: none;
@@ -1299,3 +1332,4 @@ _________________________________________________________ */
     }
   }
   
+>>>>>>> 8f3ae3a1d3bb761876e844a8ab9b00f16daa56d8

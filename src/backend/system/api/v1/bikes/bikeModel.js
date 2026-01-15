@@ -142,10 +142,10 @@ const bikeModel = {
     },
 
     /**
-     * Update the status of a bike by id (safe against deleted bikes).
+     * Update the status of a bike by id
      * @param { number } id - bike id
      * @param { string } newStatus - the new status value
-     * @returns { Promise<number> } number of affected rows (1 if updated, 0 if not found or already deleted)
+     * @returns { Promise<number> } number of affected rows (1 if updated, 0 if not found)
      * @throws { Error } if the query fails
      */
     async updateBikeStatusById(id, newStatus) {
@@ -153,7 +153,7 @@ const bikeModel = {
         try {
             conn = await pool.getConnection();
             const result = await conn.query(
-                "UPDATE bike SET status = ? WHERE bike_id = ? AND status != 'deleted'",
+                "UPDATE bike SET status = ? WHERE bike_id = ?",
                 [newStatus, id]
             );
             return result.affectedRows;

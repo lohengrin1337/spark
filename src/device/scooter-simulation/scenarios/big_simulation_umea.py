@@ -41,8 +41,8 @@ def run():
 
     # Apply hardcoded custom scenarios
     # simulator.custom_scooter_scenarios[1002] = park_in_nearest_charging_zone(required_trips=1)
-    simulator.custom_scooter_scenarios[1001] = special_behavior_one
-    simulator.custom_scooter_scenarios[1003] = breakdown_after_seconds(seconds=20)
+    # simulator.custom_scooter_scenarios[1001] = special_behavior_one
+    # simulator.custom_scooter_scenarios[1003] = breakdown_after_seconds(seconds=20)
 
     admin_listener, rental_listener = setup_simulator_listeners(simulator)
 

@@ -109,6 +109,17 @@ const rentalModel = {
         let conn;
         try {
             conn = await pool.getConnection();
+
+            const user = await conn.query("SELECT blocked FROM customer WHERE customer_id = ?", [customer_id]);
+            const userIsBlocked = user[0]?.blocked;
+            console.log("userIsBlocked", userIsBlocked);
+            
+            if (userIsBlocked) {
+                const err = new Error("User is blocked");
+                err.code = "USER_BLOCKED";
+                throw err;
+            }
+
             const result = await conn.query(
                 `INSERT INTO rental (customer_id, bike_id, start_point, start_zone, start_time) 
                  VALUES (?, ?, ?, ?, NOW())`,

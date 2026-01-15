@@ -343,18 +343,41 @@ export async function loadBikes() {
       const showZone = parking || charging || city;
 
       const tr = document.createElement('tr');
-      tr.innerHTML = `
+      let html = `
         <td>${bk.bike_id}</td>
         <td>${bk.city}</td>
         <td>${bk.status}</td>
-        <td>
-<!--          <a href="#" class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</a> -->
-          <button class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</button><br>
-          <button class="service-bike" data-id=${bk.bike_id}>Skicka på service</button>
-        </td>
+      `;
+
+      if (bk.status === "deleted") {
+        html += `
+          <td>
+            <button class="available-bike" data-id="${bk.bike_id}">Återställ</button><br>
+        `;
+      } else {
+        html += `
+          <td>
+            <button class="delete-bike" data-id="${bk.bike_id}">Ta ur drift</button><br>
+        `;
+      }
+
+      if (bk.status === "onService") {
+        html += `
+            <button class="available-bike" data-id=${bk.bike_id}>Gör tillgänglig</button>
+          </td>
+        `;
+      } else {
+        html += `
+            <button class="service-bike" data-id=${bk.bike_id}>Skicka på service</button>
+          </td>
+        `;
+      }
+        
+      html += `
         <td>${showZone ? `<a href="/admin-zone-view?zone_id=${showZone.zone_id}">${showZone.zone_id}</a>` : '-'}</td>
       `;
-    
+
+      tr.innerHTML = html;
       tbody.appendChild(tr);
     });
 
@@ -394,8 +417,8 @@ export async function loadBikes() {
     
         try {
             const token = localStorage.getItem("token");
-            const bike = { status: "needService" };
-            const res = await fetch(`/api/v1/bikes/${bikeId}`, {
+            const bike = { status: "onService" };
+            const res = await fetch(`/api/v1/bikes/${bikeId}/status/table`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -408,6 +431,33 @@ export async function loadBikes() {
     
           const data = await res.json();
           alert(data.message + " Markerad för service");
+          loadBikes();
+        } catch (err) {
+          alert('Något gick fel: ' + err.message);
+        }
+      });
+    });
+    tbody.querySelectorAll('.available-bike').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const bikeId = button.dataset.id;
+    
+        try {
+            const token = localStorage.getItem("token");
+            const bike = { status: "available" };
+            const res = await fetch(`/api/v1/bikes/${bikeId}/status/table`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                    },
+                body: JSON.stringify(bike)
+          });
+    
+          if (!res.ok) throw new Error(await res.text());
+    
+          const data = await res.json();
+          alert("Cykeln är nu tillgänglig");
           loadBikes();
         } catch (err) {
           alert('Något gick fel: ' + err.message);

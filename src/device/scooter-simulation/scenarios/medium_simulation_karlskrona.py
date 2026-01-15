@@ -1,5 +1,5 @@
 """
-@module big_simulation_karlskrona
+@module medium_simulation_karlskrona
 """
 
 import time
@@ -19,7 +19,7 @@ from simulation_helper import (
 )
 
 NUM_BATCHES = 2  # Karlskrona specific
-SCOOTERS_PER_SPECIAL_ZONE = 15
+SCOOTERS_PER_SPECIAL_ZONE = 10
 
 
 def run():

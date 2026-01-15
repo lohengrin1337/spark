@@ -1,5 +1,5 @@
 """
-@module big_simulation_malmoe
+@module small_simulation_malmoe
 """
 
 import time
@@ -10,7 +10,6 @@ from behavior import (
     special_behavior_one,
     breakdown_after_seconds
 )
-
 from simulation_helper import (
     setup_city_simulation,
     add_stationary_scooters,
@@ -20,6 +19,7 @@ from simulation_helper import (
 )
 
 NUM_BATCHES = 1  # Malmö specific
+SCOOTERS_PER_SPECIAL_ZONE = 5
 
 
 def run():
@@ -37,15 +37,6 @@ def run():
         special_battery_level=22
     )
 
-    # Apply route-based custom scenarios
-    sid = 1
-    for route_index, _ in ordered_routes:
-        if route_index == 2:
-            simulator.custom_scooter_scenarios[sid] = breakdown_after_seconds(seconds=20)
-        if route_index == 3:
-            simulator.custom_scooter_scenarios[sid] = special_behavior_one
-        sid += 1
-
     admin_listener, rental_listener = setup_simulator_listeners(simulator)
 
     print(f"{len(scooters)} route-based scooters active in Malmö (first batch)")
@@ -55,7 +46,8 @@ def run():
         scooters=scooters,
         simulator=simulator,
         current_sid=next_sid,
-        max_sid=1000
+        max_sid=1000,
+        scooters_per_zone=SCOOTERS_PER_SPECIAL_ZONE
     )
     print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Malmö")
 

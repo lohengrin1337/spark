@@ -46,7 +46,7 @@ export function updateScooterMarker(id, sc) {
     charginglow: 'chargingLow'
   };
 
-  let key = sc.st?.toLowerCase().trim() || 'available';
+  let key = sc.st?.toLowerCase()?.trim() || 'available';
   key = normalize[key] || key;
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,37 +171,57 @@ export function updateScooterMarker(id, sc) {
     </div>
   `);
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Popup action handlers
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  marker.off('popupopen');
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Popup action handlers
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  marker.on('popupopen', (e) => {
-    const popupEl = e.popup.getElement();
-    if (!popupEl) return;
+marker.off('popupopen');
 
-    const token = localStorage.getItem("token");
+const bindPopupHandlers = (popupRootEl) => {
+  if (!popupRootEl) return;
 
-    L.DomEvent.disableClickPropagation(popupEl);
-    L.DomEvent.disableScrollPropagation(popupEl);
+  const token = localStorage.getItem("token");
 
-    popupEl.querySelectorAll('.popup-btn').forEach(btn => {
-      L.DomEvent.off(btn, 'click');
+  L.DomEvent.disableClickPropagation(popupRootEl);
+  L.DomEvent.disableScrollPropagation(popupRootEl);
 
-      L.DomEvent.on(btn, 'click', (evt) => {
-        if (btn.disabled) return;
+  // Delegated click handler: it survives Leaflet DOM-refreshes and avoids per-button listeners.
+  if (popupRootEl.__adminClickHandler) {
+    L.DomEvent.off(popupRootEl, 'click', popupRootEl.__adminClickHandler);
+  }
 
-        L.DomEvent.preventDefault(evt);
-        L.DomEvent.stopPropagation(evt);
+  popupRootEl.__adminClickHandler = (evt) => {
+    const btn = evt.target?.closest?.('.admin-status-button');
+    if (!btn) return;
 
-        const scooterId = btn.dataset.id;
-        const action = btn.dataset.action;
+    if (btn.disabled) return;
 
-        updateScooterStatus(scooterId, action, token, { lat, lng });
-      });
-    });
+    L.DomEvent.preventDefault(evt);
+    L.DomEvent.stopPropagation(evt);
+
+    const scooterId = btn.dataset.id;
+    const action = btn.dataset.action;
+
+    updateScooterStatus(scooterId, action, token, { lat, lng });
+  };
+
+  L.DomEvent.on(popupRootEl, 'click', popupRootEl.__adminClickHandler);
+};
+
+marker.on('popupopen', (e) => {
+  const popupRootEl = e.popup.getElement();
+  bindPopupHandlers(popupRootEl);
+});
+
+// If popup is already open, Leaflet may have replaced the DOM.
+// Re-bind on the next frame against the current popup element.
+if (marker.isPopupOpen && marker.isPopupOpen()) {
+  requestAnimationFrame(() => {
+    const popupRootEl = marker.getPopup?.()?.getElement?.();
+    bindPopupHandlers(popupRootEl);
   });
+}
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Reset trail when page inactive

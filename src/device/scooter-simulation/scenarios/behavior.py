@@ -61,7 +61,7 @@ def special_behavior_one(scooter, simulator):
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# NEW: Park in the NEAREST charging zone after N trips
+# NEW: Park in the nearest charging zone after N trips
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def park_in_nearest_charging_zone(required_trips=2):
     """

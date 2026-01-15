@@ -64,7 +64,9 @@ async function updateBikeStatusById(id, newStatus, opts = {}) {
         'reduced',
         'deactivated',
         'needService',
+        'onService',
         'needCharging',
+        'lowCharging',
         'charging'
     ];
 
@@ -115,8 +117,10 @@ async function updateBikeStatusAndPositionById(id, newStatus, lat, lng, opts = {
       'reduced',
       'deactivated',
       'needService',
+      'onService',
       'needCharging',
-      'charging'
+      'charging',
+      'chargingLow'
   ];
 
   if (!allowedStatuses.includes(newStatus)) {

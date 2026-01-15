@@ -72,7 +72,7 @@ Fetch all rentals associated with a customer:
 
 Requires admin token or customer token with matching id.
 
->GET /invoices/customer/:customer_id
+>GET /rentals/customer?<customer_id>
 
 ```javascript
 const token = localStorage.getItem('token');
@@ -211,38 +211,9 @@ Result:
 
 ```json
 {
-    "success": true,
-    "message": "Payment recorded"
-}
-```
-
-Void an invoice:
-
-requires admin token or customer token with matching customer id(?)
-
->PUT /invoices/pay/:id
-
-Required parameters:
-
->invoice_id
-
-```javascript
-const token = localStorage.getItem('token');
-const response = await fetch(`http://localhost:3000/api/v1/invoices/void/12`, {
-    method: 'PUT',
-    headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
-});
-const result = await response.json();
-```
-
-Result:
-
-```json
-{
-    "success": true,
-    "message": "Invoice successfully voided"
+    "rental_id": "Payment recorded",
+    "scooter_id": 4,
+    "user_id": 3,
+    "user_name": "Marvin"
 }
 ```

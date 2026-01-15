@@ -47,3 +47,4 @@ docker compose down -v
 [**User App**](http://localhost:8082/)
 
 ## API Documentation
+[API docs on github pages](https://emmwid81.github.io/API-documentation/)

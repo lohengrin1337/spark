@@ -45,7 +45,11 @@ docker compose down -v
 
 ### Access the applications
 [**Admin**](http://localhost:8080/)
+User name: admin
+Password: admin
+
 [**User Web**](http://localhost:8081/)
+
 [**User App**](http://localhost:8082/)
 
 ## API Documentation

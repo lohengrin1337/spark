@@ -27,8 +27,6 @@ git@github.com:lohengrin1337/spark.git
 // https
 https://github.com/lohengrin1337/spark.git
 ```
-[**Detaljerad guide**](documentation/information
-/docker-notes.md)
 
 ### Set up `.env`
 Take a look in the [env-example](./env-example).

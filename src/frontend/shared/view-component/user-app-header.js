@@ -13,9 +13,9 @@ class UserAppHeader extends HTMLElement {
         <img class="title-sun" src="/shared/img/sun.svg" alt="Toggle theme">
       </button>
 
-      <h1 class="title">
+      <h1 class="title title-user-app">
         spark<span class="title-blink">_</span>
-        <img class="title-spark" src="img/scooter-nobg.svg" alt="Spark Scooter">
+        <img class="title-spark title-spark-user-app" src="img/scooter-nobg.svg" alt="Spark Scooter">
         <p class="title-app-mobile">App</p>
       </h1>
 

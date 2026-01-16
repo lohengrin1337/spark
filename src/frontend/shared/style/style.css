@@ -1428,11 +1428,27 @@ _________________________________________________________ */
 .user-app-logged-in-text {
   color: var(--color-text-primary);
 }
-.intro-card {
-  width: 450px;
-}
-
 .intro-card-container {
   width: 100vw;
   height: 100vh;
+}
+
+.intro-card {
+  width: min(500px, 92vw);
+}
+
+.intro-card-container {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.intro-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.title-spark-user-app {
+  margin-top: 2px;
 }

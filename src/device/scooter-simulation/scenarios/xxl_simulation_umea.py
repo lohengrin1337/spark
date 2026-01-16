@@ -19,8 +19,8 @@ from simulation_helper import (
     setup_simulator_listeners
 )
 
-NUM_BATCHES = 4  # Malmö specific
-SCOOTERS_PER_SPECIAL_ZONE = 10
+NUM_BATCHES = 8  # Umeå specific
+SCOOTERS_PER_SPECIAL_ZONE = 15
 
 
 def run():

@@ -1,27 +1,26 @@
 """
-@module big_simulation_umea
+@module small_simulation_umea
 """
 
-
 import time
-from routes import UMEA_ROUTES
+from scenarios.routes.v1.routes import UMEA_ROUTES
+from scenarios.routes.v1.cache.route_waypoint_cache import ROUTE_WAYPOINT_CACHE_BY_CITY
 from config import UPDATE_INTERVAL
 from helpers import wait_for_backend_response   
 from behavior import (
-    special_behavior_one,
     park_in_nearest_charging_zone,
     breakdown_after_seconds
 )
 from simulation_helper import (
     setup_city_simulation,
+    load_route_assigned_scooters_in_batches,
     add_stationary_scooters,
-    run_incremental_batches,
-    setup_simulator_listeners,
-    BATCH_DELAY
+    run_simulation_by_tick,
+    setup_simulator_listeners
 )
 
-NUM_BATCHES = 4  # Umeå specific
-SCOOTERS_PER_SPECIAL_ZONE = 12
+NUM_BATCHES = 5  # Umeå specific
+SCOOTERS_PER_SPECIAL_ZONE = 10
 
 
 def run():
@@ -35,20 +34,30 @@ def run():
         start_sid=1001,
         user_id_min=2001,
         user_id_max=3000,
-        user_pool_max=None,
-        special_battery_level=22
+        user_pool_max=None
     )
 
     # Apply hardcoded custom scenarios
-    # simulator.custom_scooter_scenarios[1002] = park_in_nearest_charging_zone(required_trips=1)
-    # simulator.custom_scooter_scenarios[1001] = special_behavior_one
-    # simulator.custom_scooter_scenarios[1003] = breakdown_after_seconds(seconds=20)
+    #simulator.custom_scooter_scenarios[1501] = park_in_nearest_charging_zone(required_trips=1)
+    #simulator.custom_scooter_scenarios[1504] = breakdown_after_seconds(seconds=25)
 
     admin_listener, rental_listener = setup_simulator_listeners(simulator)
 
-    print(f"{len(scooters)} route-based scooters active in Umeå (first batch)")
+    # Route-assigned scooters (spread batches)
+    next_sid, _ = load_route_assigned_scooters_in_batches(
+        simulator=simulator,
+        scooters=scooters,
+        ordered_routes=ordered_routes,
+        next_sid=next_sid,
+        num_batches=NUM_BATCHES,
+        special_battery_level=21.8,
+        max_sid=1500,
+        route_waypoint_cache=ROUTE_WAYPOINT_CACHE_BY_CITY.get("Umeå")
+    )
 
-    # Stationary in zones (continuing SIDs, max 1500)
+    print(f"{len(scooters)} route-based scooters active in Umeå (spread batches)")
+
+    # Stationary in zones
     next_sid, added = add_stationary_scooters(
         scooters=scooters,
         simulator=simulator,
@@ -58,16 +67,8 @@ def run():
     )
     print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Umeå")
 
-    # Incremental batches
-    run_incremental_batches(
-        simulator=simulator,
-        scooters=scooters,
-        ordered_routes=ordered_routes,
-        next_sid=next_sid,
-        num_batches=NUM_BATCHES,
-        special_battery_level=22,
-        max_sid=1500
-    )
+    # Start and run the completed simulation scenario now constructed
+    run_simulation_by_tick(simulator=simulator, scooters=scooters)
 
 
 if __name__ == "__main__":

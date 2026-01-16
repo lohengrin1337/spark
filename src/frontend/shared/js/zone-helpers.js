@@ -1,8 +1,7 @@
 /**
  * @module zone-helpers
  * Handles rendering of zones on a Leaflet map.
- * Now supports real polygon rendering for parking zones when available,
- * falling back to circle (center + radius) only for POINT geometry.
+ * Polygon-only rendering (no circle/POINT fallback).
  */
 
 /* global L */
@@ -14,7 +13,6 @@ const ZONE_STYLES = {
   parking: { color: 'blue', weight: 2, fillColor: '#1E90FF', fillOpacity: 0.3 }
 };
 
-const PARKING_RADIUS = 50; // meters - fallback for POINT geometry
 let allLayers = [];
 
 /**
@@ -26,40 +24,34 @@ function clearAllZones() {
 }
 
 /**
- * Parse WKT safely
- * Supports:
- * - POINT(lon lat)
- * - POLYGON((lon lat, lon lat, ...))
+ * Parse WKT for polygons safely
  */
-function parseWKT(wkt) {
+function parseWKTPolygon(wkt) {
   if (!wkt) return null;
   wkt = wkt.trim();
 
-  if (wkt.startsWith('POINT(')) {
-    const match = wkt.match(/POINT\(([-\d.]+) ([-\d.]+)\)/);
-    if (match) return { type: 'point', lat: parseFloat(match[2]), lng: parseFloat(match[1]) };
-  }
+  if (!wkt.startsWith('POLYGON(')) return null;
 
-  if (wkt.startsWith('POLYGON(')) {
-    const coordStr = wkt.slice(9, -2);
-    const points = [];
+  // Expected shape: POLYGON((lng lat, lng lat, ...))
+  // Slice off "POLYGON((" (9 chars) and ending "))" (2 chars)
+  const coordStr = wkt.slice(9, -2);
+  const points = [];
 
-    coordStr.split(',').forEach(pair => {
-      const [lngStr, latStr] = pair.trim().split(/\s+/);
-      const lat = parseFloat(latStr);
-      const lng = parseFloat(lngStr);
-      if (!isNaN(lat) && !isNaN(lng)) points.push([lat, lng]);
-    });
+  coordStr.split(',').forEach(pair => {
+    const [lngStr, latStr] = pair.trim().split(/\s+/);
+    const lat = parseFloat(latStr);
+    const lng = parseFloat(lngStr);
+    if (!isNaN(lat) && !isNaN(lng)) points.push([lat, lng]);
+  });
 
-    if (points.length >= 3) {
-      const first = points[0];
-      const last = points[points.length - 1];
-      if (first[0] !== last[0] || first[1] !== last[1]) points.push(first);
-      return { type: 'polygon', points };
-    }
-  }
+  if (points.length < 3) return null;
 
-  return null;
+  // Ensure closed ring
+  const first = points[0];
+  const last = points[points.length - 1];
+  if (first[0] !== last[0] || first[1] !== last[1]) points.push(first);
+
+  return { type: 'polygon', points };
 }
 
 /**
@@ -85,93 +77,60 @@ export async function renderAllZones(map) {
 
     const zones = await res.json();
 
-    // eslint-disable-next-line no-console
-    console.log(`Loaded ${zones.length} zones`);
-
     // Render order: slow -> city -> parking/charging (top)
     const slowLayers = [];
     const cityLayers = [];
     const topLayers = [];
 
     zones.forEach(zone => {
-      const geometry = parseWKT(zone.coordinates);
-      if (!geometry) return;
+      const geometry = parseWKTPolygon(zone.coordinates);
+      if (!geometry) return; // polygon-only
 
       const bikeCount = Array.isArray(zone.bikes) ? zone.bikes.length : 0;
       let layer;
 
       switch (zone.zone_type) {
         case 'slow': {
-          if (geometry.type !== 'polygon') return;
-
           layer = L.polygon(geometry.points, ZONE_STYLES.slow)
             .bindPopup(
               `<strong>${zone.city} - Ytterzon (Slow zone)</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-slow-zone' }
             );
-
           slowLayers.push(layer);
           break;
         }
 
         case 'city': {
-          if (geometry.type !== 'polygon') return;
-
           layer = L.polygon(geometry.points, ZONE_STYLES.city)
             .bindPopup(
               `<strong>${zone.city} - Stadszon (City zone)</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-city-zone' }
             );
-
           cityLayers.push(layer);
           break;
         }
 
         case 'charging': {
-          if (geometry.type !== 'polygon') return;
-
           layer = L.polygon(geometry.points, ZONE_STYLES.charging)
             .bindPopup(
               `<strong>${zone.city} - Laddzon</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-charging-zone' }
             );
-
           topLayers.push(layer);
           break;
         }
 
         case 'parking': {
-          if (geometry.type === 'polygon') {
-            layer = L.polygon(geometry.points, ZONE_STYLES.parking)
-              .bindPopup(
-                `<strong>${zone.city} - Parkeringszon (Polygon)</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar ${bikeCount}`,
-                { className: 'popup-parking-zone' }
-              );
-
-            topLayers.push(layer);
-            break;
-          }
-
-          if (geometry.type === 'point') {
-            const center = [geometry.lat, geometry.lng];
-
-            layer = L.circle(center, {
-              radius: PARKING_RADIUS,
-              ...ZONE_STYLES.parking
-            }).bindPopup(
-              `<strong>${zone.city} - Parkeringszon</strong><br>Radius: ${PARKING_RADIUS} m<br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
+          layer = L.polygon(geometry.points, ZONE_STYLES.parking)
+            .bindPopup(
+              `<strong>${zone.city} - Parkeringszon</strong><br>ID: <a href="/admin-zone-view?zone_id=${zone.zone_id}">${zone.zone_id}</a><br>Antal cyklar: ${bikeCount}`,
               { className: 'popup-parking-zone' }
             );
-
-            topLayers.push(layer);
-            break;
-          }
-
-          return;
+          topLayers.push(layer);
+          break;
         }
 
         default:
-          // eslint-disable-next-line no-console
           console.warn('Unknown zone type:', zone.zone_type);
           return;
       }
@@ -185,7 +144,6 @@ export async function renderAllZones(map) {
     topLayers.forEach(l => l.addTo(map).bringToFront());
 
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error('Failed to load or render zones:', err);
   }
 }

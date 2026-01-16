@@ -4,7 +4,7 @@
  * The main controller: sets up map, WebSocket-connection, UI, and theme handling.
  */
 
-import { initMap, startAnimationLoop, updateTileLayer, switchTo, map } from './map.js';
+import { initMap, startAnimationLoop, switchTo, map } from './map.js';
 import { initWebSocket } from './socket.js';
 import { initCityLinks } from './cities.js';
 import { initTheme } from './theme.js';
@@ -50,17 +50,6 @@ function startApp() {
   // 6. Render all the three cities' zones
   // ─────────────────────────────────────────────────────────────
   renderAllZones(map);
-  
-
-  // ─────────────────────────────────────────────────────────────
-  // 8. Automatically update tiles acording to theme
-  // ─────────────────────────────────────────────────────────────
-  const observer = new MutationObserver(updateTileLayer);
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['class']
-  });
-  updateTileLayer();
 
 
 }

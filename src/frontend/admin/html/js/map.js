@@ -3,17 +3,18 @@
  * Admin map setup and zone management for the scooter rental app.
  */
 
-import { TRAIL_MIN_DIST } from './utils.js';
+import { getTheme, getTileURL, onThemeChange } from '/shared/theme/theme.js';
 
 export const scooterMarkers = {};
 export const trails = {};
 export let map = null;
 let tileLayer = null;
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Page Activity (to handle trails being reset when page is inactive in mapMarkers.js )
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// At the moment not relevant as we've removed the trails completely from scooters.
 
 export let pageActive = document.visibilityState === 'visible';
 
@@ -60,26 +61,43 @@ export function initMap() {
     new ResizeObserver(() => setTimeout(resizeMap, 100)).observe(contentSection);
   }
 
-  updateTileLayer();  // Add initial tile layer and sync dark mode
+  // Add initial tile layer and sync to current theme
+  applyTiles(getTheme());
+
+  // Re-apply tiles whenever the theme changes (handled centrally via initTheme in header)
+  onThemeChange(({ theme }) => {
+    applyTiles(theme);
+  });
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Update tile layer based on dark/light mode
+// Update tile layer based on theme
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-export function updateTileLayer() {
-  const isDark = document.documentElement.classList.contains('dark-mode');
+let currentTheme = null;
+let tileUpdateTimeout = null;
 
-  if (tileLayer) map.removeLayer(tileLayer);
+function applyTiles(theme) {
+  if (!map) return;
+  if (theme !== 'light' && theme !== 'dark') return;
 
-  tileLayer = L.tileLayer(
-    isDark
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {
+  if (currentTheme === theme) return;
+
+  if (tileUpdateTimeout) {
+    clearTimeout(tileUpdateTimeout);
+  }
+
+  tileUpdateTimeout = setTimeout(() => {
+    if (!map) return;
+
+    if (tileLayer) map.removeLayer(tileLayer);
+
+    tileLayer = L.tileLayer(getTileURL(theme), {
       attribution: '&copy; OpenStreetMap contributors',
       maxZoom: 19
-    }
-  ).addTo(map);
+    }).addTo(map);
+
+    currentTheme = theme;
+  }, 50);
 }
 
 

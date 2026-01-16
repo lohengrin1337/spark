@@ -1,3 +1,26 @@
+
+.intro-card-container {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: rgb(253, 157, 66); /* light default */
+}
+
+@media (prefers-color-scheme: dark) {
+  .intro-card-container {
+    background: #563369;
+  }
+}
+
+.intro-card {
+  width: min(500px, 92vw);
+}
+
+.intro-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 /* _________________________________________________________
 
    SPACING VARIABLES - 12-POINT SYSTEM (REM)
@@ -97,6 +120,7 @@ _________________________________________________________ */
       --link-visited: rgb(219, 194, 236);
   }
 }
+
 
 /* _________________________________________________________
 
@@ -1403,4 +1427,12 @@ _________________________________________________________ */
 
 .user-app-logged-in-text {
   color: var(--color-text-primary);
+}
+.intro-card {
+  width: 450px;
+}
+
+.intro-card-container {
+  width: 100vw;
+  height: 100vh;
 }

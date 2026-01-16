@@ -12,7 +12,7 @@ if (!token) {
     window.location.replace('/user-app-login.html');
   } else { 
     localStorage.setItem('token', token);
-    window.history.replaceState({}, "", window.location.pathname);  // clear token fron url
+    window.history.replaceState({}, "", window.location.pathname);  // clear token from url
   }
 } else {
   try {
@@ -24,10 +24,10 @@ if (!token) {
     // Check role & expire date
     if (role !== "customer" || now >= exp) {
       localStorage.removeItem('token');
-      window.location.replace('/user-login.html');
+      window.location.replace('/user-app-login.html');
     }
   } catch (err) {
     localStorage.removeItem('token');
-    wwindow.location.replace('/user-login.html');
+    wwindow.location.replace('/user-app-login.html');
   }
 }

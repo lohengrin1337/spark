@@ -1,38 +1,97 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
+
+  <script>
+    (function () {
+      const prefersDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+  
+      const html = document.documentElement;
+  
+      html.classList.remove("light-mode", "dark-mode");
+
+      html.classList.add(prefersDark ? "dark-mode" : "light-mode");
+
+      localStorage.removeItem("theme");
+    })();
+  </script>
+
   <meta charset="UTF-8">
   <link rel="icon" href="/shared/img/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spark - Användarapp</title>
 
-  <script type="module" src="/shared/auth/user-app-check.js"></script>
-
   <link rel="stylesheet" href="/shared/style/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-  <script type="module" src="/shared/view-component/user-app-header.js"></script>
-</head>
-<body>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #0b0b0b;
+    }
+    .intro-card {
+      width: min(500px, 92vw);
+    }
 
-  <user-app-header></user-app-header>
+    .intro-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+    .intro-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  </style>
+
+  <script type="module">
+    const INTRO_MS = 3500;
+
+    const MAP_URL = "index-map.html";
+    const LOGIN_URL = "user-app-login.html";
+
+    function wait(ms) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const tokenFromQuery = params.get("token");
+
+    if (tokenFromQuery) {
+      localStorage.setItem("token", tokenFromQuery);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
 
-  <div id="map"></div>
-  <div class="city-nav-bar">
-    <button class="city-link karlskrona-link">Karlskrona</button>
-    <button class="city-link malmo-link">Malmö</button>
-    <button class="city-link umea-link">Umeå</button>
-  </div>
+    let token = localStorage.getItem('token');
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
-    crossorigin="anonymous">
+    async function routeAfterIntro() {
+      await wait(INTRO_MS);
+
+      if (token) {
+        window.location.replace(MAP_URL);
+      } else {
+        window.location.replace(LOGIN_URL);
+      }
+    }
+
+    routeAfterIntro();
   </script>
+</head>
 
-  <script type="module" src="js/index.js"></script>
-  
+<body>
+  <div class="intro-card-container">
+    <div class="intro-card" role="status" aria-label="Spark laddar">
+      <picture>
+        <source srcset="/shared/img/intro-dark.png" media="(prefers-color-scheme: dark)">
+        <img src="/shared/img/intro.png" alt="Spark">
+      </picture>
+    </div>
+</div>
 </body>
-
 </html>

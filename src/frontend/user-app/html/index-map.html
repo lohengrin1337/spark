@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+
+  <meta charset="UTF-8">
+  <link rel="icon" href="/shared/img/favicon.ico" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spark - Användarapp</title>
+
+  <script type="module" src="/shared/auth/user-app-check.js"></script>
+
+  <link rel="stylesheet" href="/shared/style/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <script type="module" src="/shared/view-component/user-app-header.js"></script>
+</head>
+<body>
+
+  <user-app-header></user-app-header>
+
+
+  <div id="map"></div>
+  <div class="city-nav-bar">
+    <button class="city-link karlskrona-link">Karlskrona</button>
+    <button class="city-link malmo-link">Malmö</button>
+    <button class="city-link umea-link">Umeå</button>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+    crossorigin="anonymous">
+  </script>
+
+  <script type="module" src="js/index.js"></script>
+  
+</body>
+
+</html>

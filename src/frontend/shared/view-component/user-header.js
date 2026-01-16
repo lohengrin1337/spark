@@ -8,7 +8,7 @@ class UserHeader extends HTMLElement {
     super();
     const header = document.createElement('header');
     header.innerHTML = `
-      <button id="theme-toggle">
+      <button class="theme-toggle">
         <img class="title-sun" src="/shared/img/sun.svg" alt="Toggle theme">
       </button>
 
@@ -44,7 +44,7 @@ class UserHeader extends HTMLElement {
         } catch (e) {
             console.error(e);
         }
-        initTheme("#theme-toggle");
+        initTheme(".theme-toggle");
     }
 }
 

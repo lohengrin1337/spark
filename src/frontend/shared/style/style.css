@@ -456,7 +456,7 @@ _________________________________________________________ */
   text-align: center;
 }
 
-#theme-toggle {
+.theme-toggle {
   position:absolute;
   background-color: transparent;
   top: 0.25rem;
@@ -572,7 +572,7 @@ font-weight: bold;
 color: #222;
 }
 
-#theme-toggle {
+.theme-toggle {
   position:absolute;
   background-color: transparent;
   top: 0.25rem;
@@ -1106,9 +1106,9 @@ _________________________________________________________ */
   text-align: center;
 }
 
-.status-active {
-  background: #e6f7e9;
-  color: #1e8e3e;
+.user-app-status-active {
+  background: #e8f0fe;
+  color: #1967d2;
 }
 
 .status-charging {
@@ -1116,9 +1116,9 @@ _________________________________________________________ */
   color: #f9ab00;
 }
 
-.status-idle {
-  background: #e8f0fe;
-  color: #1967d2;
+.user-app-status-available {
+  background: #e6f7e9;
+  color: #1e8e3e;
 }
 
 .battery-bar {
@@ -1230,6 +1230,10 @@ _________________________________________________________ */
   .title-spark {
       display: none;
   }
+  .user-app-logged-in-text {
+    display: none;
+  }
+  
 }
 
 
@@ -1299,3 +1303,73 @@ _________________________________________________________ */
     }
   }
   
+
+  /* Bottom bar pinned to map view */
+  .city-nav-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5000;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 12px;
+    pointer-events: auto;
+  }
+
+
+
+  .karlskrona,
+  .karlskrona-link { 
+    background: #dd8043; 
+    }
+
+    .malmo,
+    .malmo-link { 
+      background: #fdd160;
+  }
+    .umea,
+    .umea-link { 
+      background: #bfe9fc; 
+  }
+
+.city-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  padding: 0.8rem 1.4rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 1rem 1.4rem 0.2rem;
+  border-radius: 5px;
+  transition: transform ease-in 0.12s;
+}
+
+.city-nav-bar {
+  max-width: 100%;
+}
+
+@media (max-width: 880px) {
+  .city-nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+  }
+
+  .city-link {
+    padding: 0.7rem 0.7rem;
+    margin: 0.4rem 0.4rem 0.4rem;
+  }
+}
+
+
+.city-link:hover {
+  transform: scale(1.04)
+}
+
+.city-nav-bar.hidden {
+  display: none;
+}
+
+.user-app-logged-in-text {
+  color: var(--color-text-primary);
+}

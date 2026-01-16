@@ -5,20 +5,37 @@ const redisOptions = {
   port: parseInt(process.env.REDIS_PORT || '6379', 10),
 };
 
+const shouldLogRedisErrors = process.env.NODE_ENV !== 'test';
+
 // Publisher
 const redisPublisher = new Redis(redisOptions);
 redisPublisher.on('connect', () => console.log('[Redis Publisher] Connected'));
-redisPublisher.on('error', (err) => console.error('[Redis Publisher] Error:', err));
+
+redisPublisher.on('error', (err) => {
+  if (shouldLogRedisErrors) {
+    console.error('[Redis Publisher] Error:', err);
+  }
+});
 
 // Subscriber
 const redisSubscriber = new Redis(redisOptions);
 redisSubscriber.on('connect', () => console.log('[Redis Subscriber] Connected'));
-redisSubscriber.on('error', (err) => console.error('[Redis Subscriber] Error:', err));
+
+redisSubscriber.on('error', (err) => {
+  if (shouldLogRedisErrors) {
+    console.error('[Redis Subscriber] Error:', err);
+  }
+});
 
 // Client
 const redisClient = new Redis(redisOptions);
 redisClient.on('connect', () => console.log('[Redis Client] Connected'));
-redisClient.on('error', (err) => console.error('[Redis Client] Error:', err));
+
+redisClient.on('error', (err) => {
+  if (shouldLogRedisErrors) {
+    console.error('[Redis Client] Error:', err);
+  }
+});
 
 process.on('SIGINT', async () => {
   try {

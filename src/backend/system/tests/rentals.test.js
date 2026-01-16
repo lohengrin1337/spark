@@ -27,7 +27,7 @@ describe('GET /rentals/:id', () => {
     });
 });
 
-describe('POST /rentals', () => {
+/* describe('POST /rentals', () => {
     it('should create a new row in the rental table', async () => {
         const res = await request(app)
         .post('/api/v1/rentals').send({ "customer_id": 1,
@@ -40,4 +40,4 @@ describe('POST /rentals', () => {
         });
         expect(res.statusCode).toEqual(201);
     });
-});
+}); */

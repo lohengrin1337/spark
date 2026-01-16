@@ -7,7 +7,7 @@
  * 
  * state-stream.js listens and switches between polling and socket mode.
  *
- * In rental mode: show ONLY the user's rented scooter marker (active)
+ * In rental mode: show only the user's rented scooter marker (active)
  * 
  * In poll mode: fetch and show the rentable scooters on map (available/charging)
  */
@@ -18,32 +18,11 @@
 
 import { getScooterIcon } from '/shared/js/map/marker-icons.js';
 import { scooterMarkers, map, animateMarkerTo } from './user-map.js';
-import { loadCustomer } from '/shared/js/api.js';
-/* import { startRentalApi, endRentalApi } from './rental-api.js'; */
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Configuration & API Endpoints
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-const API_BASE = "";
-const RENTAL_API = `${API_BASE}/api/v1/rentals`;
-const USER_START_API = `${RENTAL_API}`;
-const USER_END_API = (id) => `${RENTAL_API}/${id}`;
+import { startRentalApiFlow, endRentalApiFlow } from './rental-api.js';
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // App State
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/**
- * Current Customer & Rental State
- */
-let currentCustomer = null;
-
-async function ascertainCustomer() {
-  if (currentCustomer) return currentCustomer;
-  currentCustomer = await loadCustomer();
-  return currentCustomer;
-}
 
 let currentRental = {
   rental_id: null,
@@ -180,36 +159,10 @@ function attachWrapperButtonListeners() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
- * Normalizes status string to lowercase.
- */
-function normStatus(s) {
-  return (typeof s === 'string') ? s.toLowerCase() : s;
-}
-
-/**
  * Determines if a scooter status should be visible on the map.
  */
 function isVisibleStatus(status) {
   return status === 'available' || status === 'charging';
-}
-
-/**
- * Maps internal status to UI-friendly status.
- */
-function uiStatus(status) {
-  return status === 'idle' ? 'available' : status;
-}
-
-/**
- * Extracts battery percentage from various possible object fields.
- */
-function getBatteryPercent(obj) {
-  const candidates = [obj?.bat, obj?.battery, obj?.battery_level, obj?.batteryLevel];
-  for (const v of candidates) {
-    const n = Number(v);
-    if (Number.isFinite(n)) return Math.max(0, Math.min(100, n));
-  }
-  return null;
 }
 
 /**
@@ -251,9 +204,12 @@ function parseBikeLatLng(bike) {
  */
 function parseSocketLatLng(sc) {
   const lat = sc?.lat;
-  const lng = (typeof sc?.lng === 'number') ? sc.lng : sc?.lon;
+  const lng = sc?.lng ?? sc?.lon;
 
-  if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) return null;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
   return { lat, lng };
 }
 
@@ -265,15 +221,15 @@ function parseSocketLatLng(sc) {
  * Builds HTML content for the rental bottom sheet.
  */
 function buildWrapperHTML({ id, status, isMyRental, lat, lng, batteryPct }) {
-  const uis = uiStatus(status);
+  const uis = status;
 
   const statusText = isMyRental ? 'Aktiv (din hyra)'
     : uis === 'charging' ? 'Laddar'
       : 'Tillgänglig';
 
-  const statusClass = isMyRental ? 'status-active'
+  const statusClass = isMyRental ? 'user-app-status-active'
     : uis === 'charging' ? 'status-charging'
-      : 'status-idle';
+      : 'user-app-status-available';
 
   let actionButton = '';
   if (!isMyRental && isVisibleStatus(status)) {
@@ -351,6 +307,15 @@ function removeAllMarkersExcept(keepId) {
     map.removeLayer(scooterMarkers[id]);
     delete scooterMarkers[id];
   }
+}
+
+/**
+ * Clears all markers from the map (poll mode only).
+ */
+export function clearAllMarkers() {
+  if (!map) return;
+  if (rentalOnlyMode) return;
+  removeAllMarkersExcept(null);
 }
 
 /**
@@ -437,8 +402,11 @@ export function updateScooterMarker(id, sc) {
     return;
   }
 
-  const batteryPct = getBatteryPercent(sc);
-  const status = normStatus(sc?.st) || 'active';
+  const bat = Number(sc?.bat);
+  const batteryPct = Number.isFinite(bat) ? Math.max(0, Math.min(100, bat)) : null;
+
+  const rawStatus = sc?.st;
+  const status = (typeof rawStatus === 'string' && rawStatus) ? rawStatus.toLowerCase() : 'active';
 
   const isMyRental = myId != null && scooterId === myId;
 
@@ -458,7 +426,7 @@ export function updateScooterMarker(id, sc) {
     return;
   }
 
-  const uis = uiStatus(status);
+  const uis = status;
   let marker = scooterMarkers[id];
 
   const newIcon = isMyRental ? getScooterIcon('active')
@@ -503,7 +471,9 @@ export function updateBikeMarker(id, bike) {
   if (rentalOnlyMode) return;
 
   const bikeId = String(id);
-  const status = normStatus(bike?.status);
+
+  const rawStatus = bike?.status;
+  const status = (typeof rawStatus === 'string' && rawStatus) ? rawStatus.toLowerCase() : rawStatus;
 
   if (!isVisibleStatus(status)) {
     if (scooterMarkers[bikeId]) {
@@ -519,8 +489,10 @@ export function updateBikeMarker(id, bike) {
     return;
   }
 
-  const batteryPct = getBatteryPercent(bike);
-  const uis = uiStatus(status);
+  const bat = Number(bike?.bat);
+  const batteryPct = Number.isFinite(bat) ? Math.max(0, Math.min(100, bat)) : null;
+
+  const uis = status;
 
   let marker = scooterMarkers[bikeId];
   const newIcon = uis === 'charging' ? getScooterIcon('charging') : getScooterIcon('available');
@@ -574,90 +546,30 @@ export function pruneMissingMarkers(seenIds) {
  * Starts a new rental for the given scooter at specified coordinates.
  */
 async function startRental(scooterId, lat, lng) {
-  const lon = parseFloat(lng);
-  const la = parseFloat(lat);
-
-  if (Number.isNaN(lon) || Number.isNaN(la)) {
-    console.error("[UserApp] Invalid coordinates for startRental:", { lat, lng });
-    alert("Ogiltig position för startpunkt.");
-    return;
-  }
-
-  const start_point = { lat: la, lon };
-
-  const token = localStorage.getItem('token');
-  const headers = {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-
   try {
-    const customer = await ascertainCustomer();
-
-    if (!customer) {
-      alert("Ingen kund inloggad.");
-      return;
-    }
-
-    const customerId = customer.customer_id ?? customer.id;
-    if (!customerId) {
-      console.error("[UserApp] Customer object missing id fields:", customer);
-      alert("Kunde inte läsa kund-ID. Logga in igen.");
-      return;
-    }
-
-    if (currentRental?.rental_id) {
-      alert("Du har redan en aktiv hyra.");
-      return;
-    }
-
-    const payload = {
-      customer_id: customerId,
-      bike_id: parseInt(scooterId, 10),
-      start_point
-    };
-
-    console.log("[API] Start rental -> POST", USER_START_API, "| payload:", payload);
-
-    const response = await fetch(USER_START_API, {
-      method: "POST",
-      headers,
-      credentials: "include",
-      body: JSON.stringify(payload)
+    const nextRental = await startRentalApiFlow({
+      scooterId,
+      lat,
+      lng,
+      currentRental
     });
 
-    if (!response.ok) {
-      if (response.status === 403) {
-        alert("Du är blockerad. Kontakta kundtjänst.");
-        return;
-      }
-
-      const errText = await response.text().catch(() => "");
-      console.error("[UserApp] Start rental failed:", response.status, errText);
-      alert(`Kunde inte starta uthyrning: ${errText || response.status}`);
-      return;
-    }
-
-    const data = await response.json();
-    const rid = data?.rental_id ?? data?.id ?? null;
-
-    currentRental = {
-      rental_id: rid,
-      scooter_id: parseInt(scooterId, 10),
-      lat: la,
-      lng: lon,
-      startTime: Date.now()
-    };
+    currentRental = nextRental;
 
     // Enter rental-only mode immediately (hide rest of markers)
     enterRentalOnlyMode();
 
     window.dispatchEvent(new CustomEvent('rental_started', {
-      detail: { rental_id: rid, scooter_id: currentRental.scooter_id }
+      detail: { rental_id: currentRental.rental_id, scooter_id: currentRental.scooter_id }
     }));
 
     alert("Uthyrning startad. Ha en trevlig tur!");
   } catch (err) {
+    if (err?.userMessage) {
+      alert(err.userMessage);
+      return;
+    }
+
     console.error("[UserApp] Start rental error:", err);
     alert("Nätverksfel...");
   }
@@ -667,27 +579,8 @@ async function startRental(scooterId, lat, lng) {
  * Ends the active rental by ID.
  */
 async function endRental(rentalId) {
-  const token = localStorage.getItem('token');
-  const headers = {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-
   try {
-    const url = USER_END_API(rentalId);
-    console.log("[API] End rental -> PUT", url);
-
-    const response = await fetch(url, {
-      method: "PUT",
-      headers,
-      credentials: "include"
-    });
-
-    if (!response.ok) {
-      const err = await response.text().catch(() => "");
-      alert(`Kunde inte avsluta hyra: ${err || response.status}`);
-      return;
-    }
+    await endRentalApiFlow({ rentalId });
 
     alert("Uthyrning avslutad. Tack för resan! En faktura ligger nu redo bland dina sidor.");
 
@@ -705,6 +598,11 @@ async function endRental(rentalId) {
       detail: { rental_id: rentalId }
     }));
   } catch (err) {
+    if (err?.userMessage) {
+      alert(err.userMessage);
+      return;
+    }
+
     console.error("[UserApp] End rental error:", err);
     alert("Nätverksfel");
   }

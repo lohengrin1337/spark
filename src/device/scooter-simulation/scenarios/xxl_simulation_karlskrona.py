@@ -1,9 +1,9 @@
 """
-@module small_simulation_umea
+@module small_simulation_karlskrona
 """
 
 import time
-from scenarios.routes.v1.routes import UMEA_ROUTES
+from scenarios.routes.v1.routes import KARLSKRONA_ROUTES
 from scenarios.routes.v1.cache.route_waypoint_cache import ROUTE_WAYPOINT_CACHE_BY_CITY
 from config import UPDATE_INTERVAL
 from helpers import wait_for_backend_response   
@@ -19,8 +19,8 @@ from simulation_helper import (
     setup_simulator_listeners
 )
 
-NUM_BATCHES = 4  # Malmö specific
-SCOOTERS_PER_SPECIAL_ZONE = 10
+NUM_BATCHES = 4  # Karlskrona specific
+SCOOTERS_PER_SPECIAL_ZONE = 15
 
 
 def run():
@@ -29,11 +29,11 @@ def run():
     wait_for_backend_response()
 
     simulator, scooters, ordered_routes, next_sid = setup_city_simulation(
-        city_name="Umeå",
-        routes=UMEA_ROUTES,
-        start_sid=1001,
-        user_id_min=2001,
-        user_id_max=3000,
+        city_name="Karlskrona",
+        routes=KARLSKRONA_ROUTES,
+        start_sid=1501,
+        user_id_min=3001,
+        user_id_max=4000,
         user_pool_max=None
     )
 
@@ -50,22 +50,22 @@ def run():
         ordered_routes=ordered_routes,
         next_sid=next_sid,
         num_batches=NUM_BATCHES,
-        special_battery_level=21.8,
-        max_sid=1500,
-        route_waypoint_cache=ROUTE_WAYPOINT_CACHE_BY_CITY.get("Umeå")
+        special_battery_level=20.8,
+        max_sid=2000,
+        route_waypoint_cache=ROUTE_WAYPOINT_CACHE_BY_CITY.get("Karlskrona")
     )
 
-    print(f"{len(scooters)} route-based scooters active in Umeå (spread batches)")
+    print(f"{len(scooters)} route-based scooters active in Karlskrona (spread batches)")
 
     # Stationary in zones
     next_sid, added = add_stationary_scooters(
         scooters=scooters,
         simulator=simulator,
         current_sid=next_sid,
-        max_sid=1500,
+        max_sid=2000,
         scooters_per_zone=SCOOTERS_PER_SPECIAL_ZONE
     )
-    print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Umeå")
+    print(f"Added {added} stationary scooters in zones: now {len(scooters)} total active in Karlskrona")
 
     # Start and run the completed simulation scenario now constructed
     run_simulation_by_tick(simulator=simulator, scooters=scooters)

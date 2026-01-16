@@ -3,8 +3,12 @@
 
 Defines hardcoded scooter routes for Malmö, Karlskrona, Umeå.
 Each route is a list of latitude/longitude tuples representing a path.
-Used by the simulator for rental trip simulation, and makes sure the scooters keep only
+Used by the simulator for rental trip simulation, and it makes sure the scooters keep only
 to the roads.
+
+Now used in conjunction with calculated, cached waypoint data, enabling the even spread of scooters along
+the route, for more pleasant big simulation separation of scooters.
+
 """
 
 MALMOE_ROUTES = {

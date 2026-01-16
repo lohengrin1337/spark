@@ -106,10 +106,11 @@ class Simulator:
         self.last_db_charging_status = {}
 
         # Current rental state per scooter
+        # "active" is the canonical control-flag (rental_id is an identifier, not control flow)
         self.rentals = {
             scooter.id: {
+                "active": False,
                 "rental_id": None,
-                "start_ts": None,
                 "user_id": None,
                 "user_name": None,
                 "start_zone": "free",
@@ -128,7 +129,6 @@ class Simulator:
                 "rental_id": None,
                 "user_id": None,
                 "user_name": None,
-                "start_ts": None,
             }
             for scooter in scooters
         }
@@ -310,24 +310,27 @@ class Simulator:
         scooter.status = "needCharging"
         print(f"DEBUG: Scooter {scooter.id} locked due to low battery ({scooter.battery}%)")
 
-    def _force_complete_active_rental_at_current_position(self, scooter, current_time, end_zone="admin_forced"):
-        """
-        Force-completes any active rental at the current position.
-        """
-        rental_state = self.rentals[scooter.id]
-        if rental_state["rental_id"] is None:
-            return
 
-        print(f"Forcing completion of active rental {rental_state['rental_id']} due to admin UI-event.")
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Rental completion helper (shared for normal/forced/out-of-bounds)
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _complete_rental_and_publish(self, scooter, rental_state, end_zone, current_time):
+        """
+        Complete rental via API, then publish summary to Redis.
+        """
+        rental_id = rental_state.get("rental_id")
+        if not rental_state.get("active") or not rental_id:
+            return None
 
         rental_state["end_zone"] = end_zone
-        path_coordinates = self.rbroadcast.load_coords(rental_state["rental_id"])
+        path_coordinates = self.rbroadcast.load_coords(rental_id)
 
+        # Ensure last coordinate has 0 speed (realistic stop)
         if path_coordinates:
             path_coordinates[-1]["spd"] = 0.0
 
         complete_rental(
-            rental_id=rental_state["rental_id"],
+            rental_id=rental_id,
             end_point={"lat": float(scooter.lat), "lng": float(scooter.lng)},
             end_zone=end_zone,
             route=path_coordinates,
@@ -338,6 +341,26 @@ class Simulator:
             rental_state,
             current_time,
             path_coordinates,
+        )
+
+        return path_coordinates
+
+
+    def _force_complete_active_rental_at_current_position(self, scooter, current_time, end_zone="admin_forced"):
+        """
+        Force-completes any active rental at the current position.
+        """
+        rental_state = self.rentals[scooter.id]
+        if not rental_state["active"]:
+            return
+
+        print(f"Forcing completion of active rental {rental_state['rental_id']} due to admin UI-event.")
+
+        self._complete_rental_and_publish(
+            scooter,
+            rental_state,
+            end_zone=end_zone,
+            current_time=current_time
         )
 
         self._return_user_to_pool(rental_state)
@@ -403,7 +426,7 @@ class Simulator:
             # Guard: never allow forcing "available" while a rental is active (sim-owned or external).
             # Revert DB to the current (old) status to avoid DB/simulator divergence.
             if new_status == "available":
-                sim_rental_active = self.rentals[scooter.id]["rental_id"] is not None
+                sim_rental_active = self.rentals[scooter.id]["active"]
                 ext_rental_active = self.external_rentals[scooter.id]["active"]
                 if sim_rental_active or ext_rental_active:
                     print(
@@ -423,7 +446,7 @@ class Simulator:
             if new_status in critical_statuses:
                 # Force-complete any active rental once, then lock permanently
                 rental_state = self.rentals[scooter.id]
-                if rental_state["rental_id"] is not None:
+                if rental_state["active"]:
                     self._force_complete_active_rental_at_current_position(
                         scooter,
                         current_time,
@@ -493,7 +516,6 @@ class Simulator:
                     "rental_id": rental_id,
                     "user_id": user_id,
                     "user_name": user_name,
-                    "start_ts": current_time,
                 })
 
                 # Reflect active locally so frontend does not show "available" while external rental runs.
@@ -501,15 +523,6 @@ class Simulator:
                 # DB update is handled by backend.
                 if scooter.status not in NON_RENTABLE_STATUSES and scooter.id not in self.deactivated_scooters:
                     scooter.status = "active"
-
-                # Mirror rental id locally for logging only
-                rental_state = self.rentals[scooter.id]
-                rental_state["rental_id"] = rental_id
-                rental_state["start_ts"] = current_time
-                rental_state["user_id"] = user_id
-                rental_state["user_name"] = user_name
-                rental_state["start_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lng)
-                rental_state["end_zone"] = "free"
 
                 # Start fresh route logging for this rental
                 self.rbroadcast.clear_coords(rental_id)
@@ -532,11 +545,7 @@ class Simulator:
                     "rental_id": None,
                     "user_id": None,
                     "user_name": None,
-                    "start_ts": None,
                 })
-
-                # Clear simulator-local rental state - backend already completed the rental canonically.
-                self._reset_rental_state(self.rentals[scooter.id])
 
                 # If battery is low (or we deferred this during external rental), lock now
                 if scooter.id in self.pending_battery_lock or scooter.battery < LOW_BATTERY_THRESHOLD:
@@ -566,10 +575,16 @@ class Simulator:
     def get_route_for_trip(self, scooter_id):
         trip_count = self.trip_counter[scooter_id]
 
-        route_id = self.scooter_to_route[scooter_id]
-        base_route = self.routes[route_id]
+        route_id = self.scooter_to_route.get(scooter_id)
+        if route_id is None:
+            return None
+
+        base_route = self.routes.get(route_id)
+        if not base_route:
+            return None
 
         return base_route if trip_count % 2 == 0 else base_route[::-1]
+
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Main simulation ticker - manages the heartbeat(s) that drive the simulation of the fleet
@@ -584,7 +599,6 @@ class Simulator:
         for scooter in self.scooters:
             scooter_id = scooter.id
             prev_lat, prev_lng = self.last_position[scooter_id]
-            current_route = self.get_route_for_trip(scooter_id)
 
             external_mode = self.external_rentals[scooter_id]["active"]
             external_rental_id = self.external_rentals[scooter_id]["rental_id"]
@@ -592,7 +606,7 @@ class Simulator:
 
             # Battery logic for locking at sub-20%
             if scooter.battery < LOW_BATTERY_THRESHOLD and scooter.id not in self.deactivated_scooters:
-                sim_rental_active = self.rentals[scooter.id]["rental_id"] is not None
+                sim_rental_active = self.rentals[scooter.id]["active"]
                 ext_rental_active = self.external_rentals[scooter.id]["active"]
 
                 if sim_rental_active or ext_rental_active or scooter.status == "active":
@@ -608,20 +622,6 @@ class Simulator:
             # - However: keep publishing scooter state
             # - keep logging coords under the external rental id
             if external_mode and external_rental_id:
-                movement_update = {
-                    "lat": scooter.lat,
-                    "lng": scooter.lng,
-                    "speed_kmh": 0.0,
-                    "activity": "active",
-                    "route_finished": False
-                }
-
-                current_zone = self.city.classify_zone(scooter.lat, scooter.lng)
-
-                # Speed limits irrelevant here (stationary), but to keep the structure intact
-                movement_update["speed_kmh"] = 0.0
-
-                # Charging detection
                 in_charging_zone = self._is_in_charging_zone(scooter)
 
                 self._sync_charging_status_db_first(scooter, in_charging_zone)
@@ -660,14 +660,19 @@ class Simulator:
                 scooter.rbroadcast.broadcast_state(publish_payload)
                 continue
 
-            # Resolve movement: special behavior wins, otherwise follow route
+
+            # Only route-move when a sim-owned rental is active (standing still is default)
+            current_route = None
+            if self.rentals[scooter_id]["active"] and scooter_id in self.scooter_to_route:
+                current_route = self.get_route_for_trip(scooter_id)
+
+
+            # Resolve movement: special behavior wins, otherwise route-follow when present, else stand still
             movement_update = self._resolve_movement_for_scooter(scooter, current_route)
 
             # Apply new position first - critical for accurate zone detection this tick
-            new_lat = movement_update["lat"]
-            new_lng = movement_update["lng"]
-            scooter.lat = new_lat
-            scooter.lng = new_lng
+            scooter.lat = movement_update["lat"]
+            scooter.lng = movement_update["lng"]
 
             # Classify zone using the updates position
             current_zone = self.city.classify_zone(scooter.lat, scooter.lng)
@@ -699,24 +704,14 @@ class Simulator:
 
                     # Force-complete any active rental (sim-owned only)
                     rental_state = self.rentals[scooter.id]
-                    if rental_state["rental_id"] is not None:
+                    if rental_state["active"]:
                         print(f"Forcing completion of active rental {rental_state['rental_id']} due to out-of-bounds")
 
-                        rental_state["end_zone"] = "outofbounds"
-                        path_coordinates = self.rbroadcast.load_coords(rental_state["rental_id"])
-
-                        complete_rental(
-                            rental_id=rental_state["rental_id"],
-                            end_point={"lat": float(scooter.lat), "lng": float(scooter.lng)},
-                            end_zone="outofbounds",
-                            route=path_coordinates,
-                        )
-
-                        self._publish_completed_rental(
+                        self._complete_rental_and_publish(
                             scooter,
                             rental_state,
-                            current_time,
-                            path_coordinates,
+                            end_zone="outofbounds",
+                            current_time=current_time
                         )
 
                         self._return_user_to_pool(rental_state)
@@ -725,6 +720,7 @@ class Simulator:
                 else:
                     # Ensure the out-of-bounds reason is recorded even if already locked by another reason.
                     self.outofbounds_locked_scooters.add(scooter.id)
+
 
             # Apply movement override for deactivated scooters
             if scooter.id in self.deactivated_scooters:
@@ -796,6 +792,7 @@ class Simulator:
             scooter.rbroadcast.broadcast_state(publish_payload)
 
 
+
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Decide how a scooter should move this given tick
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~            
@@ -803,7 +800,7 @@ class Simulator:
         """
         Returns movement update for one tick.
         If a special behavior is active for this scooter → use it.
-        Otherwise → normal route-following movement.
+        Otherwise → normal route-following movement (when route is present).
         """
         scooter_id = scooter.id
         special_behavior = self.per_scooter_special_behavior.get(scooter_id)
@@ -816,11 +813,23 @@ class Simulator:
                     "lng": result.get("lng", scooter.lng),
                     "speed_kmh": result.get("speed_kmh", 0.0),
                     "route_finished": result.get("route_finished", False),
+                    "activity": result.get("activity", "idle")
                 }
+
+        # No route present === stand still by default
+        if not route:
+            return {
+                "lat": scooter.lat,
+                "lng": scooter.lng,
+                "speed_kmh": 0.0,
+                "activity": "idle",
+                "route_finished": False
+            }
 
         # Normal route movement
         return self.compute_update(scooter, route)
    
+
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Rental lifecycle logic - now persists to real DB via API
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -832,10 +841,10 @@ class Simulator:
         if self.external_rentals[scooter_id]["active"]:
             return
 
-        # ___ START RENTAL ___
+        # ~~~~~START RENTAL~~~~~
         if self.can_start_rental(scooter):
+            rental_state["active"] = True
             rental_state["rental_id"] = self._new_rental_id()
-            rental_state["start_ts"] = current_time
             rental_state["start_zone"] = self.classify_zone_at_point(prev_lat, prev_lng)
 
             self._assign_user(rental_state)
@@ -864,8 +873,8 @@ class Simulator:
                 0.0  # Start from standstill
             )
 
-        # ___ LOG COORDINATES ___
-        if scooter.status == "active" and rental_state["rental_id"]:
+        # ~~~~~LOG COORDINATES~~~~~
+        if scooter.status == "active" and rental_state["active"] and rental_state["rental_id"]:
             self.rbroadcast.log_coord(
                 rental_state["rental_id"],
                 scooter.lat,
@@ -873,33 +882,23 @@ class Simulator:
                 scooter.speed_kmh,
             )
 
-        # ___ END RENTAL ___
+        # ~~~~~END RENTAL~~~~~
         if not route_finished:
             return
 
-        rental_id = rental_state["rental_id"]
-        if not rental_id:
+        if not rental_state["active"]:
+            return
+
+        if not rental_state["rental_id"]:
             return
 
         rental_state["end_zone"] = self.classify_zone_at_point(scooter.lat, scooter.lng)
-        path_coordinates = self.rbroadcast.load_coords(rental_id)
 
-        # Ensure last coordinate has 0 speed (realistic stop)
-        if path_coordinates:
-            path_coordinates[-1]["spd"] = 0.0
-
-        complete_rental(
-            rental_id=rental_id,
-            end_point={"lat": float(scooter.lat), "lng": float(scooter.lng)},
-            end_zone=rental_state["end_zone"],
-            route=path_coordinates,
-        )
-
-        self._publish_completed_rental(
+        self._complete_rental_and_publish(
             scooter,
             rental_state,
-            current_time,
-            path_coordinates,
+            end_zone=rental_state["end_zone"],
+            current_time=current_time
         )
 
         self._return_user_to_pool(rental_state)
@@ -927,13 +926,10 @@ class Simulator:
         """
         Publish completed rental summary to Redis
         """
-        duration_seconds = int(current_time - rental_state["start_ts"])
-
         self.rbroadcast.publish_completed({
             "type": "completed_rental",
             "rental_id": rental_state["rental_id"],
             "scooter_id": scooter.id,
-            "duration_s": duration_seconds,
             "coords": coords,
             "user_id": rental_state.get("user_id"),
             "user_name": rental_state.get("user_name"),
@@ -977,8 +973,8 @@ class Simulator:
         Clear per-rental state for next trip
         """
         rental_state.update({
+            "active": False,
             "rental_id": None,
-            "start_ts": None,
             "user_id": None,
             "user_name": None,
             "start_zone": "free",
@@ -1072,6 +1068,7 @@ class Simulator:
         """
         return self.city.classify_zone(lat, lng)
     
+
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Can start rental?-check
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1086,7 +1083,11 @@ class Simulator:
             return False
 
         # Already rented? Denied.
-        if rental_state["rental_id"] is not None:
+        if rental_state["active"]:
+            return False
+
+        # Route missing? Denied.
+        if scooter.id not in self.scooter_to_route:
             return False
 
         # Battery <20%? Denied.

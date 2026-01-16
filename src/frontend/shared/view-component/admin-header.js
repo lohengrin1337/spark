@@ -8,7 +8,7 @@ class AdminHeader extends HTMLElement {
     super();
     const header = document.createElement('header');
     header.innerHTML = `
-      <button id="theme-toggle">
+      <button class="theme-toggle">
         <img class="title-sun" src="img/sun.svg" alt="Toggle theme">
       </button>
 
@@ -28,7 +28,7 @@ class AdminHeader extends HTMLElement {
   }
 
   connectedCallback() {
-    initTheme("#theme-toggle");
+    initTheme(".theme-toggle");
 
     const token = localStorage.getItem("token");
 

@@ -9,7 +9,7 @@ class UserAppHeader extends HTMLElement {
     super();
     const header = document.createElement('header');
     header.innerHTML = `
-      <button id="theme-toggle">
+      <button class="theme-toggle">
         <img class="title-sun" src="/shared/img/sun.svg" alt="Toggle theme">
       </button>
 
@@ -19,13 +19,16 @@ class UserAppHeader extends HTMLElement {
         <p class="title-app-mobile">App</p>
       </h1>
 
+
       <nav>
-        <div class="navlink-box">
-          <a href="user-app-panel.html">
-            <img class="user-spark" src="/shared/img/user.svg" alt="User Panel">
-          </a>
-        </div>
-      </nav>
+      <div class="user-spark">
+      <div>
+      <a href="user-app-panel.html">
+      <img style="height: 42px;" src="/shared/img/user.svg" alt="User Panel"></div>
+      <div> <p id="logged-in-as" class="user-app-logged-in-text"></p></p></div>
+      </a>
+      </div>
+    </nav>
     `;
     this.appendChild(header);
   }
@@ -47,7 +50,7 @@ class UserAppHeader extends HTMLElement {
       } catch (e) {
           console.error(e);
       }
-      initTheme("#theme-toggle");
+      initTheme(".theme-toggle");
   }
 }
 

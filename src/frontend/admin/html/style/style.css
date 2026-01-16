@@ -435,7 +435,7 @@ _________________________________________________________ */
     text-align: center;
 }
 
-#theme-toggle {
+.theme-toggle {
     position:absolute;
     background-color: transparent;
     top: 0.25rem;

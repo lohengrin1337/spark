@@ -12,6 +12,7 @@
  */
 
 import * as MapMarkers from './map-ui-controller.js';
+import { getUserChosenCity } from './user-map.js';
 
 const API_BASE = "";
 const BIKES_API = `${API_BASE}/api/v1/bikes`;
@@ -41,6 +42,9 @@ let pollTimer = null;
 let pollAborter = null;
 const POLL_INTERVAL_MS = 7500;
 
+// Track active city for polling to allow clean transitions
+let lastPolledCity = null;
+
 /**
  * Checks if an error is from an aborted fetch (used for clean poll cancellation).
  */
@@ -69,10 +73,16 @@ function applyUpdates() {
 // Poll snapshot
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
- * Fetches a complete snapshot of all bikes from the backend.
+ * Fetches a complete snapshot of all bikes from a given city
  */
-async function fetchAllBikesSnapshot() {
-  const url = `${BIKES_API}`;
+async function fetchCityBikesSnapshot() {
+  const city = getUserChosenCity();
+
+  // No chosen city: do not fetch, instead UI should prompt
+  if (!city) return [];
+
+  const qs = new URLSearchParams({ city });
+  const url = `${BIKES_API}?${qs.toString()}`;
 
   const token = localStorage.getItem('token');
   const headers = {
@@ -110,11 +120,34 @@ function isPollVisibleStatus(statusRaw) {
 async function pollOnce() {
   if (state.mode !== 'poll') return;
 
+  const city = getUserChosenCity();
+
+  // No chosen city: clear any existing markers and skip polling.
+  if (!city) {
+    lastPolledCity = null;
+    if (typeof MapMarkers.clearAllMarkers === 'function') {
+      MapMarkers.clearAllMarkers();
+    } else {
+      MapMarkers.pruneMissingMarkers(new Set());
+    }
+    return;
+  }
+
+  // City changed: clear markers immediately so we don't show stale city state.
+  if (lastPolledCity !== city) {
+    lastPolledCity = city;
+    if (typeof MapMarkers.clearAllMarkers === 'function') {
+      MapMarkers.clearAllMarkers();
+    } else {
+      MapMarkers.pruneMissingMarkers(new Set());
+    }
+  }
+
   if (pollAborter) pollAborter.abort();
   pollAborter = new AbortController();
 
   try {
-    const bikes = await fetchAllBikesSnapshot();
+    const bikes = await fetchCityBikesSnapshot();
 
     const seenIds = new Set();
     for (const bike of bikes) {
@@ -137,7 +170,7 @@ async function pollOnce() {
 }
 
 /**
- * Starts periodic polling (idempotent).
+ * Starts periodic polling
  */
 function startPolling() {
   stopPolling();
@@ -148,7 +181,7 @@ function startPolling() {
 }
 
 /**
- * Stops polling and aborts any in-flight request.
+ * Stops polling and aborts any ongoing request
  */
 function stopPolling() {
   if (pollTimer) clearInterval(pollTimer);
@@ -242,7 +275,7 @@ function disconnectSocket() {
 /**
  * Switches to real-time socket mode for active rental.
  */
-function switchToSocketMode(reason = 'unknown') {
+function switchToSocketMode(reason = 'Rental started') {
   if (state.mode === 'socket') return;
 
   state.mode = 'socket';
@@ -259,7 +292,7 @@ function switchToSocketMode(reason = 'unknown') {
 /**
  * Switches back to polling mode (full fleet view).
  */
-function switchToPollMode(reason = 'unknown') {
+function switchToPollMode(reason = 'Rental ended') {
   log('switchToPollMode()', { reason, rental_id: state.rental_id, scooter_id: state.scooter_id });
 
   MapMarkers.exitRentalOnlyMode();
@@ -275,7 +308,7 @@ function switchToPollMode(reason = 'unknown') {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Public init (rental lifecycle)
+// Public init (handles rental lifecycle)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * - Starts polling by default

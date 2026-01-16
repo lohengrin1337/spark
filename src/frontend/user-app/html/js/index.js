@@ -3,9 +3,9 @@
  * Main entry point for the User App
  */
 
-import { initMap, startAnimationLoop, updateTileLayer, switchTo } from './user-map.js';
+import { initMap, startAnimationLoop, switchToCityUserApp, initCityNavVisibility } from './user-map.js';
 import { initWebSocket } from './state-stream.js';
-import { initCityLinks } from '/shared/js/map/cities.js';
+import { initCityLinksUserApp } from '/shared/js/map/cities.js';
 import { initTheme } from '/shared/theme/theme.js';
 
 function startApp() {
@@ -17,19 +17,16 @@ function startApp() {
   }
 
   initTheme();
+  
   initMap();
+
   startAnimationLoop();
 
   initWebSocket();
 
-  initCityLinks(switchTo);
+  initCityLinksUserApp(switchToCityUserApp);
 
-  const observer = new MutationObserver(updateTileLayer);
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['class']
-  });
-  updateTileLayer();
+  initCityNavVisibility();
 }
 
 if (document.readyState === 'loading') {

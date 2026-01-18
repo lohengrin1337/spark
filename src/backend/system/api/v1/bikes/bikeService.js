@@ -82,7 +82,7 @@ async function updateBikeStatusById(id, newStatus, opts = {}) {
             id: parseInt(id, 10),
             st: newStatus
         });
-        await redisPublisher.publish('scooter:delta', uiDelta);
+        await redisPublisher.publish('scooter:state:tick', uiDelta);
 
         // Admin command channel (used to sync simulator-admin events)
         if (publishAdmin) {
@@ -142,7 +142,7 @@ async function updateBikeStatusAndPositionById(id, newStatus, lat, lng, opts = {
           lat,
           lng
       });
-      await redisPublisher.publish('scooter:delta', uiDelta);
+      await redisPublisher.publish('scooter:state:tick', uiDelta);
 
       // Admin command channel (used to sync simulator-admin events)
       if (publishAdmin) {

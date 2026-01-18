@@ -38,7 +38,7 @@ class ScooterBroadcaster:
         self.r.set(f"scooter:{scooter_id}", encoded)
 
         # Real-time push for the live map updates
-        self.r.publish("scooter:delta", encoded)
+        self.r.publish("scooter:state:tick", encoded)
 
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

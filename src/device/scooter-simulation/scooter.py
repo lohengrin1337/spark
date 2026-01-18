@@ -92,7 +92,7 @@ class Scooter:
     # Publish/Broadcast Scooter-state
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     """
-    Sends current state to Redis (if a redis-broadcaster is provided)
+    Broadcast current scooter state (if a redis-broadcaster is provided)
     """
     def publish(self, in_charging_zone=False):
         if not self.rbroadcast:

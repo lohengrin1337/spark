@@ -8,23 +8,21 @@
  * Forwards all real-time events published by the device container (via Redis Pub/Sub), where 
  * the scooter state exist, to any connected frontend clients over a raw, low overhead WebSocket-connection (wss).
  * 
- * The Device/Simulation container publishes JSON messages to these Redis channels: [ scooter:delta, rental:completed ]
+ * The Device/Simulation container publishes JSON messages to these Redis channels: [ scooter:state:tick, rental:completed ]
  * 
  * ...and the the payload is broadcasted to all the connected frontend WebSocket clients.
  *
  * Also, as a sidenote, publishes trivial rental:completed to admin subscriber for the completed rentals live view.
  * 
- * Note: Important point to drive home: this acts not as a regular socket server, but as a socket (server) bridge.
- * 
- * This distinction is key, because although it is a server in the strict sense, handling clients connecting to it,
- * it does this as a stateless forwarderer of event driven data.
- * 
- * The source of truth of the scooter state is upstream in the simulation container, distributed via the
- * RedisPub/Sub-pipeline.
- * 
- * This humble socket setup thus simply connects and forwards that data stream to the frontends over WSS,
- * performing very basic parsing and stringification, yes, but in essence not handling, transforming or
- * persisting anything.
+ * Note: Important distinction: this component exposes a WebSocket server endpoint, but it is not an
+ * application-level socket server.
+ *
+ * Although it accepts and manages WebSocket connections, it does not own domain state, protocol semantics, 
+ * or client-specific behavior. It functions purely as a transport bridge that forwards event-driven data.
+ *
+ * All scooter state is resolved upstream in the simulation container and distributed via Redis Pub/Sub. 
+ * This module merely terminates that internal transport and re-broadcasts the same authoritative event
+ * stream to connected frontend clients.
  * 
  * Conceptualizing and treating this component as a bridge ensures that frontend expectations can be kept
  * neutral and clear, and that all the multiple independent clients can safely consume the same
@@ -58,32 +56,29 @@ module.exports = function initSocketBridge(wss, redisSubscriber) {
     });
   
   
-    /**
-     * Subscribe to the authoritative Redis Pub/Sub scooter:delta-channel (and trivial
-     * rental:completed channel).
-     */
-    redisSubscriber.subscribe('scooter:delta', 'rental:completed');
-  
-    /**
-     * For every message published on any subscribed channel, the payload is parsed as JSON,
-     * re-serialized, and then broadcast to all currently connected frontend WebSocket-clients.
-     *
-     * The channel-parameter is not used for any routing here: the frontend receives
-     * a unified event stream and performs any filtering instead client-side.
-     */
-    redisSubscriber.on('message', (channel, message) => {
-      try {
-        const data = JSON.parse(message);
-  
-        for (const client of clients) {
-          if (client.readyState === client.OPEN) {
-            client.send(JSON.stringify(data));
-          }
-        }
-      } catch (err) {
-        console.error('[Redis] Failed to parse message:', err);
+  /**
+   * Subscribe to authoritative Redis Pub/Sub channels emitting resolved events.
+   *
+   * These channels carry already-decided, self-contained event payloads.
+   */
+  redisSubscriber.subscribe('scooter:state:tick', 'rental:completed');
+
+  /**
+   * Forward each published event verbatim to all connected frontend WebSocket clients.
+   *
+   * The bridge does not inspect, validate, transform, or route events.
+   * It simply terminates the internal Redis transport and re-exposes the same
+   * event stream to the frontend clients.
+   *
+   */
+  redisSubscriber.on('message', (channel, message) => {
+    for (const client of clients) {
+      if (client.readyState === client.OPEN) {
+        client.send(message);
       }
-    });
+    }
+  });
+
   
     return { clients };
   };
